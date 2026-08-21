@@ -135,8 +135,9 @@ resolution, the `/tandem config` mode) is defined once in
 ## 8. Failure & degradation ladder
 
 Explicit behavior for: inaccessible ticket/doc (mark source unfetched, ask for a paste,
-continue with lowered confidence); Codex unavailable (**solo mode**: same lens ladder run by a
-fresh subagent as devil's advocate; recorded in state and dossier); persistent disagreement
+continue with lowered confidence); Codex unavailable (originally an automatic **solo mode** —
+superseded by §14's user-owned `codex_failure` policy: ask | stop | Claude fallback critics);
+persistent disagreement
 (deadlock → user); unrelated test failures (baseline failure snapshot taken before first
 change; only deltas are ours); CI failures (same classification); PR creation failure (report,
 give the manual command, branch stays pushed); interruption (state.md → resume).
@@ -219,3 +220,24 @@ tandem-review all point at it. A `/tandem config` mode (interactive + `show` / `
 clean replacement (the pre-release `.tandem/config.md` is not read; if one is found, tandem
 says so and offers a one-time copy of its valid values) — the project had been public for
 hours, not long enough to promise compatibility.
+
+## 14. Codex unavailability policy (2026-08-21)
+
+The automatic "one recovery, then solo" fallback was replaced by a user-owned policy. Two
+new config keys: `codex_failure: ask|stop|claude` (default `ask` — silently switching a
+cross-model workflow to same-model review is a consent decision, not a degradation detail)
+and `claude_fallback_model: inherit|<model id>` (fallback critics only; no hardcoded model
+list — validated at dispatch, never silently substituted). Detection unchanged in shape but
+reclassified: deterministic failures (missing CLI, bad auth, exhausted quota) are never
+retried; transient ones keep the single fresh-session recovery. On unavailability: `ask`
+pauses at a safe checkpoint (retry offered only for transient failures; non-interactive runs
+stop rather than assume consent), `stop` halts resumably with the failed stage and resume
+condition recorded, `claude` enters run-wide fallback mode — fresh "Claude fallback critic"
+subagents receive exactly what Codex would have (plan/state paths, lens charter, delta,
+dispositions — never the raw conversation), same contracts and caps, findings still verified
+by the orchestrator, and later stages never re-ask. Labeling is load-bearing: fallback output
+is never described as Codex review or cross-model consensus, and the dossier and PR disclose
+material same-model reviews. `codex: off` stays a choice, not a failure — it never triggers
+the policy and remains distinguishable in state (`solo (by config)` vs `claude-fallback`).
+Kept separate by design: implementation subagents (`execution`) — different system, own
+model behavior, never reused to review their own work.

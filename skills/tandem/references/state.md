@@ -15,8 +15,9 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided
-spar: pending | codex (thread <id>) | solo (by config) | solo (degraded round <n>[, was codex thread <id>])
+config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit
+spar: pending | codex (thread <id>) | solo (by config) | claude-fallback (model <m>, since round <n>[, was codex thread <id>])
+codex-failure: <omit unless Codex became unavailable: at <stage/round> — reason → policy (ask|stop|claude) → outcome (user chose stop|claude|retry / stopped / fallback, model <m>)[; explicit codex retry at <stage>: succeeded|failed]>
 updated: <ISO datetime>
 
 ## Task
@@ -40,6 +41,7 @@ updated: <ISO datetime>
 ## Spar rounds
 - 1 (intent, BLOCKING): 2 accepted, 1 rejected — <one-line gist>
 - 2 (architecture, skipped): settled during understand
+- 3 (edge cases, MATERIAL) [fallback]: … — rounds run by a Claude critic carry [solo] or [fallback]
 …
 
 ## Build
@@ -55,7 +57,7 @@ updated: <ISO datetime>
 - <command> → <pass/fail + counts> (<datetime>)
 
 ## Ship
-- Review: <tandem-review verdict + findings triaged: N fixed, M rejected>
+- Review: <tandem-review verdict + findings triaged: N fixed, M rejected>[ (Claude fallback critic, model <m>) | (solo review — codex off)]
 - Dossier: <path, once committed>
 - PR: <url or "not yet" or "off">
 - CI: <green | failures: ours(...) / pre-existing(...)>
@@ -90,4 +92,11 @@ On `/tandem resume`:
 4. Announce a 3-line recap to the user (task, phase, next action), then continue from `## Next`
    with the matching phase playbook.
 5. A recorded Codex `thread` may be resumable; if the resume fails, follow the protocol's
-   failure ladder (one fresh session with a 3-bullet catch-up, then solo).
+   failure ladder and then the `codex_failure` policy.
+6. A run that entered Claude fallback mode (`spar: claude-fallback…`) STAYS in fallback mode
+   after resume — never re-ask about Codex stage by stage. Only an explicit resume-time
+   override (the user asks to retry Codex or changes the policy) reopens it; log the retry's
+   outcome on the `codex-failure:` line. A run STOPPED by the policy resumes from `§ Next`:
+   when `§ Next` names a Codex condition ("continue once quota renews"), retrying Codex IS
+   the recorded next step — attempt it and log the outcome, no extra ask needed. In every
+   case, completed rounds and reviews are never re-run.

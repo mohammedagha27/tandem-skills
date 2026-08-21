@@ -83,21 +83,65 @@ large diffs, prefer `run_in_background: true` and read the reply file on complet
 background run finishes, lead your next message with a loud banner (`🔔 CODEX FINISHED —
 <what>`) before any analysis — the user isn't watching tool calls.
 
-Classify the failure before the ladder. **Terminal** — the codex binary is missing, auth is
-invalid, the model/flag is unsupported: a retry cannot succeed, so skip the recovery, go
-straight to solo mode, and tell the user exactly what's broken and how to fix it (`codex
-login`, install, version). **Transient** — timeout, crash, empty reply, missing success
-contract, double verdict-miss — enters the ladder:
+Classify the failure before the ladder. **Deterministic** — the codex binary is missing,
+auth is invalid, quota/usage is exhausted, the model/flag is unsupported: a retry cannot
+succeed, so never retry; declare Codex **unavailable** immediately and tell the user exactly
+what's broken and what would fix it (`codex login`, install, plan renewal — name the
+condition, never paste credentials or raw sensitive output). **Transient** — timeout, crash,
+rate limit, network blip, empty reply, missing success contract, double verdict-miss —
+enters the bounded ladder:
 
 1. **First failure:** tell the user what failed. One deliberate recovery is sanctioned: a
    **fresh session** (`codex exec`, new thread) whose prompt carries a 3-bullet catch-up
    (current plan/diff pointer, settled points, rejected findings + reasons) — never a blind
    retry of the same call, and never a resume of a thread that just failed.
 2. **Second consecutive failure** (recovery included): Codex is **unavailable** for this run.
-   Fall back to solo mode (see `sparring.md`), record the degradation, stop hammering the CLI.
 
 Failed calls and the recovery attempt never count toward any round cap; the interrupted round
-re-runs and occupies its original slot — the cap counts *completed* review rounds only.
+re-runs and occupies its original slot — the cap counts *completed* review rounds only. A
+rejected proposal, harsh finding, or disagreement is never an availability failure.
+
+## Codex unavailable — the `codex_failure` policy
+
+Once unavailable, the configured `codex_failure` (see `config.md`; resolved on state's
+`config:` line) decides what happens. It applies identically at every Codex touchpoint —
+sparring rounds, mid-build spot-checks, the pre-PR review — and `codex: off` never gets
+here (that's a choice, not a failure).
+
+- **`ask` (default):** pause at a safe checkpoint (nothing half-written) — in **every**
+  autonomy mode; `autonomy=auto` never proceeds past this. Explain why Codex is unavailable
+  (condition + fix, no credentials/sensitive output), then ask via the harness's interactive
+  question tool: **stop and preserve progress** (exactly the `stop` behavior below,
+  `§ Next` included) / **continue with Claude fallback critics** (say which model — see
+  below) / **retry Codex** (offer this option only when a retry is reasonable, i.e. the
+  failure was transient — never for deterministic failures). Never choose on the user's
+  behalf; if there is no way to ask (the harness has no interactive question channel, or the
+  run is headless/CI with nobody to answer), stop safely rather than assume consent. The
+  answer applies to the current run only — update the installation config only if the user
+  explicitly asks to save it as a default.
+- **`stop`:** stop before any further workflow action. State, completed work, decisions, and
+  verification evidence are already on disk; set `state.md § Next` to the failed stage plus
+  the condition required to continue, so `/tandem resume` picks up exactly there. Never
+  silently fall back to Claude.
+- **`claude`:** enter **Claude fallback mode** for the rest of the run: every remaining
+  Codex critic invocation is replaced by a fresh **Claude fallback critic** subagent
+  (mechanics in `sparring.md § Claude fallback / solo mechanics`; the shipping playbook uses
+  the same policy for the review gate). No further Codex calls this run — and no re-asking
+  at every later stage; Codex is retried only when the user explicitly requests it (e.g. a
+  resume-time override).
+
+Record the event in `state.md` (one line: reason → policy → decision/action, round/stage);
+the `spar:` field and round/review entries mark what ran on fallback. Fallback output is
+always labeled **"Claude fallback critic"** — never "Codex review", "cross-model consensus",
+or "independent provider validation".
+
+**Fallback model:** the critic uses `claude_fallback_model` (`inherit` = the orchestrator's
+current model). The dispatch is the validation: pass the id to the subagent call, and if the
+harness rejects it as unknown/unavailable, ask the user or stop; never silently substitute
+another model. Disclose the model in the fallback announcement and in state. This setting governs
+fallback critics only — implementation subagents are a separate system (`execution`), keep
+their own model behavior, are never consumed/reconfigured by fallback, and are never reused
+to review their own work.
 
 ## Verdict contract
 

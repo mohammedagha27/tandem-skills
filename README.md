@@ -40,7 +40,10 @@ by `/tandem` as the pre-PR gate.
 
 - **Claude Code** (required).
 - **[Codex CLI](https://github.com/openai/codex)** with `codex login` completed (recommended).
-  Without it, tandem degrades to a clearly-labeled single-model mode rather than failing.
+  Without it — or if Codex fails mid-run (quota, auth, network) — tandem applies your
+  `codex_failure` policy: ask (default), stop resumably, or continue with clearly-labeled
+  Claude fallback critics. It never fails silently and never passes off same-model review as
+  cross-model.
 - **git** (required — Codex refuses to run outside a git repo, and the workflow is built
   around branches).
 - **`gh` CLI or a GitHub remote** (optional). Only the PR and CI-watch steps use it; without
@@ -91,9 +94,12 @@ belongs to the installation that's actually loaded — global, project-level, or
 /tandem config reset                 # back to built-ins (asks first)
 ```
 
-The eight keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
+The ten keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
 (auto|inline|subagents), `pr` (ask|auto|off), `ci` (on|off), `docs` (on|off), `autonomy`
-(guided|auto) — full semantics in the skill's `references/config.md`. One-off overrides ride
+(guided|auto), `codex_failure` (ask|stop|claude — what happens if Codex becomes unavailable
+mid-run: ask you, stop resumably, or continue with clearly-labeled Claude fallback critics),
+`claude_fallback_model` (inherit|model id — the model those fallback critics use) — full
+semantics in the skill's `references/config.md`. One-off overrides ride
 the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=off`.
 
 ## What a run looks like

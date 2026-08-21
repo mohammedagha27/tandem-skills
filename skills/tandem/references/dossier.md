@@ -25,8 +25,9 @@ the diff) is enough to render the template honestly.
 ```markdown
 # <Feature name>
 
-_<one-line what-and-why>. <date>, branch <name>. Built with tandem (<"Claude + Codex spar" |
-"single-model" — match how the spar actually ran, per state's `spar:` line>)._
+_<one-line what-and-why>. <date>, branch <name>. Built with tandem (<how the spar actually
+ran, per state's `spar:` line — e.g. "Claude + Codex spar", "single-model", or "Codex rounds
+1–2, Claude fallback critic rounds 3–5">)._
 _(The PR links this dossier; record the PR URL in state.md § Ship once it exists.)_
 
 ## Problem
@@ -45,8 +46,10 @@ Only decisions that pass "would a future reader wonder about this?">
 
 ## Challenged & contested
 <the G-ids: where the models disagreed and it mattered — each side's position and how it
-resolved. Where sparring materially changed the plan, say what changed. If sparring ran
-solo (no Codex), say so.>
+resolved. Where sparring materially changed the plan, say what changed. If any material
+round or review ran single-model — solo by `codex=off` or a "Claude fallback critic" after
+a Codex failure — disclose it here, with which ones; never describe same-model output as a
+Codex review or cross-model validation.>
 
 ## Edge cases handled
 <the ones that cost thought, with pointers to their tests>

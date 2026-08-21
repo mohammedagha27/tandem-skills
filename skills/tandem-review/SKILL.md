@@ -129,8 +129,12 @@ the SAME Codex session for re-review over the fix delta.
   presentation so a future session inherits it from the conversation record. After the cap,
   remaining disputes go to the user; "keep going" buys exactly one cycle, then stop and
   re-ask. Failed calls and the protocol's recovery attempt never count as cycles.
-- Codex unavailable (per the protocol's failure ladder — one fresh-session recovery, then
-  done): say so and offer a Claude-only pass against the same examine-list, clearly labeled
-  as single-model.
+- Codex unavailable (per the protocol's failure ladder: deterministic = no retry, transient =
+  one fresh-session recovery): apply the `codex_failure` policy from the same config the
+  `codex` key came from — in tandem context a run already in Claude fallback mode just
+  continues in it. Under `ask` (the default): say what failed (no credentials/sensitive
+  output) and offer stop / a Claude critic pass against the same examine-list / retry (only
+  if transient). Any single-model pass is clearly labeled "Claude fallback critic" (model:
+  `claude_fallback_model`, disclosed) — never presented as a Codex or cross-model review.
 - Truly empty scope (base verified correct, no diff, nothing uncommitted): report "nothing to
   review" — don't launch.

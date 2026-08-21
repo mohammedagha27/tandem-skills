@@ -339,7 +339,35 @@ current before writing), with a one-question text fallback for harnesses without
 The same picker-over-prose rule was extended to the understand-phase interview and deadlock
 tie-breaks.
 
-## 9. Verdict
+## 9. Round 7 — Codex unavailability policy (2026-08-21)
+
+The automatic solo fallback was replaced by the user-owned `codex_failure: ask|stop|claude`
+policy plus `claude_fallback_model` (DESIGN §14). Validation executed: an adversarial
+tabletop (fresh agent, 7 walks: ask-path with deterministic failure under autonomy=auto,
+claude-path mid-spar with coverage of spot-checks and pre-PR review, stop-and-resume, model
+handling, codex-off distinction, state-record completeness, cross-file consistency). Clean
+checks included: retry correctly withheld for deterministic failures; ask never mutates
+installation config; failed calls consume no rounds; no re-asking once in fallback mode —
+consistent across five files; labeling ("Claude fallback critic", never cross-model)
+consistent everywhere including PR and dossier disclosure; no silent model substitution and
+no leakage into implementation subagents; codex-off fires no policy anywhere. 15 findings
+fixed, the load-bearing one being the state template's `config:` line carrying only 8 of 10
+resolved keys — which would have made the policy unrecoverable on resume (the very guarantee
+it exists for). Others: autonomy=auto's always-ask list now includes the codex_failure
+pause; the ask-path's stop option explicitly inherits the stop policy's `§ Next` contract;
+non-interactivity got a decidable test (no question channel / headless with nobody to
+answer); fallback critics got their own failure mechanic (re-dispatch with the verdict
+contract restated, then run the round yourself, marked); the fallback prompt list now
+carries the trust-boundary rule; the `codex-failure:` state line gained a stage slot and
+§ Ship a single-model review marker; stopped-run resume may retry Codex when `§ Next` names
+it as the continue-condition; the dossier header is no longer binary for mid-run fallback;
+"validate before dispatch" reworded to dispatch-as-validation; stale "self-review"/"eight
+keys"/old-solo references and DESIGN §8's superseded normative text corrected.
+
+Not executed: no live quota-exhaustion or rate-limit reproduction against the real Codex
+CLI — the failure classification is encoded from documented behavior, not induced failures.
+
+## 10. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

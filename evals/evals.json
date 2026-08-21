@@ -42,7 +42,7 @@
       "id": 7,
       "name": "codex-unavailable",
       "prompt": "/tandem Add retry logic to the webhook sender (with codex CLI missing or unauthenticated)",
-      "expected_output": "Unavailability test triggers after defined failure conditions; solo mode announced to user, recorded in state.md and dossier; lens ladder still runs via subagent devil's advocate; no endless CLI retries."
+      "expected_output": "Deterministic failure (missing CLI/auth) — no retries; codex_failure policy applies (default ask): pause at a safe checkpoint, explain the condition without exposing credentials, offer stop/claude-fallback (retry NOT offered — deterministic); the answer applies to this run only; decision recorded on state's codex-failure line; non-interactive context = stop safely."
     },
     {
       "id": 8,
@@ -91,6 +91,18 @@
       "name": "unfamiliar-external-project",
       "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no installation config.md)",
       "expected_output": "Runs on defaults with zero configuration; no config.md is created by the run; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
+    },
+    {
+      "id": 21,
+      "name": "codex-failure-claude-fallback",
+      "prompt": "/tandem Add webhook signing (codex_failure: claude; Codex hits quota exhaustion at spar round 2)",
+      "expected_output": "No retry (deterministic); run enters Claude fallback mode: spar set to claude-fallback with model + since-round, event line recorded; remaining rounds use fresh Claude critic subagents on claude_fallback_model (validated, disclosed) with the same lens/verdict contract and round caps; round lines marked [fallback]; the failed invocation consumes no round; later stages (spot-checks, pre-PR review) stay in fallback WITHOUT re-asking; output labeled 'Claude fallback critic', never cross-model; dossier + PR body disclose the same-model reviews."
+    },
+    {
+      "id": 22,
+      "name": "codex-failure-stop-and-resume",
+      "prompt": "/tandem resume payment-export (run previously stopped by codex_failure: stop at the pre-PR review)",
+      "expected_output": "Stop preserved state/work/evidence and set § Next to the failed stage + condition to continue; resume restarts exactly there without re-running completed rounds; a resume-time override may retry Codex or switch policy, with the retry outcome logged on the codex-failure line; codex: off runs are distinguishable (solo by config — no failure event, no policy, no warnings)."
     },
     {
       "id": 16,

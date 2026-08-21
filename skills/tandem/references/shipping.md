@@ -34,13 +34,20 @@ Triage its triaged output (tandem-review already verifies findings against the c
   rather than looping; each further cycle happens only on their explicit per-cycle ask. Rerun
   step 1 verification after any fix.
 
-If Codex is unavailable, degrade per its protocol; with `codex=off`, run the same pass by
-choice (no degradation framing). Either way it's a Claude self-review pass against the
-examine-list in tandem-review's prompt (correctness, requirements coverage, architecture fit,
-regressions, edge cases, security, performance, maintainability, test quality, complexity,
-plan deviations), recorded as single-model — under the **same output contract as the Codex
-path**: severity-tagged findings, a final verdict line, and triage into the same buckets. A
-paragraph of "looks fine" does not satisfy this step.
+If Codex is unavailable here, apply the `codex_failure` policy
+(`codex-protocol.md § Codex unavailable`) — a run already in Claude fallback mode just
+continues in it, without re-asking. With `codex=off`, run the single-model pass by choice
+(no failure framing). In both single-model cases the review is a **fresh Claude critic
+subagent** (model: `claude_fallback_model`, disclosed; labeled "Claude fallback critic" in
+the failure case, "solo review" under `codex=off`) against the examine-list in
+tandem-review's prompt (correctness, requirements coverage, architecture fit, regressions,
+edge cases, security, performance, maintainability, test quality, complexity, plan
+deviations) — under the **same output contract as the Codex path**: severity-tagged
+findings, a final verdict line, triage into the same buckets, and the orchestrator verifies
+every finding before acting. Never use an implementation subagent to review its own work; if
+subagents are unavailable, an orchestrator self-review is the last resort, marked as such.
+A paragraph of "looks fine" does not satisfy this step. Record which reviews ran single-model
+in `state.md § Ship`.
 
 ## 3. Dossier (per `docs` config)
 
@@ -56,8 +63,10 @@ before opening. `auto` → open it. Opening a PR is outward-facing: when in doub
 - Push with `-u`. Look for a PR/MR template (`.github/PULL_REQUEST_TEMPLATE*`,
   `.gitlab/merge_request_templates/`) and use it.
 - PR body: what + why from `state.md § Task/Decisions` (not a commit list), test plan from
-  `§ Verification`, plus notable disagreements/deviations a reviewer should know. Link the
-  ticket so the tracker auto-links.
+  `§ Verification`, plus notable disagreements/deviations a reviewer should know. If any
+  material review or sparring ran on a same-model Claude critic (fallback or `codex=off`),
+  disclose that plainly — never present it as a cross-model review. Link the ticket so the
+  tracker auto-links.
 - PR creation fails (permissions, no remote, protected branch, non-GitHub host)? Report the
   exact error, give the platform-appropriate manual command (`gh pr create …` on GitHub; the
   host's merge-request URL or CLI elsewhere), leave the branch pushed. Not a workflow failure.

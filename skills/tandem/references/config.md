@@ -10,12 +10,14 @@ to this file instead of restating any of it.
 |---|---|---|---|
 | `codex` | `on\|off` | `on` | `off` = never invoke the Codex CLI anywhere in a run: sparring, mid-build spot-checks, and the pre-PR review all run single-model (solo mode *by choice*, recorded as `spar: solo (by config)` — no failure-ladder framing). For repos whose content must not go to OpenAI, or machines without Codex. |
 | `max_rounds` | positive integer | `5` | Hard cap on sparring rounds. The loop always terminates here. |
-| `codex_review` | `on\|off` | `on` | Pre-PR feature-level review via the `tandem-review` skill (single-model self-review when `codex=off`). |
+| `codex_review` | `on\|off` | `on` | Pre-PR feature-level review via the `tandem-review` skill (a fresh single-model Claude critic pass when `codex=off`). |
 | `execution` | `auto\|inline\|subagents` | `auto` | Build execution model. `auto` = classify per the build playbook; `inline`/`subagents` force that model. |
 | `pr` | `ask\|auto\|off` | `ask` | `ask` = confirm before opening a PR; `auto` = open it; `off` = stop at a pushed branch. |
 | `ci` | `on\|off` | `on` | Monitor CI checks after the PR opens (no-op when no PR exists). |
 | `docs` | `on\|off` | `on` | Generate and commit the dossier (full mode only). |
-| `autonomy` | `guided\|auto` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; destructive, security-sensitive, or scope-ambiguous decisions — and sparring deadlocks — always ask, in every mode. |
+| `autonomy` | `guided\|auto` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; destructive, security-sensitive, or scope-ambiguous decisions — sparring deadlocks, and a `codex_failure: ask` pause — always ask, in every mode. |
+| `codex_failure` | `ask\|stop\|claude` | `ask` | What happens when Codex becomes UNAVAILABLE mid-run (quota, rate limit, auth, missing CLI, network, bounded-retry timeout, repeated protocol failure — never a mere disagreement, and never `codex: off`, which is a choice, not a failure). `ask` = pause at a safe checkpoint and let the user decide; `stop` = stop safely, resumable; `claude` = continue with fresh **Claude fallback critic** agents. Details in `codex-protocol.md § Codex unavailable — the codex_failure policy`. |
+| `claude_fallback_model` | `inherit` or a model id | `inherit` | Model for Claude fallback critics only (never implementation subagents). `inherit` = the orchestrator's current model. Any model id the installed Claude Code environment supports is legal — there is no hardcoded list; validation happens at dispatch, and an unavailable model means ask-or-stop, never a silent substitute. |
 
 Aliases, accepted in the config file and as invocation args: `rounds` ≡ `max_rounds`,
 `review` ≡ `codex_review`. Store the canonical name when writing the file.
@@ -102,13 +104,14 @@ Operations:
 - `/tandem config` (interactive): state the file path (or "none — built-in defaults in
   effect") in one line — don't dump the full table first; that's `show`'s job. Then present
   **every key as its own tab** in the harness's interactive question tool (`AskUserQuestion`
-  in Claude Code renders one tab per question; it takes four questions per call, so the
-  eight keys are two consecutive tabbed dialogs: `codex | max_rounds | codex_review |
-  execution`, then `pr | ci | docs | autonomy`). Per tab: the key name as the header, one
-  question ("codex — call OpenAI Codex?"), and its allowed values as the options, with the
-  CURRENT value first and labeled `(current)` — so a tab the user doesn't care about is
-  simply left on its current value. `max_rounds` offers 3, 5, 7 plus free entry via the
-  picker's built-in Other. The user flips through the tabs they care about and submits each
+  in Claude Code renders one tab per question; it takes four questions per call, so the ten
+  keys are three consecutive tabbed dialogs: `codex | max_rounds | codex_review | execution`,
+  then `pr | ci | docs | autonomy`, then `codex_failure | claude_fallback_model`). Per tab:
+  the key name as the header, one question ("codex — call OpenAI Codex?"), and its allowed
+  values as the options, with the CURRENT value first and labeled `(current)` — so a tab the
+  user doesn't care about is simply left on its current value. `max_rounds` offers 3, 5, 7
+  plus free entry via the picker's built-in Other; `claude_fallback_model` offers `inherit`
+  plus free entry of any model id via Other (no hardcoded model list). The user flips through the tabs they care about and submits each
   dialog once. Diff the answers against the current values: write only real changes
   (preserving everything else); if every answer matches current, exit without writing.
   Finish by showing the resulting file and its path. Never ask open-ended prose questions

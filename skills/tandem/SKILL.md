@@ -38,7 +38,7 @@ from. A stale state file silently breaks all three.
 
 ## Configuration
 
-The complete contract — the eight keys with defaults, aliases, validation, where the
+The complete contract — the ten keys with defaults, aliases, validation, where the
 persistent `config.md` lives (beside the ACTIVE installation's `SKILL.md`, never in the
 target repo), and the `/tandem config` mode — is defined once, in `references/config.md`.
 Read it at kickoff when resolving config, on resume, and whenever the user wants to view or
@@ -106,8 +106,9 @@ in the plan-gate presentation and the PR body.
 ### 3. Spar — `references/sparring.md` + `references/codex-protocol.md`
 Draft `plan.md`, then run the bounded Claude ↔ Codex argument: purposeful rounds (assumptions →
 architecture → edge cases → simplification → kill shot), severity-tagged findings, early exit
-when rounds stop earning their cost. Codex unavailable? The playbook's solo-mode fallback
-applies — never skip adversarial pressure entirely.
+when rounds stop earning their cost. Codex unavailable? The `codex_failure` policy decides —
+ask (default), stop safely, or continue with labeled Claude fallback critics; adversarial
+pressure is never silently skipped, and a stop is always resumable.
 
 ### 4. Plan gate
 Present the hardened plan in one interaction: goal, approach, key decisions with rationale,
@@ -152,7 +153,7 @@ review findings triaged, PR opened and CI green/triaged (per config), dossier co
 |---|---|
 | Ticket/doc/link inaccessible | Say so, record the attempted command + error in `state.md § Sources` (evidence, not a claim), ask for a paste, continue with what exists. If the failed source was the ONLY input, this is the no-input case: ask and wait, in both autonomy modes |
 | Requirements stay ambiguous | `guided`: keep interviewing. `auto`: assume + record basis; anything failing the scope test always asks |
-| Codex call fails (timeout/crash/auth) | Failure ladder in `codex-protocol.md`: one fresh-session recovery with a catch-up, then solo mode; record the degradation in state and dossier |
+| Codex call fails (quota/rate/auth/CLI/network/timeout) | `codex-protocol.md`: deterministic failures never retried; transient ones get one fresh-session recovery. Then Codex is unavailable → the `codex_failure` policy (ask, default \| stop \| claude fallback); recorded in state and disclosed in the dossier. `codex: off` never triggers this — it's a choice, not a failure |
 | Codex and Claude deadlock | Tie-break at the plan gate, every autonomy mode; present both positions honestly. Never fake convergence |
 | Tests fail before any change | Baseline snapshot; only *new* failures block the ship |
 | Implementation exposes a bad assumption | Reopen the decision, update plan + state, continue |
