@@ -329,12 +329,14 @@ Not executed (honest limits): no end-to-end interactive `/tandem config` session
 user, and the trigger panel was not re-run for the new description clause — the config-mode
 trigger queries were added to `trigger_evals` for the next panel.
 
-Field-test feedback, same day: the first real `/tandem config` run answered with a full
-markdown table plus an open-ended prose question. Fixed in the contract: interactive mode now
-drives changes through the harness's interactive question tool (`AskUserQuestion` in Claude
-Code — grouped multi-select, then per-key option pickers with the current value marked),
-with a one-question text fallback for harnesses without a picker; the same
-picker-over-prose rule was extended to the understand-phase interview and deadlock
+Field-test feedback, same day (two iterations): the first real `/tandem config` run answered
+with a full markdown table plus an open-ended prose question → contract now mandates the
+harness's interactive question tool (`AskUserQuestion` in Claude Code). The first picker
+design (grouped multi-select, then per-key questions) was field-tested and rejected as
+two-step; the contract now presents every key as its own TAB (two consecutive 4-tab dialogs,
+current value first and marked, untouched tabs mean no change, answers diffed against
+current before writing), with a one-question text fallback for harnesses without a picker.
+The same picker-over-prose rule was extended to the understand-phase interview and deadlock
 tie-breaks.
 
 ## 9. Verdict
