@@ -1,0 +1,59 @@
+# Ship — verify, review, PR, CI
+
+Iron law throughout: **no completion claims without fresh verification evidence in the current
+message.** "Should pass" and yesterday's run don't count.
+
+## 1. Full verification
+
+Run the full relevant suite + linters + build (whatever the repo's CI would run). Compare
+failures against `state.md § Build → Baseline failures`:
+
+- New failures → fix before anything else.
+- Pre-existing failures → list them explicitly as pre-existing (with the baseline as evidence);
+  they don't block, but they get reported to the user and noted in the dossier.
+
+Record commands + results in `state.md § Verification`.
+
+## 2. Feature review gate (`codex_review=on`)
+
+Invoke the **tandem-review** skill on the feature branch — it reviews the whole feature
+(merge-base → HEAD + working tree), not the last diff, and knows to read `plan.md`/`state.md`
+for requirements coverage. Pass it the slug so it finds the tandem context.
+
+Triage its triaged output (tandem-review already verifies findings against the code):
+
+- Fix accepted findings; log the round in `state.md § Ship`.
+- Cap: **2 fix-and-re-review cycles.** Still MATERIAL+ after that → present the remainder to
+  the user with positions rather than looping. Rerun step 1 verification after any fix.
+
+If Codex is unavailable, degrade per its protocol: a self-review pass against the same
+checklist, recorded as such.
+
+## 3. PR (per `pr` config)
+
+`off` → push the branch, report, skip to step 5. `ask` (default) → present the summary and ask
+before opening. `auto` → open it. Opening a PR is outward-facing: when in doubt, ask.
+
+- Push with `-u`. Look for a PR template (`.github/PULL_REQUEST_TEMPLATE*`) and use it.
+- PR body: what + why from `state.md § Task/Decisions` (not a commit list), test plan from
+  `§ Verification`, plus notable disagreements/deviations a reviewer should know. Link the
+  ticket so the tracker auto-links.
+- PR creation fails (permissions, no remote, protected branch)? Report the exact error, give
+  the manual `gh pr create …` command, leave the branch pushed. Not a workflow failure.
+
+## 4. CI (per `ci` config)
+
+`gh pr checks <url> --watch` (or poll if watch is unavailable). On failures, read the actual
+logs, then classify:
+
+- **Ours** (touched code, new tests, baseline-green now red) → fix, push, re-watch.
+  Bounded: after 3 fix-pushes without green, stop and hand the analysis to the user.
+- **Pre-existing/unrelated** (matches baseline failures, flaky-marked, infrastructure) →
+  report separately with evidence; never "fix" unrelated tests to force green without the
+  user's say-so.
+
+## 5. Done
+
+Update `state.md`: phase `dossier` (or `done` if `docs=off`), `§ Ship` complete, `§ Next`
+cleared. Report to the user: what shipped, verification evidence, review outcome, PR/CI state,
+pre-existing issues found along the way.

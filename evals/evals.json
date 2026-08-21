@@ -1,0 +1,62 @@
+{
+  "skill_name": "tandem",
+  "note": "Realistic scenarios for validating the tandem skill family. Interactive phases (understand-gate questions, plan sign-off) make fully-automated end-to-end runs impossible; these are exercised as tabletop walkthroughs by fresh subagents plus live Codex protocol smoke tests. See docs/VALIDATION.md for executed results.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "simple-feature-request",
+      "prompt": "/tandem Add a --json flag to the export command so scripts can consume the output",
+      "expected_output": "Intake classifies prose input, discovers the export command in the repo, produces R-stubs; asks only questions the codebase can't answer; drafts plan.md; runs bounded spar; presents plan gate."
+    },
+    {
+      "id": 2,
+      "name": "ticket-with-repo-context",
+      "prompt": "/tandem PROJ-123",
+      "expected_output": "Recognizes ticket ID, attempts fetch via available tools (MCP/gh), pulls acceptance criteria from ticket + comments, cross-references repo conventions, marks unfetchable sources honestly."
+    },
+    {
+      "id": 3,
+      "name": "requirement-document",
+      "prompt": "/tandem Implement the requirements in docs/feature.md",
+      "expected_output": "Reads the doc fully, distinguishes explicit vs implied requirements, tags confirmed/assumed/open with acceptance lines."
+    },
+    {
+      "id": 4,
+      "name": "ambiguous-feature",
+      "prompt": "/tandem Make search better",
+      "expected_output": "Does NOT start planning; intake finds the search implementation, understand phase interviews one-question-at-a-time with recommendations; scope ambiguity goes to the user even in autonomy=auto."
+    },
+    {
+      "id": 5,
+      "name": "planning-only",
+      "prompt": "/tandem plan Add rate limiting to the public API",
+      "expected_output": "Full flow through plan gate, then stops. No branch, no code. State.md records mode=plan."
+    },
+    {
+      "id": 6,
+      "name": "full-implementation-with-review",
+      "prompt": "/tandem Add bulk export support (rounds=3)",
+      "expected_output": "max_rounds resolved to 3 and echoed; after build, tandem-review invoked on merge-base..HEAD; findings verified before triage; bounded fix cycles; PR per config."
+    },
+    {
+      "id": 7,
+      "name": "codex-unavailable",
+      "prompt": "/tandem Add retry logic to the webhook sender (with codex CLI missing or unauthenticated)",
+      "expected_output": "Unavailability test triggers after defined failure conditions; solo mode announced to user, recorded in state.md and dossier; lens ladder still runs via subagent devil's advocate; no endless CLI retries."
+    },
+    {
+      "id": 8,
+      "name": "resume-after-interruption",
+      "prompt": "/tandem resume bulk-export",
+      "expected_output": "Reads .tandem/bulk-export/state.md only (not spar-log); verifies recorded phase against reality; 3-line recap; continues from § Next."
+    }
+  ],
+  "trigger_evals": [
+    {"query": "/tandem PROJ-451", "should_trigger": "tandem"},
+    {"query": "take this ticket end to end and spar with codex on the plan first", "should_trigger": "tandem"},
+    {"query": "have codex review my branch before I open the PR", "should_trigger": "tandem-review"},
+    {"query": "codex review this plan before we write code", "should_trigger": "tandem (spar mode)"},
+    {"query": "fix this typo in the README", "should_trigger": "neither"},
+    {"query": "review this function I just wrote", "should_trigger": "neither (single-model code review)"}
+  ]
+}
