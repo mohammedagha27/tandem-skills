@@ -111,11 +111,16 @@ different, one spot-check round is allowed: same prompt shape, same verdict cont
 thread if alive, else fresh with a catch-up. Max one per reopened decision; spot-checks don't
 count toward `max_rounds` and are logged in `state.md § Spar rounds` as `SC<n>` lines.
 
-## Solo mode (Codex unavailable)
+## Solo mode (Codex unavailable — or `codex: off`)
 
-Per the failure ladder in `codex-protocol.md`: tell the user plainly what failed and that the
-spar continues single-vendor (weaker — say so), set `spar: solo (degraded round <n>, was
-codex thread <id>)` in `state.md` (omit the thread part if no session ever started), and run
+With `codex: off` in config, solo mode runs *by choice*: skip the failure-ladder framing, set
+`spar: solo (by config)`, and note in the plan-gate presentation that the spar was
+single-model. Everything below applies identically.
+
+When Codex fails, per the failure ladder in `codex-protocol.md`: tell the user plainly what
+failed and that the spar continues single-vendor (weaker — say so), set `spar: solo (degraded
+round <n>, was codex thread <id>)` in `state.md` (omit the thread part if no session ever
+started), and run
 the remaining lens ladder using a **fresh
 general-purpose subagent per round** as devil's advocate. Solo subagents have no session
 memory, so every solo prompt must carry: the `plan.md` path, settled decisions (D-ids), and

@@ -1,9 +1,9 @@
 # Tandem
 
-Personal Claude Code skills for building features with a cross-model sparring partner.
-Claude does the work; OpenAI Codex attacks it at the two points where a second model earns
-its keep: before any code exists (plan sparring) and before the PR opens (whole-feature
-review). Codex is read-only at all times.
+Claude Code skills that turn Claude and OpenAI Codex into complementary engineering partners
+rather than two independent coding agents. Claude does the work; Codex attacks it at the two
+points where a second model earns its keep: before any code exists (plan sparring) and before
+the PR opens (whole-feature review). Codex is read-only at all times.
 
 ## The two skills
 
@@ -31,24 +31,44 @@ HEAD plus uncommitted work, not just the last diff). Claude verifies every Codex
 against the code before you see it, so hallucinated findings die quietly. Also used internally
 by `/tandem` as the pre-PR gate.
 
+```
+/tandem-review                          # current branch vs its detected base
+/tandem-review against origin/develop   # name the base explicitly when it's ambiguous
+```
+
+## Prerequisites
+
+- **Claude Code** (required).
+- **[Codex CLI](https://github.com/openai/codex)** with `codex login` completed (recommended).
+  Without it, tandem degrades to a clearly-labeled single-model mode rather than failing.
+- **git** (required — Codex refuses to run outside a git repo, and the workflow is built
+  around branches).
+- **`gh` CLI or a GitHub remote** (optional). Only the PR and CI-watch steps use it; without
+  it, runs end at a pushed branch with the manual commands printed. Any issue tracker works
+  for intake — tickets are fetched through whatever the session has (MCP tools, `gh`, or a
+  plain URL fetch) and an unfetchable source falls back to asking you for a paste.
+
 ## Installation
 
-Requires Claude Code and the [Codex CLI](https://github.com/openai/codex) (`codex login`
-completed; without it, tandem degrades to a clearly-labeled single-model mode).
-
 ```bash
-git clone git@github.com:mohammedagha27/tandem-skills.git
+git clone https://github.com/mohammedagha27/tandem-skills.git
 cd tandem-skills && ./install.sh        # symlinks both skills into ~/.claude/skills
 ```
 
 Install both skills together — `/tandem` invokes `/tandem-review`, and `tandem-review` reads
-the shared Codex protocol from the `tandem` skill directory.
+the shared Codex protocol from the `tandem` skill directory. Restart Claude Code (or open a
+new session) to pick them up. The installer targets `~/.claude/skills` by default; set
+`CLAUDE_SKILLS_DIR` to override. It uses symlinks (macOS/Linux; on Windows, use WSL or copy
+the two `skills/*` directories instead).
+
+To uninstall: remove the two symlinks (`rm ~/.claude/skills/tandem ~/.claude/skills/tandem-review`).
 
 ## Configuration
 
 None required. To change defaults per repo, create `.tandem/config.md`:
 
 ```
+codex: on            # off = never call Codex; run fully single-model (default on)
 max_rounds: 3        # sparring round cap (default 5)
 codex_review: on     # pre-PR feature review (on|off)
 pr: ask              # ask|auto|off
@@ -59,6 +79,32 @@ autonomy: guided     # guided (pause at gates) | auto (only mandatory gates)
 
 One-off overrides ride the invocation: `/tandem PROJ-123 rounds=3 review=off`.
 
+## What a run looks like
+
+`/tandem Add rate limiting to the public API`, condensed:
+
+1. **Intake** — no ticket to fetch; the prose is the source. Tandem finds the API entry
+   points, middleware conventions, and the test layout, and writes requirement stubs to
+   `.tandem/rate-limiting/state.md`.
+2. **Understand** — it asks you only what the repo can't answer, one question at a time with
+   a recommendation attached: "Per-user or per-IP limits? The auth middleware suggests
+   per-user — recommend that." Scope-ambiguous questions are never guessed at.
+3. **Spar** — it drafts `plan.md`, then Codex attacks it round by round (assumptions →
+   architecture → edge cases → simplification → kill shot). Claude verifies each finding,
+   folds in what's right, rejects what's wrong with a logged reason. Simple plans converge in
+   2–3 rounds; the cap (default 5) is a ceiling, not a target.
+4. **Plan gate** — you see the hardened plan, the surviving disagreements, and the live
+   assumptions in one message, and sign off.
+5. **Build** — feature branch, baseline test snapshot, small verified increments; deviations
+   from the plan are logged, never silent.
+6. **Ship** — fresh verification, then `/tandem-review` runs Codex over the whole branch,
+   findings are verified and triaged, and the dossier (problem, decisions, disagreements,
+   evidence) is committed before the PR opens. PR and CI-watch follow your config.
+
+Interrupt it anywhere; `/tandem resume` picks up from the state file, verifying the recorded
+phase against reality before trusting it. To abandon a run instead, delete its
+`.tandem/<slug>/` directory — everything durable lives in git and the dossier.
+
 ## What a run leaves behind
 
 - `.tandem/<slug>/` — working state (gitignore it). `state.md` holds requirements, decisions,
@@ -67,6 +113,35 @@ One-off overrides ride the invocation: `/tandem PROJ-123 rounds=3 review=off`.
   called out), decisions with rejected alternatives, where the two models disagreed and how it
   resolved, verification evidence, known limitations. Project memory, not a transcript.
 - The branch, PR, and a review log of the sparring rounds.
+
+## Privacy & security
+
+- **Repo content goes to OpenAI.** Codex reads your repository and receives the plan/state
+  files in its prompts; that content is processed by OpenAI under your Codex account's terms,
+  and the calls consume your Codex/ChatGPT plan's quota. For a repo whose content must not
+  leave your machine, set `codex: off` — the whole workflow then runs single-model (sparring
+  and review by Claude, labeled as such) and nothing is sent to OpenAI. Note that
+  `codex_review: off` alone is *not* a privacy switch: it only skips the pre-PR review gate,
+  and plan sparring still calls Codex.
+- **Codex is read-only, enforced per call.** Fresh sessions run `-s read-only`; resumed
+  sessions force `-c sandbox_mode="read-only"` (resume would otherwise inherit your
+  `~/.codex/config.toml`, which may allow writes).
+- **All writes, commits, pushes, and PRs come from Claude**, under Claude Code's normal
+  permission prompts. PRs default to ask-first.
+- **Third-party text is treated as data, not instructions.** Fetched tickets/docs and Codex
+  replies can contain prompt-injection attempts; the skills flag instruction-shaped content
+  instead of following it, and no review suggestion is ever executed without verification.
+
+## Troubleshooting
+
+- **Skills don't appear after install** — restart Claude Code; check the symlinks point where
+  you cloned (`ls -l ~/.claude/skills/tandem*`).
+- **Codex calls fail immediately** — run `codex login`; check `codex --version` (protocol
+  verified on 0.146.0; the preflight in `skills/tandem/references/codex-protocol.md` says what
+  to re-check on other versions).
+- **Codex hangs at ~0% CPU** — something invoked it without stdin discipline; the protocol
+  file documents the fix (prompt via `- <file`), which the skills already follow.
+- **Mid-run interruption** — nothing is lost; state is on disk. `/tandem resume` continues.
 
 ## Design notes
 
@@ -82,9 +157,9 @@ binary approve/revise, and every Codex loop bounded with an honest-deadlock path
 The interview discipline in the understand phase, and the ancestry of this whole idea, come
 from **Matt Pocock's** `grill-me` and `grill-with-docs` skills
 (https://github.com/mattpocock/skills, MIT) — see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-The Codex CLI mechanics build on the `grill-me-codex` / `grill-with-docs-codex` derivatives
-previously in this account, re-verified against codex-cli 0.146.0. This is a new project, not
-a fork of either.
+The Codex CLI mechanics build on earlier unpublished derivatives of those skills by this
+project's author (`grill-me-codex` / `grill-with-docs-codex`), re-verified against codex-cli
+0.146.0. This is a new project, not a fork of either.
 
 ## Limitations
 

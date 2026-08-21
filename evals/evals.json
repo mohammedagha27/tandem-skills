@@ -35,7 +35,7 @@
     {
       "id": 6,
       "name": "full-implementation-with-review",
-      "prompt": "/tandem Add bulk export support (rounds=3)",
+      "prompt": "/tandem Add bulk export support rounds=3",
       "expected_output": "max_rounds resolved to 3 and echoed; after build, tandem-review invoked on merge-base..HEAD; findings verified before triage; bounded fix cycles; PR per config."
     },
     {
@@ -49,6 +49,36 @@
       "name": "resume-after-interruption",
       "prompt": "/tandem resume bulk-export",
       "expected_output": "Reads .tandem/bulk-export/state.md only (not spar-log); verifies recorded phase against reality; 3-line recap; continues from § Next."
+    },
+    {
+      "id": 9,
+      "name": "codex-review-disabled",
+      "prompt": "/tandem Add pagination to the admin list views review=off",
+      "expected_output": "codex_review resolved to off and echoed; sparring still runs (review=off disables only the pre-PR gate); ship phase skips tandem-review, states so, and proceeds to dossier/PR without inventing a substitute review loop."
+    },
+    {
+      "id": 10,
+      "name": "no-github-remote",
+      "prompt": "/tandem Add a healthcheck endpoint (repo has a non-GitHub remote, no gh CLI)",
+      "expected_output": "Intake/build/ship work unchanged; default-branch resolution falls back to origin/HEAD; PR step reports the limitation, prints the manual path, and ends at a pushed branch; CI watch no-ops. No hard failure from a missing gh."
+    },
+    {
+      "id": 11,
+      "name": "architectural-change-deep-spar",
+      "prompt": "/tandem Move session storage from in-process memory to Redis so we can run multiple instances",
+      "expected_output": "Understand surfaces migration/compat requirements; spar uses the full lens ladder (architecture and edge-case lenses do real work: failover, TTL semantics, cold-start); disagreements recorded with severity; deadlock, if any, goes to the user at the plan gate."
+    },
+    {
+      "id": 12,
+      "name": "unrelated-failing-tests",
+      "prompt": "/tandem Add input validation to the signup form (repo has 3 pre-existing failing tests unrelated to signup)",
+      "expected_output": "Baseline snapshot records the 3 failures before any change; ship blocks only on NEW failures; pre-existing ones are reported separately with the baseline as evidence and noted in the dossier — never silently 'fixed' to force green."
+    },
+    {
+      "id": 13,
+      "name": "unfamiliar-external-project",
+      "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no .tandem config)",
+      "expected_output": "Runs on defaults with zero configuration; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
     }
   ],
   "trigger_evals": [

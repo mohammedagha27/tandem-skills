@@ -30,8 +30,8 @@ Triage its triaged output (tandem-review already verifies findings against the c
   rather than looping; each further cycle happens only on their explicit per-cycle ask. Rerun
   step 1 verification after any fix.
 
-If Codex is unavailable, degrade per its protocol: a Claude self-review pass against the
-examine-list in tandem-review's prompt (correctness, requirements coverage, architecture fit,
+If Codex is unavailable (or `codex=off`), degrade per its protocol: a Claude self-review pass
+against the examine-list in tandem-review's prompt (correctness, requirements coverage, architecture fit,
 regressions, edge cases, security, performance, maintainability, test quality, complexity,
 plan deviations), recorded as single-model.
 
@@ -50,8 +50,9 @@ before opening. `auto` → open it. Opening a PR is outward-facing: when in doub
 - PR body: what + why from `state.md § Task/Decisions` (not a commit list), test plan from
   `§ Verification`, plus notable disagreements/deviations a reviewer should know. Link the
   ticket so the tracker auto-links.
-- PR creation fails (permissions, no remote, protected branch)? Report the exact error, give
-  the manual `gh pr create …` command, leave the branch pushed. Not a workflow failure.
+- PR creation fails (permissions, no remote, protected branch, non-GitHub host)? Report the
+  exact error, give the platform-appropriate manual command (`gh pr create …` on GitHub; the
+  host's merge-request URL or CLI elsewhere), leave the branch pushed. Not a workflow failure.
 
 ## 5. CI (per `ci` config — no-op when no PR exists)
 

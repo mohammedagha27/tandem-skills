@@ -15,8 +15,8 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided
-spar: pending | codex (thread <id>) | solo (degraded round <n>[, was codex thread <id>])
+config: codex=on max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided
+spar: pending | codex (thread <id>) | solo (by config) | solo (degraded round <n>[, was codex thread <id>])
 updated: <ISO datetime>
 
 ## Task

@@ -35,11 +35,11 @@ which made multi-round loops repetitive.
 | `handoff` | Compact state for a fresh agent; reference artifacts by path instead of duplicating | Taken as the resumability model: `state.md` is a standing handoff document |
 | `skill-creator` + `superpowers:writing-skills` | Progressive disclosure (metadata → SKILL.md → references), trigger-focused descriptions that do not summarize workflow (summaries become shortcuts Claude follows instead of reading the skill), token efficiency, test-with-subagents | Followed in the construction of these skills themselves |
 | `documentation-writer` (Diátaxis) | Four-quadrant discipline; the dossier is an Explanation-quadrant artifact with Reference elements | Shapes the dossier template |
-| codex plugin (`codex-cli-runtime`, `codex-result-handling`) | Severity-ordered findings, preserve evidence boundaries (fact vs inference), never auto-apply review fixes | Taken: severity ordering, evidence-boundary preservation in review output handling |
+| codex plugin (`codex-cli-runtime`, `codex-result-handling`; a locally installed Claude Code plugin, not part of this repo) | Severity-ordered findings, preserve evidence boundaries (fact vs inference), never auto-apply review fixes | Taken: severity ordering, evidence-boundary preservation in review output handling |
 
-Attribution note: the goal statement attributed the originals to Andrej Karpathy; the bundled
-THIRD-PARTY-NOTICES in the existing skills attribute `grill-me`/`grill-with-docs` to
-**Matt Pocock** (github.com/mattpocock/skills, MIT). Tandem attributes accordingly.
+Attribution note: an early project brief attributed the originals to Andrej Karpathy; the
+THIRD-PARTY-NOTICES bundled with the predecessor skills attribute `grill-me`/`grill-with-docs`
+to **Matt Pocock** (github.com/mattpocock/skills, MIT). Tandem attributes accordingly.
 
 ## 3. Architecture decision: two skills + shared references
 
@@ -60,7 +60,7 @@ Duplication control: the full Codex CLI protocol lives once, in
 carries only a ~10-line inline safety crib (the lines that prevent dangerous or hanging runs)
 so a standalone install degrades safely rather than dangerously.
 
-Context control: `tandem/SKILL.md` is a router (~250 lines) — lifecycle map, state contract,
+Context control: `tandem/SKILL.md` is a router (~170 lines) — lifecycle map, state contract,
 gates, failure ladder. Each phase's playbook is a reference file loaded only when that phase
 starts. A resumed session reads `state.md` plus the current phase's playbook, never the
 whole history.
@@ -75,7 +75,7 @@ Build → Ship (verify → tandem-review → dossier → PR → CI)
 (The dossier commits on the feature branch *before* the PR opens — validation caught that
 committing it after a watched CI run silently invalidates the recorded green.)
 
-Changes from the proposed lifecycle in the goal:
+Changes from the lifecycle proposed in the original project brief:
 
 - "Context discovery" and "requirement understanding" merged into **Intake → Understand**:
   discovery is not a separate pass; every requirement is either answered by the repo/docs or
@@ -122,7 +122,8 @@ working memory).
 ## 7. Configuration
 
 Precedence: built-in defaults → `.tandem/config.md` (repo-level, `key: value` lines) →
-invocation arguments (`/tandem rounds=3 review=off …`). Six knobs, all with strong defaults:
+invocation arguments (`/tandem rounds=3 review=off …`). Seven knobs, all with strong defaults:
+`codex=on` (off = fully single-model, added post-audit as the honest privacy/no-Codex switch),
 `max_rounds=5`, `codex_review=on`, `pr=ask` (ask|auto|off), `ci=on`, `docs=on`,
 `autonomy=guided` (guided|auto). Zero configuration required for normal use.
 

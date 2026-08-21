@@ -39,7 +39,7 @@ uncertainty report:
 
 ## 3. Tabletop walkthroughs (fresh subagents, adversarial brief)
 
-| Scenario (goal §Validation) | Agent focus | Outcome |
+| Scenario (from the original project brief) | Agent focus | Outcome |
 |---|---|---|
 | 1. Simple feature request + 6. full implementation with review | Full-lifecycle walkthrough | see findings below |
 | 2. Ticket ID with repo context (fetch failure path) + 4. ambiguous feature | Intake/understand loopholes | see findings below |

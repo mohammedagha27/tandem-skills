@@ -1,3 +1,4 @@
 .DS_Store
 .tandem/
+# skill-creator eval workspaces (see docs/VALIDATION.md)
 *-workspace/
