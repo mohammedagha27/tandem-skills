@@ -87,10 +87,17 @@ Don't cave to everything (that defeats the cross-model check) and don't dismiss 
 
 ## Convergence and deadlock
 
-- **Converged:** kill shot returns CLEAN/MINOR **and** `state.md § Disagreements` holds no
-  unresolved BLOCKING item → proceed to the Plan gate.
-- **Deadlocked:** the cap is hit — or the kill shot is done — with an unresolved BLOCKING
-  disagreement standing. Deadlock is a legitimate outcome, never papered over.
+The loop ends when the kill shot has run and been arbitrated (early exit or cap — either way,
+kill shot last). One exception: if the kill shot lands MATERIAL+ findings that Claude accepts
+(the plan just changed) and unspent rounds remain, one re-run of the kill shot is allowed
+within the cap. Then classify — the two outcomes are exhaustive **after arbitration**, because
+every finding is by then accepted (folded into the plan), rejected (logged), or escalated:
+
+- **Deadlocked:** an unresolved BLOCKING disagreement stands in `state.md § Disagreements`.
+  A legitimate outcome, never papered over.
+- **Converged:** everything else — including a MATERIAL kill shot whose findings were all
+  accepted or rejected-with-reason. Surviving non-blocking disagreements ride to the Plan
+  gate as presentation items, not tie-breaks.
 - **The tie-break always goes to the user, in every autonomy mode**, and is presented ONCE,
   merged into the Plan gate: for each contested G-id — Codex's position, Claude's
   counter-position, a recommendation. After the user rules: log the resolution on the G-id,
@@ -102,13 +109,14 @@ Don't cave to everything (that defeats the cross-model check) and don't dismiss 
 When Build reopens a decision (broken assumption) and the new approach is materially
 different, one spot-check round is allowed: same prompt shape, same verdict contract, resumed
 thread if alive, else fresh with a catch-up. Max one per reopened decision; spot-checks don't
-count toward `max_rounds`.
+count toward `max_rounds` and are logged in `state.md § Spar rounds` as `SC<n>` lines.
 
 ## Solo mode (Codex unavailable)
 
 Per the failure ladder in `codex-protocol.md`: tell the user plainly what failed and that the
-spar continues single-vendor (weaker — say so), set `spar: solo (was codex thread <id>,
-degraded round <n>)` in `state.md`, and run the remaining lens ladder using a **fresh
+spar continues single-vendor (weaker — say so), set `spar: solo (degraded round <n>, was
+codex thread <id>)` in `state.md` (omit the thread part if no session ever started), and run
+the remaining lens ladder using a **fresh
 general-purpose subagent per round** as devil's advocate. Solo subagents have no session
 memory, so every solo prompt must carry: the `plan.md` path, settled decisions (D-ids), and
 previously rejected findings with reasons — or they will re-litigate everything. Same lens

@@ -77,7 +77,7 @@ verdict-miss):
    Fall back to solo mode (see `sparring.md`), record the degradation, stop hammering the CLI.
 
 Failed calls and the recovery attempt never count toward any round cap; the interrupted round
-re-runs (in whichever mode you're now in).
+re-runs and occupies its original slot — the cap counts *completed* review rounds only.
 
 ## Verdict contract
 

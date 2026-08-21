@@ -2,8 +2,9 @@
 
 `.tandem/<slug>/state.md` is current-truth only — supersede rather than accumulate. Two
 exceptions are append-shaped by design because they are bounded, dossier-feeding logs:
-`## Spar rounds` (one line per round, capped by `max_rounds`) and `## Verification` (one line
-per run). Everything else gets replaced when it changes. Full history lives in `spar-log.md`,
+`## Spar rounds` (one line per round — bounded by `max_rounds` plus at most one `SC<n>`
+spot-check line per reopened build decision) and `## Verification` (one line per run).
+Everything else gets replaced when it changes. Full history lives in `spar-log.md`,
 git, and ultimately the dossier.
 
 ## Template
@@ -15,7 +16,7 @@ mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
 config: max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided
-spar: pending | codex (thread <id>) | solo (was codex thread <id>, degraded round <n>) | skipped
+spar: pending | codex (thread <id>) | solo (degraded round <n>[, was codex thread <id>])
 updated: <ISO datetime>
 
 ## Task
@@ -34,7 +35,7 @@ updated: <ISO datetime>
 - D1: <choice>. Why: <one line>. Rejected: <alternative + one-line reason>.
 
 ## Disagreements
-- G1: <topic>. Codex: <position>. Claude: <position>. Resolution: <accepted|rejected|user chose X|unresolved> — <reason>.
+- G1 (BLOCKING|MATERIAL|MINOR): <topic>. Codex: <position>. Claude: <position>. Resolution: <accepted|rejected|user chose X|unresolved> — <reason>.
 
 ## Spar rounds
 - 1 (intent, BLOCKING): 2 accepted, 1 rejected — <one-line gist>

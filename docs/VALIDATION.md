@@ -140,5 +140,37 @@ uncertainty report:
 
 ## 4. Post-fix regression check
 
-A second, smaller panel of fresh agents re-ran the highest-risk scenarios against the fixed
-files (results appended below).
+A second panel of fresh agents re-ran the highest-risk scenarios against the fixed files.
+
+**Sparring semantics recheck** — failure-ladder recovery, mid-build resume safety, and the
+STILL DISPUTED verdict chain all PASSED as unambiguous. Remaining defects found and fixed:
+- Converged/deadlocked wasn't exhaustive (a MATERIAL kill shot at the cap fit neither). →
+  Classification now happens after arbitration, where the two outcomes ARE exhaustive:
+  unresolved BLOCKING disagreement = deadlock, everything else = converged; one kill-shot
+  re-run allowed within the cap when accepted findings changed the plan.
+- Disagreement G-ids carried no severity, so the "unresolved BLOCKING" test wasn't computable
+  from state alone. → Severity added to the G-id template.
+- Spot-check rounds had no logging home and broke the "capped" claim on `## Spar rounds`. →
+  Logged as `SC<n>` lines; bound restated as max_rounds + one SC per reopened decision.
+- `spar: skipped` was an orphan enum value; the solo line was unfillable when no thread ever
+  started. → `skipped` removed; thread part made optional.
+- Recovery-slot accounting clarified: the cap counts completed review rounds only.
+
+**tandem-review recheck** — dirty-tree scope, failure states, verdict recomputation, and the
+no-mutation rule all PASSED. Remaining defects found and fixed:
+- The default-branch fallback could still "settle" a main+develop repo, making the ask-rule
+  dead code. → Resolution reordered: ambiguity check before any fallback; the default branch
+  existing does not settle multiple candidates.
+- The fix-cycle cap had no durable store across sessions. → Recorded in `state.md § Ship` in
+  tandem context; cycles-used tally stated in every standalone presentation; "keep going"
+  buys exactly one cycle.
+- A BLOCKING-class unverifiable inference could hide behind a recomputed CLEAN. → Verdict is
+  `UNRESOLVED (<severity>-class inference outstanding)` in that case, never plain CLEAN.
+- Crib gaps: failed calls don't count as cycles; untracked-file *content* must be read.
+
+## 5. Verdict
+
+Both skills survived two adversarial rounds with all confirmed defects fixed; the Codex CLI
+protocol is live-verified end-to-end on 0.146.0. Residual known limitations are listed in the
+README. The natural next iteration is field use: the first few real `/tandem` runs will teach
+more than a third tabletop round would.

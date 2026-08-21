@@ -15,11 +15,12 @@ carries that consent; no other caller, human or programmatic, inherits it.
 
 ## Scope resolution
 
-1. Determine the base deterministically: the branch's configured upstream merge target if the
-   repo records one, else the repo's default branch (`gh repo view --json defaultBranchRef` or
-   `origin/HEAD`). If more than one plausible integration branch exists (`main` AND `develop`)
-   and nothing settles it, that IS ambiguous — ask. A user-supplied base/range/branch always
-   wins (but "review this branch" names the *subject*, not the base).
+1. Determine the base in this order: (a) a user-supplied base/range always wins ("review this
+   branch" names the *subject*, not the base); (b) the branch's configured upstream merge
+   target, if the repo records one; (c) **ambiguity check before any fallback** — if more than
+   one plausible integration branch exists (`main` AND `develop`, say), ask; the default
+   branch existing does NOT settle it; (d) only with a single candidate, the repo's default
+   branch (`gh repo view --json defaultBranchRef`, or `origin/HEAD`).
 2. The scope is the working-tree diff against the merge-base — `git diff <merge-base>` (this
    covers committed AND uncommitted changes) — plus untracked files from `git status`, listed
    separately. Echo the scope (base, branch, commit count, files touched) before launching.
@@ -58,8 +59,9 @@ together). If that file is missing, the essentials that must never be violated:
 ```
 You are reviewing a complete feature before it becomes a PR. You are read-only.
 Scope: run `git diff <merge-base>` (all changes, committed and uncommitted, vs the base)
-and `git status` for untracked files; read any repo file you need. Review the ENTIRE scope —
-if you skim any touched file, say which.
+and `git status` for untracked files — read the full content of untracked files, not just
+their names; read any repo file you need. Review the ENTIRE scope — if you skim any touched
+file, say which.
 [If tandem context: The agreed plan is .tandem/<slug>/plan.md and the requirement/decision
 record is .tandem/<slug>/state.md — check the implementation against BOTH.]
 
@@ -88,9 +90,12 @@ Every finding lands in exactly one bucket, worked in severity order:
 4. **Unverifiable inference** — Codex labeled it an inference and you can't cheaply settle it;
    pass it through clearly labeled as such, never dressed up as a confirmed finding.
 
-Then **recompute the verdict from confirmed findings only** — Codex's headline verdict is not
-repeated if triage gutted it. Present: confirmed (by severity, with your fix plan), rejected
-(with evidence), pre-existing, unverifiable — preserving Codex's fact/inference boundaries.
+Then **recompute the verdict from confirmed findings** — Codex's headline verdict is not
+repeated if triage gutted it. One exception keeps the headline honest: if a BLOCKING- or
+MATERIAL-class item sits in the unverifiable bucket, the verdict is never plain CLEAN — report
+it as `UNRESOLVED (<severity>-class inference outstanding)`. Present: confirmed (by severity,
+with your fix plan), rejected (with evidence), pre-existing, unverifiable — preserving Codex's
+fact/inference boundaries.
 
 **Standalone invocation:** STOP after presenting. Ask which findings to fix — never
 auto-apply review fixes to a branch you were only asked to review.
@@ -101,8 +106,11 @@ the SAME Codex session for re-review over the fix delta.
 
 - Fix-and-re-review cycles ≤ 2, counted **per feature branch** — a fresh Codex session, a new
   merge-base echo, or a standalone-then-approved flow does not reset the counter. The cap
-  applies equally when a standalone user approves fixes. After the cap, remaining disputes go
-  to the user; each further cycle happens only on their explicit per-cycle ask.
+  applies equally when a standalone user approves fixes. Persist the count: in tandem context,
+  record it in `state.md § Ship`; standalone, state the cycles-used tally in every
+  presentation so a future session inherits it from the conversation record. After the cap,
+  remaining disputes go to the user; "keep going" buys exactly one cycle, then stop and
+  re-ask. Failed calls and the protocol's recovery attempt never count as cycles.
 - Codex unavailable (per the protocol's failure ladder — one fresh-session recovery, then
   done): say so and offer a Claude-only pass against the same examine-list, clearly labeled
   as single-model.
