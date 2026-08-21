@@ -1,16 +1,19 @@
-# Codex CLI Protocol (verified on codex-cli 0.146.0, 2026-08-21)
+# Codex CLI Protocol (verified on codex-cli 0.146.0 and 0.149.0, 2026-08-21)
 
 The one safe, non-hanging way to run OpenAI Codex as a read-only critic from Claude Code.
 Every line here exists because the naive version fails silently or dangerously.
 
 ## Preflight (once per run)
 
-1. `codex --version` — these mechanics are verified on 0.146.0; on any other version re-check
-   the flags below before trusting them.
+1. `codex --version` — these mechanics are verified on 0.146.0 and 0.149.0; on any other version re-check
+   the flags below before trusting them. Known floor: CLIs older than 0.130 error on the
+   default model — treat them as unsupported (deterministic failure), don't work around.
 2. Authenticated via a prior `codex login` (ChatGPT account is fine). Auth/model errors get
    surfaced to the user — never silently retried.
 3. Do NOT pin `-m`. The user's `~/.codex/config.toml` model is used. Echo it once (read the
-   `model` line; absent = "CLI default") so the user knows who's reviewing.
+   `model` line; absent = "CLI default") so the user knows who's reviewing. The why: pinned
+   gpt-5.x-codex variants can 400 under ChatGPT-account auth — if a user-requested pin fails
+   that way, it's a deterministic failure (drop the pin or stop), not a transient to retry.
 4. Run from the **target repo root**. Codex refuses to run outside a trusted directory (a git
    repo) unless `--skip-git-repo-check` is passed — prefer being in the repo over the flag.
 

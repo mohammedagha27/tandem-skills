@@ -16,10 +16,14 @@ The plan survived sparring and the gate; now execute it without silently driftin
    `develop` exist and nothing settles it, ask once. Create `feat/<slug>` (or the repo's
    naming convention) from it, and record both `branch:` and `base:` in `state.md`.
    Building in a worktree (chosen at the gate, or because the user wants their checkout
-   undisturbed)? Create it NOW, before any other step — `git worktree add <path> -b
-   feat/<slug> <base>` — and run everything from here on, baseline included, inside it.
-   `.tandem/<slug>/` stays in the main checkout's repo root (one source of truth); reference
-   it by absolute path from the worktree.
+   undisturbed)? Create it NOW, before any other step — and prefer the harness's NATIVE
+   worktree tool (`EnterWorktree` in Claude Code); raw `git worktree add <path> -b
+   feat/<slug> <base>` only when no native tool exists (a worktree the harness doesn't know
+   about is phantom state it can't manage). Project-local worktree path? `git check-ignore`
+   it first, or place it outside the repo — an unignored worktree pollutes the clean-tree
+   gate itself. Already inside a worktree? Don't nest another. Run everything from here on,
+   baseline included, inside it. `.tandem/<slug>/` stays in the main checkout's repo root
+   (one source of truth); reference it by absolute path from the worktree.
 2. **Baseline snapshot:** run the test suite (or the relevant slice, if the full suite is
    impractical — say which) BEFORE the first change. Record failing test ids in
    `state.md § Build → Baseline failures`. This is what later separates "we broke it" from
@@ -56,7 +60,8 @@ per-task working files — regenerable, never authoritative:
 1. **Brief:** write `.tandem/<slug>/briefs/TASK-<n>.md` from the plan's task entry plus any
    state context it needs. The worker gets the brief and the repo — never this conversation
    and never the whole plan. Every brief ends with the worker's contract: implement and test
-   exactly this task; run the brief's verification command; write a detailed report (what you
+   exactly this task (behavior-pinning tests: show them RED before your change and GREEN
+   after, and report both runs); run the brief's verification command; write a detailed report (what you
    did, deviations, caveats, anything only partially met) to
    `.tandem/<slug>/reports/TASK-<n>.md`; return only a short status (done | blocked + why);
    do NOT commit, push, or touch `state.md` — the orchestrator owns git and the ledger.
@@ -85,6 +90,9 @@ files>`), and never dispatch the next worker onto a dirty tree.
 ## Execution discipline (both models)
 
 - Work task by task; mark each done in `state.md § Build → Done` as you go.
+- A behavior-pinning or regression test must be seen RED before the change and GREEN after —
+  a pinning test that passes immediately proves nothing about the change; fix the test.
+  Workers report both runs (it's part of the brief's verification contract).
 - Honor the repo's own workflow norms and the user's standing preferences (TDD, coverage
   bars, commit conventions). The plan's test strategy section says what to test; write tests
   with the code, not as a final batch.
@@ -95,6 +103,18 @@ files>`), and never dispatch the next worker onto a dirty tree.
   blocks the work, the fix belongs in the plan (add a deviation, below) — not smuggled in.
 - Verify continuously: after each step, run the focused tests for what you touched. Full-suite
   runs at checkpoints, not after every line.
+
+## When something breaks mid-build
+
+No fixes without a root cause. Read the WHOLE error (not just its first line), reproduce it,
+check what changed (the diff since the last green commit is the prime suspect), form ONE
+hypothesis, and test it with the smallest possible probe — one variable at a time. A fix you
+can't explain is a coincidence waiting to regress.
+
+**Three failed fixes on the same problem = the problem is a decision, not the code.** Stop
+patching: treat it as a broken assumption (move 2 of the deviation protocol below) — reopen
+the D-id, with the user if it's theirs. Hard stop, not a suggestion; the fourth guess is how
+silent drift starts.
 
 ## Deviations — the anti-drift rule
 

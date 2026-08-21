@@ -2,9 +2,9 @@
 
 ## grill-me / grill-with-docs (Matt Pocock)
 
-The relentless-interview discipline used in tandem's Understand phase (one question at a
-time, a recommended answer per question, "if the codebase can answer it, explore the codebase
-instead"), and the three-part ADR test used at the Plan gate, are adapted from the
+The relentless-interview discipline used in tandem's Understand phase (frontier-batched questioning — every question whose prerequisites are settled, asked
+together with a recommended answer each, evolved from the original one-at-a-time form; and
+"if the codebase can answer it, explore the codebase instead"), and the three-part ADR test used at the Plan gate, are adapted from the
 **grill-me** and **grill-with-docs** skills by **Matt Pocock**
 (https://github.com/mattpocock/skills), used under the MIT License:
 

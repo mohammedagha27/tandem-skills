@@ -12,7 +12,12 @@ failures against `state.md § Build → Baseline failures`:
 - Pre-existing failures → list them explicitly as pre-existing (with the baseline as evidence);
   they don't block, but they get reported to the user and noted in the dossier.
 
-Record commands + results in `state.md § Verification`.
+Then the **requirements checklist**: walk EVERY R-id in `state.md` against its `accept:`
+line and name the evidence (test id, command output, file:line). A green suite is not this
+proof — a suite with a missing feature also passes. Gaps block the ship and reopen Build (or
+the plan, per the deviation protocol).
+
+Record commands + results + the checklist outcome in `state.md § Verification`.
 
 ## 2. Feature review gate (`codex_review=on`)
 
@@ -24,7 +29,9 @@ call; the reviewer honors the run's state over repo defaults.
 
 Triage its triaged output (tandem-review already verifies findings against the code):
 
-- Fix accepted findings; log the round in `state.md § Ship`.
+- Fix accepted findings in severity order — blocking first, then simple, then complex —
+  verifying each fix in isolation (focused test) before moving to the next; log the round in
+  `state.md § Ship`.
 - Re-reviews resume the SAME Codex session over the fix delta ("here's what changed since
   your review: …") — not a fresh whole-branch pass. The delta includes the disposition of
   every prior finding — fixed (where), rejected (with evidence), or consciously deferred —
@@ -79,12 +86,21 @@ CLI/API, say CI can't be watched from here and give the pipeline URL — don't s
 On failures, read the actual logs, then classify:
 
 - **Ours** (touched code, new tests, baseline-green now red) → fix, push, re-watch.
-  Bounded: after 3 fix-pushes without green, stop and hand the analysis to the user.
+  Bounded: after 3 fix-pushes without green, stop patching — three failed fixes is evidence
+  a *decision* is wrong, not bad luck. Root-cause it per the build playbook's mid-build
+  debugging rule and reopen the decision via the deviation protocol (with the user if it's
+  theirs).
 - **Pre-existing/unrelated** (matches baseline failures, flaky-marked, infrastructure) →
   report separately with evidence; never "fix" unrelated tests to force green without the
   user's say-so.
 
 ## 6. Done
+
+Build worktree end-of-life: on the PR path, LEAVE it alive — review feedback iterates there;
+name its path in the report. With no PR (`pr=off` or declined) and the work integrated or
+consciously abandoned: exit it first (native tool, or cd to the main checkout root), then
+`git worktree remove <path>` BEFORE any branch deletion — and never delete a branch a PR
+references. Confirm before discarding anything unmerged.
 
 Update `state.md`: phase `done`, `§ Ship` complete, `§ Next` cleared, one closing summary
 line. Report to the user: what shipped, verification evidence, review outcome, dossier path,

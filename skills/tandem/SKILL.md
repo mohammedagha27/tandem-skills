@@ -102,12 +102,17 @@ is reported and worked around, never silently dropped.
 ### 2. Understand
 Resolve every requirement to **confirmed** (user said so, or the source says so unambiguously),
 **assumed** (you chose a reading — record it), or **open**. The order of authority: the
-codebase and docs answer first; the user answers only what they alone can. Interview style when
-you do ask: one question per message, your recommended answer attached, walking each branch of
-the decision tree until resolved (this is Matt Pocock's `grill-me` discipline). Whenever a
-question has concrete options — here, at the plan gate, in tie-breaks, in config mode —
-present it through the harness's interactive question tool (`AskUserQuestion` in Claude Code,
-recommended option first), not as prose the user has to type an answer to.
+codebase and docs answer first; the user answers only what they alone can. Interview style
+when you do ask (adapted from Matt Pocock's grilling discipline): ask the whole **dependency
+frontier** in one round — every question whose prerequisites are already settled, numbered,
+each with your recommended answer. A question whose answer depends on another question still
+open this round belongs to a later round; a running exploration blocks only the questions
+downstream of it — ask the rest of the frontier now. When a boundary is fuzzy, pose a
+concrete scenario ("a user deletes the org mid-export — what should happen?") instead of an
+abstract question. Whenever questions have concrete options — here, at the plan gate, in
+tie-breaks, in config mode — present them through the harness's interactive question tool
+(`AskUserQuestion` in Claude Code: one tab per frontier question, ≤4 per dialog, recommended
+option first), not as prose the user has to type answers to.
 
 **The scope test** (one definition, used everywhere — here, at the plan gate, in escalation):
 a requirement is *scope-ambiguous* when two reasonable readings would deliver different things —
@@ -179,6 +184,10 @@ review findings triaged, PR opened and CI green/triaged (per config), dossier co
 | User interrupts | State is already on disk; `/tandem resume` continues |
 
 ## Hard rules
+
+Violating the letter of these rules is violating their spirit — "technically compliant"
+workarounds (a skipped baseline because "the diff is tiny", a stale run counted as
+verification) are violations.
 
 - Codex is read-only in every interaction this skill makes. No exceptions.
 - Every Codex loop is bounded and terminates. No unbounded ping-pong.

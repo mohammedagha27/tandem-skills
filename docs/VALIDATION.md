@@ -375,7 +375,30 @@ completion arrives as a task notification; never sleep-poll or guess task ids; f
 calls when the result blocks progress; playbooks still load only at phase start), a pointer
 from intake's sweep instruction, and a one-physical-line rule for state header fields.
 
-## 10. Verdict
+## 10. Round 8 — cross-pollination adoptions (2026-08-21)
+
+Two research agents mined superpowers, the grill-me lineage (predecessors on disk + Pocock's
+current repo), and the codex plugin's GPT-5.x prompting guidance for deltas; 15 were adopted
+across seven bundles (DESIGN §15). Validation executed:
+
+- **Live Codex smoke test on codex-cli 0.149.0** of the new XML block-structured spar prompt
+  (a toy plan with a planted banner-vs-empty-stdout contradiction): success contract met;
+  the planted contradiction caught as `[BLOCKING] OBSERVED plan.md:5,8` with the exact
+  required fix; every finding labeled OBSERVED|INFERRED (grounding rules followed); the
+  dig-deeper nudge visibly produced second-order findings (stale quiet-state across
+  in-process calls, subprocess stdout leaks); no clarifying-question stall; verdict line
+  exact and machine-parseable. This also re-verifies the core protocol flags on 0.149.0 —
+  version claims updated accordingly.
+- Consistency sweeps: no remaining "one question at a time" instruction in operational text
+  (README walkthrough updated; THIRD-PARTY-NOTICES wording updated to the evolved frontier
+  discipline); frontmatter and JSON validate.
+
+Not executed: no tabletop round for these adoptions (they are additive guardrails on
+already-validated structures, and the highest-risk piece — the prompt restructure — got the
+live test above); no live verification of the restored 0.130-floor and `-m`-pinning facts
+(carried from the predecessors' verified notes, marked as such).
+
+## 11. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

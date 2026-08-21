@@ -241,3 +241,25 @@ material same-model reviews. `codex: off` stays a choice, not a failure — it n
 the policy and remains distinguishable in state (`solo (by config)` vs `claude-fallback`).
 Kept separate by design: implementation subagents (`execution`) — different system, own
 model behavior, never reused to review their own work.
+
+## 15. Cross-pollination pass (2026-08-21)
+
+Two research agents mined the superpowers family, the grill-me lineage (including Pocock's
+CURRENT skills — he refactored to a frontier-batching `grilling` primitive and a separate
+`domain-modeling` skill, validating §9's glossary decision), and the codex plugin's GPT-5.x
+prompting guidance. Adopted: systematic-debugging's root-cause-before-fix method plus the
+"three failed fixes = a wrong decision" circuit breaker (routed into the deviation protocol —
+the one whole discipline tandem lacked); native-worktree-tool preference with check-ignore
+and end-of-life mechanics; a ship-phase R-id checklist, a plan-draft R-id→TASK coverage
+self-check, and red-green verification for behavior-pinning tests; XML block-structured
+spar/review prompts with grounding rules (OBSERVED|INFERRED labeling — previously only the
+review asked for it), a dig-deeper nudge, and a follow-through policy (live-verified on
+codex-cli 0.149.0: planted contradiction caught, labels followed, verdict contract exact);
+dependency-frontier question batching replacing one-question-at-a-time (Pocock's own
+evolution; also removes an inconsistency with config mode's tabbed dialogs) plus the
+scenario-stress-test mechanism §2 claimed but never shipped; restored predecessor protocol
+facts (0.130 floor, why `-m` pinning 400s); rejected-alternatives named per key decision;
+the letter=spirit clause; severity-ordered per-fix application in the review loop (user's
+call over a weak-adopt recommendation). Skipped: full TDD iron law, rationalization tables,
+bite-sized checkbox plans, parallel implementers, domain-modeling machinery — each conflicts
+with a documented tandem decision.

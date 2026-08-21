@@ -109,8 +109,9 @@ the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=
 1. **Intake** — no ticket to fetch; the prose is the source. Tandem finds the API entry
    points, middleware conventions, and the test layout, and writes requirement stubs to
    `.tandem/rate-limiting/state.md`.
-2. **Understand** — it asks you only what the repo can't answer, one question at a time with
-   a recommendation attached: "Per-user or per-IP limits? The auth middleware suggests
+2. **Understand** — it asks you only what the repo can't answer, batching every question
+   whose prerequisites are settled into one round of tabbed pickers, each with a
+   recommendation attached: "Per-user or per-IP limits? The auth middleware suggests
    per-user — recommend that." Scope-ambiguous questions are never guessed at.
 3. **Spar** — it drafts `plan.md`, then Codex attacks it round by round (assumptions →
    architecture → edge cases → simplification → kill shot). Claude verifies each finding,
@@ -164,7 +165,7 @@ phase against reality before trusting it. To abandon a run instead, delete its
 - **Skills don't appear after install** — restart Claude Code; check the symlinks point where
   you cloned (`ls -l ~/.claude/skills/tandem*`).
 - **Codex calls fail immediately** — run `codex login`; check `codex --version` (protocol
-  verified on 0.146.0; the preflight in `skills/tandem/references/codex-protocol.md` says what
+  verified on 0.146.0 and 0.149.0; the preflight in `skills/tandem/references/codex-protocol.md` says what
   to re-check on other versions).
 - **Codex hangs at ~0% CPU** — something invoked it without stdin discipline; the protocol
   file documents the fix (prompt via `- <file`), which the skills already follow.
