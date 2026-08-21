@@ -1,4 +1,5 @@
 .DS_Store
-.tandem/
+# tandem working state: ignore per-feature state dirs, keep .tandem/config.md committed
+.tandem/*/
 # skill-creator eval workspaces (see docs/VALIDATION.md)
 *-workspace/
