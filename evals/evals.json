@@ -75,6 +75,18 @@
       "expected_output": "Baseline snapshot records the 3 failures before any change; ship blocks only on NEW failures; pre-existing ones are reported separately with the baseline as evidence and noted in the dossier — never silently 'fixed' to force green."
     },
     {
+      "id": 14,
+      "name": "adaptive-subagent-execution",
+      "prompt": "/tandem Split the monolithic report generator into separate export, template, and delivery services (plan approved with 7 independent tasks)",
+      "expected_output": "Build classifies execution=subagents (several independent tasks) and records the reason in state.md § Build; briefs written to .tandem/<slug>/briefs/ from plan+state; fresh implementer per task returns a short status with its report on disk; orchestrator verifies diff + verification command itself before committing; risky tasks get a reviewer subagent; state.md remains the only ledger; tandem-review still runs as the final gate."
+    },
+    {
+      "id": 15,
+      "name": "inline-execution-small-build",
+      "prompt": "/tandem Add a config flag to disable email notifications",
+      "expected_output": "Build classifies execution=inline (two tightly coupled tasks — no subagent ceremony) and records the choice + reason in state.md § Build; execution=subagents invocation override would force the other path."
+    },
+    {
       "id": 13,
       "name": "unfamiliar-external-project",
       "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no .tandem config)",

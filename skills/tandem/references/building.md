@@ -24,9 +24,45 @@ The plan survived sparring and the gate; now execute it without silently driftin
    mechanical gap is move 1; a hole that reopens a decision is move 2). The freeze means no
    *silent* change, not no change.
 
-## Execution discipline
+## Execution model — inline or per-task subagents
 
-- Work plan-step by plan-step; mark each done in `state.md § Build → Done` as you go.
+Classify once, after re-reading the frozen plan, and record the choice and reason in
+`state.md § Build → Execution` (the user can force it with the invocation-only override
+`execution=inline|subagents`):
+
+- **Inline** — you implement in-session: one or two tightly coupled tasks, or mechanical work.
+- **Subagents** — a fresh implementer per task: several independently executable tasks, or a
+  build large enough that accumulating its diffs would crowd the orchestrator's context.
+  Batch tiny same-shape edits into a single dispatch. Sequential by default — never run
+  implementers whose file sets could conflict in parallel.
+
+The subagent loop (adapted from Jesse Vincent's superpowers `subagent-driven-development`,
+MIT — see THIRD-PARTY-NOTICES; state.md remains the ONLY ledger — no separate progress file):
+
+1. **Brief:** write `.tandem/<slug>/briefs/TASK-<n>.md` from the plan's task entry plus any
+   state context it needs. The worker gets the brief and the repo — never this conversation
+   and never the whole plan. A brief that can't stand alone is a plan defect: fix the plan
+   via the deviation protocol before dispatching.
+2. **Dispatch** a fresh implementer subagent with the brief path. It implements, writes the
+   tests the brief calls for, runs the brief's verification command, self-reviews, writes a
+   detailed report to `.tandem/<slug>/reports/TASK-<n>.md`, and returns only a short status
+   (done | blocked + why).
+3. **Verify yourself:** read the diff and run the verification command — never take the
+   report's word for it. Then commit and update `state.md` (task done, commit sha).
+4. **Task review, sized to risk:** a task touching security, data migration, a public
+   interface, or several components gets a fresh reviewer subagent (inputs: brief + diff;
+   output: severity-tagged findings). For mechanical tasks, your own diff inspection plus a
+   green verification command is enough. One focused correction + scoped re-review per task —
+   not a fix marathon; a task still failing after that reopens the plan via the deviation
+   protocol.
+
+Isolated worktree: when the clean-tree gate parked unrelated work, or the user wants their
+checkout undisturbed, run the build in `git worktree add` isolation on the feature branch —
+subagent execution composes with it unchanged.
+
+## Execution discipline (both models)
+
+- Work task by task; mark each done in `state.md § Build → Done` as you go.
 - Honor the repo's own workflow norms and the user's standing preferences (TDD, coverage
   bars, commit conventions). The plan's test strategy section says what to test; write tests
   with the code, not as a final batch.
@@ -60,5 +96,5 @@ Missing dependency, permission wall, an instruction that stopped making sense: s
 (guided) or record the blocker in `state.md § Next` and surface it (auto). Don't guess through
 blockers — a wrong guess compounds.
 
-Exit to Ship when: every plan step is done or consciously deviated, the branch is green against
+Exit to Ship when: every plan task is done or consciously deviated, the branch is green against
 baseline, and `state.md` reflects reality.

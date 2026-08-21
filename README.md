@@ -105,7 +105,9 @@ One-off overrides ride the invocation: `/tandem PROJ-123 rounds=3 review=off`.
 4. **Plan gate** — you see the hardened plan, the surviving disagreements, and the live
    assumptions in one message, and sign off.
 5. **Build** — feature branch, baseline test snapshot, small verified increments; deviations
-   from the plan are logged, never silent.
+   from the plan are logged, never silent. Multi-task plans dispatch a fresh subagent per
+   task, each fed a standalone brief, so the main session stays lean; small coupled changes
+   run inline.
 6. **Ship** — fresh verification, then `/tandem-review` runs Codex over the whole branch,
    findings are verified and triaged, and the dossier (problem, decisions, disagreements,
    evidence) is committed before the PR opens. PR and CI-watch follow your config.

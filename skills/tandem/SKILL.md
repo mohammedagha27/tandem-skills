@@ -39,7 +39,9 @@ Precedence: defaults → `.tandem/config.md` (repo-level `key: value` lines) →
 (e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Short aliases are accepted in
 both places: `rounds` ≡ `max_rounds`, `review` ≡ `codex_review`. Unknown keys: warn once and
 ignore. Invalid values (`max_rounds=0` or non-numeric, an unrecognized enum): warn once and
-use the default — never guess a meaning. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
+use the default — never guess a meaning. One invocation-only override has no config key:
+`execution=inline|subagents` forces the build's execution model (default: auto-classified
+per the build playbook). On `/tandem resume`, the config recorded in `state.md` wins unless the resume
 invocation passes new args. Echo the resolved values once at kickoff.
 
 | Key | Default | Meaning |
@@ -118,7 +120,9 @@ repo's existing ADR format if one exists, else a short Context/Decision/Conseque
 ### 5. Build — `references/building.md`
 Implement the frozen plan on a feature branch: baseline-failure snapshot first, small verified
 increments, deviations logged and reconciled (a wrong plan gets *updated*, never silently
-abandoned). Discovering a broken assumption mid-build reopens the relevant decision — briefly,
+abandoned). Execution is classified adaptively — inline for small coupled work, fresh
+per-task subagents (each fed a standalone brief) when the plan has enough independent tasks
+to threaten context. Discovering a broken assumption mid-build reopens the relevant decision — briefly,
 with the user if it's theirs.
 
 ### 6. Ship — `references/shipping.md`

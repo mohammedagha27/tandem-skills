@@ -33,6 +33,7 @@ which made multi-round loops repetitive.
 | `superpowers:writing-plans` | Zero-context executor assumption, exact paths, no placeholders ("TBD" is a plan failure), type-consistency self-review | Taken: plan quality bar and the no-placeholder rule |
 | `superpowers:verification-before-completion` | "No completion claims without fresh verification evidence" | Taken as the ship phase's iron law |
 | `handoff` | Compact state for a fresh agent; reference artifacts by path instead of duplicating | Taken as the resumability model: `state.md` is a standing handoff document |
+| `superpowers:subagent-driven-development` (Jesse Vincent, MIT; adopted post-publication, see §12) | Zero-context task briefs, fresh implementer subagent per task, reviewer gates, reports on disk | Taken (adapted): brief format, per-task fresh implementers, risk-sized task review. Left: separate progress ledger, five-round fix loops, model-escalation policy, its own final whole-branch review and branch finishing (tandem-review and ship own those) |
 | `skill-creator` + `superpowers:writing-skills` | Progressive disclosure (metadata → SKILL.md → references), trigger-focused descriptions that do not summarize workflow (summaries become shortcuts Claude follows instead of reading the skill), token efficiency, test-with-subagents | Followed in the construction of these skills themselves |
 | `documentation-writer` (Diátaxis) | Four-quadrant discipline; the dossier is an Explanation-quadrant artifact with Reference elements | Shapes the dossier template |
 | codex plugin (`codex-cli-runtime`, `codex-result-handling`; a locally installed Claude Code plugin, not part of this repo) | Severity-ordered findings, preserve evidence boundaries (fact vs inference), never auto-apply review fixes | Taken: severity ordering, evidence-boundary preservation in review output handling |
@@ -164,3 +165,24 @@ give the manual command, branch stays pushed); interruption (state.md → resume
 ## 11. Validation performed
 
 See `docs/VALIDATION.md` for the scenario matrix and findings that fed back into the skills.
+
+## 12. Post-publication addition: adaptive subagent execution (2026-08-21)
+
+The build playbook gained an execution model adapted from Jesse Vincent's
+`superpowers:subagent-driven-development` (MIT). Options considered:
+
+- **Vendor the upstream skill wholesale, mandatory for every build.** Rejected: it carries
+  its own ledger (`progress.md`), its own per-task and final whole-branch review loops, and
+  branch-finishing — duplicating `state.md` and `tandem-review` — plus fork drift against a
+  living upstream. Upstream itself routes adaptively; mandating it everywhere would
+  contradict its own rules.
+- **Detect-and-delegate when superpowers is installed.** Rejected: identical invocations
+  would behave differently across machines, and the delegated skill would still own a
+  second ledger and final review.
+- **Absorb the primitives, adaptively (chosen).** Plans now carry zero-context TASK briefs;
+  build classifies inline vs per-task fresh subagents (invocation-only override
+  `execution=`, no config key until field use demands one); workers get brief + repo, never
+  the conversation; reports live on disk, short statuses return; task review is sized to
+  risk (one focused correction, then the deviation protocol); `state.md` stays the only
+  ledger and `tandem-review` the only final gate. Not imported: the separate ledger,
+  five-round fix loops, model-escalation policy, uniform review ceremony, branch finishing.

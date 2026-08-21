@@ -31,3 +31,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## subagent-driven-development (Jesse Vincent, superpowers)
+
+The adaptive subagent execution protocol in tandem's build playbook — zero-context task
+briefs, fresh per-task implementer subagents returning short statuses with detailed reports
+on disk, and risk-sized task review gates — is adapted from the **subagent-driven-development**
+skill in **Jesse Vincent's** `superpowers` project
+(https://github.com/obra/superpowers, MIT License, Copyright (c) 2025 Jesse Vincent).
+Tandem adapts the ideas rather than copying the skill: it keeps its own single ledger
+(`state.md`), its own review gate (`tandem-review`), and adaptive rather than uniform
+ceremony.

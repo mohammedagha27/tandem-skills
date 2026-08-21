@@ -12,7 +12,16 @@ Codex bites hardest on something concrete. Before round 1, write `plan.md`:
 # Plan: <task>          _(draft — under sparring)_
 ## Goal                 <one paragraph, in the project's own terms>
 ## Requirements         <R1..Rn from state.md, each: confirmed|assumed>
-## Approach             <numbered, concrete steps with file paths>
+## Tasks                <TASK-1..n, each a zero-context executable brief:
+                         - requirements delivered (R-ids)
+                         - files to create/modify/test
+                         - depends on (TASK-ids)
+                         - interfaces consumed/produced
+                         - exact behavior and constraints
+                         - verification command + expected result
+                         - done when
+                         If a task can't be executed from its brief plus the repo alone,
+                         the plan isn't done.>
 ## Test strategy        <what proves each requirement; which suites/commands>
 ## Key decisions        <the contestable choices, named explicitly — give Codex something to bite>
 ## Risks / open questions

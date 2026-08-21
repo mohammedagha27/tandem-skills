@@ -44,9 +44,10 @@ updated: <ISO datetime>
 
 ## Build
 - Baseline failures: <test ids that failed BEFORE any change, or "none">
-- Done: <plan step ids completed>
-- Last commit: <sha> (<step id>)
-- In progress: <step id> — uncommitted changes: yes|no
+- Execution: inline | subagents — <one-line reason, or "forced by invocation">
+- Done: <TASK ids completed>
+- Last commit: <sha> (<TASK id>)
+- In progress: <TASK id> — uncommitted changes: yes|no
 - Deviations: V1: <what changed vs plan + why>  (also annotate plan.md)
 
 ## Verification
