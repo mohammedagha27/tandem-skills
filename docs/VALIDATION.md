@@ -367,6 +367,14 @@ keys"/old-solo references and DESIGN §8's superseded normative text corrected.
 Not executed: no live quota-exhaustion or rate-limit reproduction against the real Codex
 CLI — the failure classification is encoded from documented behavior, not induced failures.
 
+Field-test feedback, same day: a real `/tandem` run dispatched intake Explore agents and then
+busy-waited — background `sleep 60…420` loops, task-output calls on guessed ids, ~23 minutes
+lost — and also preloaded sparring playbooks during intake and wrapped state's `config:` line
+mid-value. Fixes: a Subagent discipline section in SKILL.md (waiting = ending your turn;
+completion arrives as a task notification; never sleep-poll or guess task ids; foreground
+calls when the result blocks progress; playbooks still load only at phase start), a pointer
+from intake's sweep instruction, and a one-physical-line rule for state header fields.
+
 ## 10. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session

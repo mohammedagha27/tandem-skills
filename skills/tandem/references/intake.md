@@ -56,7 +56,8 @@ Bound this to what the task touches — it's reconnaissance, not an audit:
   that is no longer read — if present, say so once and offer to copy its valid values into
   the installation config (contract: `references/config.md`).
 
-Use subagents for broad sweeps when the repo is large; keep conclusions, not file dumps.
+Use subagents for broad sweeps when the repo is large (per SKILL.md § Subagent discipline —
+end your turn to wait; never sleep-poll); keep conclusions, not file dumps.
 
 ## 3. Produce requirement stubs
 

@@ -1,6 +1,8 @@
 # state.md format + resume protocol
 
-`.tandem/<slug>/state.md` is current-truth only — supersede rather than accumulate. Two
+`.tandem/<slug>/state.md` is current-truth only — supersede rather than accumulate. The
+header block (`phase:` through `updated:`) is parsed line-by-line: each field is exactly ONE
+physical line, however long — never wrap the `config:` line mid-value. Two
 exceptions are append-shaped by design because they are bounded, dossier-feeding logs:
 `## Spar rounds` (one line per round — bounded by `max_rounds` plus at most one `SC<n>`
 spot-check line per reopened build decision) and `## Verification` (one line per run).

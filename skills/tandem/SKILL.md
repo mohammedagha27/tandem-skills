@@ -72,6 +72,23 @@ of the input; trailing `key=value` tokens are config args, not task prose.
   run state, no branch, no Codex. Natural-language asks ("configure tandem defaults") route
   here too.
 
+## Subagent discipline (intake sweeps, critics, build workers)
+
+Every subagent this skill dispatches follows the same rules:
+
+- **Scope and self-containment:** one agent per independent concern; parallel dispatches go
+  out together in a single message; each prompt carries everything the agent needs (scope,
+  file paths, constraints, exactly what to return) — subagents never inherit this session's
+  history.
+- **Waiting means ending your turn.** A dispatched agent's completion comes back as a task
+  notification that re-invokes you — there is nothing to poll. NEVER busy-wait with `sleep`
+  loops, never call task-output tools on guessed ids, and never fill the wait with
+  later-phase work (playbooks load when their phase starts, not "while waiting"). If you
+  need the result before anything else can proceed, make the Agent call in the foreground
+  and use its returned report directly.
+- **Verify on return:** read each summary, check for conflicts between agents, and never
+  treat an agent's claim as verification evidence — run the checks yourself.
+
 ## The lifecycle
 
 Each phase has a playbook in `references/`. Load the playbook **when the phase starts**, not
