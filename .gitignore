@@ -1,5 +1,7 @@
 .DS_Store
-# tandem working state: ignore per-feature state dirs, keep .tandem/config.md committed
-.tandem/*/
+# personal tandem defaults of anyone using the symlink install — never committed to this repo
+skills/*/config.md
+# tandem run state (working memory only — persistent defaults live with the skill install)
+.tandem/
 # skill-creator eval workspaces (see docs/VALIDATION.md)
 *-workspace/

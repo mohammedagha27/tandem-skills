@@ -52,12 +52,17 @@ Bound this to what the task touches — it's reconnaissance, not an audit:
   question for Understand.
 - The actual code the change lands in: entry points, data flow, existing tests.
 - Recent history: `git log --oneline -15` on the touched area — someone may be mid-refactor.
+- Legacy config check: a `.tandem/config.md` in this repo is a pre-release preferences file
+  that is no longer read — if present, say so once and offer to copy its valid values into
+  the installation config (contract: `references/config.md`).
 
 Use subagents for broad sweeps when the repo is large; keep conclusions, not file dumps.
 
 ## 3. Produce requirement stubs
 
-Write `state.md` (format: `state.md` reference) with every requirement you can extract, each
+Write `state.md` (format: `state.md` reference; its `config:` line holds the RESOLVED values
+per SKILL.md § Configuration and `references/config.md` — resolve them now, never copy the
+template's example values) with every requirement you can extract, each
 tagged `confirmed` / `assumed` / `open` and given an acceptance line ("accept: …") where the
 source provides one. Rules of thumb:
 

@@ -33,11 +33,15 @@ carries that consent; no other caller, human or programmatic, inherits it.
    and `state.md` — that upgrades the review with requirements coverage and plan-deviation
    checks. Standalone (no tandem context) reviews simply skip those dimensions.
 4. Honor `codex: off` wherever the run records it: the `config:` line of the run's `state.md`
-   (invocation overrides land there — it is authoritative in tandem context) or
-   `.tandem/config.md`. It's a privacy switch — this skill must not be its side door: say so
-   and run the Claude-only pass against the same examine-list, labeled single-model. An
-   explicit request to use Codex anyway wins — but only after you've flagged the config, so
-   the override is informed.
+   (resolved at kickoff — authoritative in tandem context) or, standalone, the active
+   installation's config — `config.md` beside the sibling `tandem` skill's `SKILL.md`
+   (resolution rules in `../tandem/references/config.md`; this skill never has a config file
+   of its own). If no sibling tandem installation exists, no persistent config applies —
+   say so (it's the privacy key: the user should know none was found) and proceed on
+   defaults. It's a privacy switch — this skill must not be its side door: say so and run
+   the Claude-only pass against the same examine-list, labeled single-model. An explicit
+   request to use Codex anyway wins — but only after you've flagged the config, so the
+   override is informed.
 
 ## Protocol
 

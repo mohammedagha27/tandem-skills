@@ -72,21 +72,29 @@ the two `skills/*` directories instead).
 
 To uninstall: remove the two symlinks (`rm ~/.claude/skills/tandem ~/.claude/skills/tandem-review`).
 
+Your persistent defaults (`config.md` beside the tandem skill — see Configuration) are never
+overwritten or removed by install or update; with the symlink install they live in your clone
+and survive re-linking.
+
 ## Configuration
 
-None required. To change defaults per repo, create `.tandem/config.md`:
+None required — everything has a sensible default. Persistent defaults live in a `config.md`
+beside the installed tandem skill (e.g. `~/.claude/skills/tandem/config.md`; the file always
+belongs to the installation that's actually loaded — global, project-level, or a custom
+`CLAUDE_SKILLS_DIR` all work the same way). Manage it from inside Claude Code:
 
 ```
-codex: on            # off = never call Codex; run fully single-model (default on)
-max_rounds: 3        # sparring round cap (default 5)
-codex_review: on     # pre-PR feature review (on|off)
-pr: ask              # ask|auto|off
-ci: on               # watch CI after the PR opens
-docs: on             # generate the dossier
-autonomy: guided     # guided (pause at gates) | auto (only mandatory gates)
+/tandem config                       # interactive: view and change defaults
+/tandem config show                  # read-only view of built-in vs configured values
+/tandem config execution=subagents   # set specific keys directly
+/tandem config max_rounds=3 pr=auto
+/tandem config reset                 # back to built-ins (asks first)
 ```
 
-One-off overrides ride the invocation: `/tandem PROJ-123 rounds=3 review=off`.
+The eight keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
+(auto|inline|subagents), `pr` (ask|auto|off), `ci` (on|off), `docs` (on|off), `autonomy`
+(guided|auto) — full semantics in the skill's `references/config.md`. One-off overrides ride
+the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=off`.
 
 ## What a run looks like
 
@@ -118,8 +126,9 @@ phase against reality before trusting it. To abandon a run instead, delete its
 
 ## What a run leaves behind
 
-- `.tandem/<slug>/` — working state (gitignore it). `state.md` holds requirements, decisions,
-  disagreements, and deviations; it's what makes `/tandem resume` work.
+- `.tandem/<slug>/` — working state, kept out of git via `.git/info/exclude` (never a
+  preferences file). `state.md` holds requirements, decisions, disagreements, and deviations;
+  it's what makes `/tandem resume` work.
 - `docs/features/YYYY-MM-DD-<slug>.md` — the dossier: problem, requirements (assumptions
   called out), decisions with rejected alternatives, where the two models disagreed and how it
   resolved, verification evidence, known limitations. Project memory, not a transcript.

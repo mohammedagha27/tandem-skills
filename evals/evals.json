@@ -89,8 +89,38 @@
     {
       "id": 13,
       "name": "unfamiliar-external-project",
-      "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no .tandem config)",
-      "expected_output": "Runs on defaults with zero configuration; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
+      "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no installation config.md)",
+      "expected_output": "Runs on defaults with zero configuration; no config.md is created by the run; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
+    },
+    {
+      "id": 16,
+      "name": "config-show-read-only",
+      "prompt": "/tandem config show",
+      "expected_output": "Resolves <TANDEM_SKILL_DIR>/config.md beside the loaded SKILL.md (global, project, custom CLAUDE_SKILLS_DIR, or symlink — never hardcoded ~/.claude); prints key | built-in | configured | resolved plus the active file path; writes nothing, creates nothing, does not start intake/run state/branch/Codex."
+    },
+    {
+      "id": 17,
+      "name": "config-direct-assignment",
+      "prompt": "/tandem config execution=subagents max_rounds=3",
+      "expected_output": "Validates both values, updates only those keys in the active installation's config.md (creating it if absent, preserving other lines/comments), warns before writing if the file is git-tracked (project install), shows the resulting file + path; next run resolves execution=subagents max_rounds=3."
+    },
+    {
+      "id": 18,
+      "name": "config-invalid-assignment",
+      "prompt": "/tandem config max_rounds=0 sparkle=on",
+      "expected_output": "Both rejected with concise warnings (invalid value; unknown key); nothing written; existing settings not corrupted; no defaults guessed."
+    },
+    {
+      "id": 19,
+      "name": "config-reset-confirmation",
+      "prompt": "/tandem config reset",
+      "expected_output": "Asks for confirmation first; on yes, rewrites config.md to the canonical empty form (or deletes just that file if the user prefers) — built-ins back in effect; touches nothing else."
+    },
+    {
+      "id": 20,
+      "name": "invocation-override-one-run",
+      "prompt": "/tandem Add rate limiting rounds=2 (installation config.md has max_rounds: 4)",
+      "expected_output": "Run resolves max_rounds=2 (invocation wins), echoed once and recorded on state.md's config: line; installation config.md still says 4 afterwards; a later /tandem resume of this run uses the recorded 2 unless the resume invocation overrides it."
     }
   ],
   "trigger_evals": [
@@ -103,6 +133,8 @@
     {"query": "run codex on this file and fix what it finds", "should_trigger": "neither (single-file scope; tandem-review is branch/feature scope only)"},
     {"query": "I have a PRD in docs/prd/export.md — build it, but I don't have codex installed", "should_trigger": "tandem (solo mode)"},
     {"query": "we're about to merge feat/billing-v2, get a second model's eyes on the whole branch, we use gitlab", "should_trigger": "tandem-review"},
-    {"query": "argue with codex about whether we should use postgres or dynamo for the session store", "should_trigger": "tandem (spar mode)"}
+    {"query": "argue with codex about whether we should use postgres or dynamo for the session store", "should_trigger": "tandem (spar mode)"},
+    {"query": "configure tandem defaults", "should_trigger": "tandem (config mode)"},
+    {"query": "/tandem config pr=auto", "should_trigger": "tandem (config mode)"}
   ]
 }

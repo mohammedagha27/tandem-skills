@@ -64,7 +64,9 @@ uncertainty report:
   push could silently not happen). → Dossier playbook now specifies: feature branch, and push
   after committing whenever the branch was already pushed.
 - `.gitignore` referent ambiguous (`.tandem/` wholesale would ignore the committed
-  `config.md`). → Now specified: ignore `.tandem/*/` (state dirs), keep `.tandem/config.md`.
+  `config.md`). → Specified at the time as: ignore `.tandem/*/` (state dirs), keep
+  `.tandem/config.md`. (Since superseded — round 6 moved persistent config out of `.tandem/`
+  entirely.)
 - `ci=on` with `pr=off` silently no-ops. → Stated explicitly.
 
 **Failure/resume agent** (all fixed):
@@ -294,7 +296,40 @@ clean; 11 findings were fixed:
 - Stale references fixed ("plan step" → task; the working-state contract now mentions
   `briefs/` and `reports/` as regenerable non-ledger files).
 
-## 8. Verdict
+## 8. Round 6 — installation-scoped configuration (2026-08-21)
+
+`.tandem/config.md` was replaced by one installation-scoped `config.md` plus a
+`/tandem config` mode (DESIGN §13; contract in `references/config.md`). Validation actually
+executed:
+
+- **Live install tests** (isolated clone, custom `CLAUDE_SKILLS_DIR`): symlink install
+  resolves to one physical file through the link (`os.path.realpath` equality asserted);
+  re-running `install.sh` over an existing `config.md` preserves it and reports the path; a
+  fresh install reports "built-ins in use"; the repo's gitignore keeps `skills/*/config.md`
+  invisible to git. All passed.
+- **Adversarial tabletop** (fresh agent, 10 walks covering the acceptance criteria:
+  interactive/show/assignment/reset, tracked-file and read-only installs, full-run
+  resolution + resume, legacy file, tandem-review standalone with `codex: off`, cross-file
+  sweep): 8 walks clean, no blockers, 8 findings fixed —
+  invalid values now drop to the next-lower precedence layer instead of jumping to built-ins
+  (a garbage invocation arg can no longer defeat a valid installation setting); intake
+  explicitly resolves config when writing state's `config:` line (template values are never
+  copied); `reset` with no file writes nothing; the legacy `.tandem/config.md` check got a
+  trigger point (intake repo discovery); tracked-file writes now require explicit
+  confirmation, and the tracked/read-only guards are scoped to write operations only;
+  pre-existing invalid lines are preserved-and-warned during unrelated edits; a declined
+  interactive session exits without writing; tandem-review says so when no sibling tandem
+  installation (and hence no config) exists; stale "forced by invocation" phrasing and two
+  since-superseded doc-record lines were marked or fixed.
+- **Sweep:** no live skill instruction creates or reads `.tandem/config.md` as preferences
+  (only the explicit not-read legacy note); state's `config:` template line matches the
+  8-key schema exactly; all cross-file pointers resolve.
+
+Not executed (honest limits): no end-to-end interactive `/tandem config` session with a real
+user, and the trigger panel was not re-run for the new description clause — the config-mode
+trigger queries were added to `trigger_evals` for the next panel.
+
+## 9. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

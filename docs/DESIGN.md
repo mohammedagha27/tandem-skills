@@ -122,11 +122,15 @@ working memory).
 
 ## 7. Configuration
 
-Precedence: built-in defaults → `.tandem/config.md` (repo-level, `key: value` lines) →
-invocation arguments (`/tandem rounds=3 review=off …`). Seven knobs, all with strong defaults:
+Precedence: built-in defaults → the active installation's `config.md` (lives beside the
+loaded `SKILL.md`; see §13 for why this replaced the original repo-level `.tandem/config.md`) →
+invocation arguments (`/tandem rounds=3 review=off …`). Eight keys, all with strong defaults:
 `codex=on` (off = fully single-model, added post-audit as the honest privacy/no-Codex switch),
-`max_rounds=5`, `codex_review=on`, `pr=ask` (ask|auto|off), `ci=on`, `docs=on`,
-`autonomy=guided` (guided|auto). Zero configuration required for normal use.
+`max_rounds=5`, `codex_review=on`, `execution=auto` (auto|inline|subagents),
+`pr=ask` (ask|auto|off), `ci=on`, `docs=on`, `autonomy=guided` (guided|auto). Zero
+configuration required for normal use; the whole contract (schema, aliases, validation, path
+resolution, the `/tandem config` mode) is defined once in
+`skills/tandem/references/config.md`.
 
 ## 8. Failure & degradation ladder
 
@@ -180,9 +184,38 @@ The build playbook gained an execution model adapted from Jesse Vincent's
   would behave differently across machines, and the delegated skill would still own a
   second ledger and final review.
 - **Absorb the primitives, adaptively (chosen).** Plans now carry zero-context TASK briefs;
-  build classifies inline vs per-task fresh subagents (invocation-only override
-  `execution=`, no config key until field use demands one); workers get brief + repo, never
+  build classifies inline vs per-task fresh subagents (`execution=` was invocation-only
+  here — superseded the same day by §13, which made it a persistent key); workers get brief +
+  repo, never
   the conversation; reports live on disk, short statuses return; task review is sized to
   risk (one focused correction, then the deviation protocol); `state.md` stays the only
   ledger and `tandem-review` the only final gate. Not imported: the separate ledger,
   five-round fix loops, model-escalation policy, uniform review ceremony, branch finishing.
+
+## 13. Installation-scoped configuration (2026-08-21)
+
+`.tandem/config.md` (repo-level defaults) was replaced by ONE persistent scope: the active
+skill installation — `<TANDEM_SKILL_DIR>/config.md`, resolved as "the directory containing
+the SKILL.md that was actually loaded" (works for global, project-level, custom
+CLAUDE_SKILLS_DIR, and symlink installs alike; through a symlink the file lands in the clone,
+which is one physical file that survives re-linking — this repo gitignores
+`skills/*/config.md` so personal defaults never enter the published repo).
+
+Why the move: defaults are a property of how a *user* runs tandem, not of the repos they run
+it on; the old location put a preferences file inside every target repo (mutating repos
+uninvited, inviting accidental commits) and made two sources of truth once invocation-only
+overrides appeared. `execution` was promoted from invocation-only to a normal persistent key
+(`auto|inline|subagents`, default `auto`) at the same time, which deleted its special-case
+recording rule.
+
+Decisions: exactly one persistent scope (no global-vs-project merging — the loaded
+installation wins by definition); `tandem-review` reads the same file via its sibling tandem
+directory, never its own; a missing file means built-ins and is only created by an explicit
+`/tandem config` save; runtime precedence stays defaults → installation config → invocation
+args, with resolved values recorded in `state.md` so resume stays deterministic. The whole
+contract lives once in `references/config.md`; SKILL.md, building, state, resume, and
+tandem-review all point at it. A `/tandem config` mode (interactive + `show` / `key=value` /
+`reset`) edits the file from inside Claude Code and never enters the lifecycle. Migration:
+clean replacement (the pre-release `.tandem/config.md` is not read; if one is found, tandem
+says so and offers a one-time copy of its valid values) — the project had been public for
+hours, not long enough to promise compatibility.

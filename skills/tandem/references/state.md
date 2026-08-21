@@ -15,7 +15,7 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: codex=on max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided [execution=<value> — only when forced at invocation]
+config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided
 spar: pending | codex (thread <id>) | solo (by config) | solo (degraded round <n>[, was codex thread <id>])
 updated: <ISO datetime>
 
@@ -44,7 +44,7 @@ updated: <ISO datetime>
 
 ## Build
 - Baseline failures: <test ids that failed BEFORE any change, or "none">
-- Execution: inline | subagents — <one-line reason, or "forced by invocation">
+- Execution: inline | subagents — <one-line reason, or "set in config/invocation">
 - Done: <TASK ids completed>
 - Last commit: <sha> (<TASK id>)
 - In progress: <TASK id> — uncommitted changes: yes|no
@@ -84,7 +84,9 @@ On `/tandem resume`:
    diff before touching them; never stash or discard them blind. Re-run tests only if
    `## Verification` is stale relative to `Last commit`. Reality wins: fix `state.md` to match
    it and note the correction.
-3. Config: the `config:` line in state wins, unless the resume invocation passes new args.
+3. Config: the `config:` line in state holds the RESOLVED values from kickoff and wins,
+   unless the resume invocation passes new args (contract: `references/config.md`) —
+   installation-config edits made since kickoff do not retroactively change this run.
 4. Announce a 3-line recap to the user (task, phase, next action), then continue from `## Next`
    with the matching phase playbook.
 5. A recorded Codex `thread` may be resumable; if the resume fails, follow the protocol's

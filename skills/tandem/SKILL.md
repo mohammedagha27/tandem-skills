@@ -1,6 +1,6 @@
 ---
 name: tandem
-description: 'Feature lifecycle with a cross-model sparring partner. Use when the user invokes /tandem, gives a ticket ID (PROJ-123), a requirement doc, links, or a feature request and wants it taken from raw input to understood, planned, implemented, reviewed, and documented — with OpenAI Codex adversarially hardening the plan before any code. Also use when the user says "plan this with codex", "spar with codex", "build this feature properly", "take this ticket end to end", or wants to resume interrupted work (trigger when a .tandem/ state directory exists for it, even if they don''t say "tandem"). Works even without Codex (labeled single-model mode). Modes: plan (stop after the plan gate), spar (stop after the sparring loop — also for standalone design debates with Codex, e.g. "argue with codex about whether we need a queue"), resume. NOT for reviewing an existing branch (use tandem-review), NOT for trivial edits a single commit would cover, and NOT for reviewing already-written code.'
+description: 'Feature lifecycle with a cross-model sparring partner. Use when the user invokes /tandem, gives a ticket ID (PROJ-123), a requirement doc, links, or a feature request and wants it taken from raw input to planned, implemented, reviewed, and documented — with OpenAI Codex adversarially hardening the plan before any code. Also use when the user says "plan this with codex", "spar with codex", "build this feature properly", "take this ticket end to end", or wants to resume interrupted work (trigger when a .tandem/ state directory exists for it, even if they don''t say "tandem"). Works without Codex (labeled single-model mode). Modes: plan (stop at the plan gate), spar (stop after the sparring loop — also for standalone design debates with Codex, e.g. "argue with codex about whether we need a queue"), resume, config (view/change saved defaults — "configure tandem defaults"). NOT for reviewing an existing branch or already-written code (use tandem-review), and NOT for trivial edits a single commit would cover.'
 ---
 
 # Tandem — Build Features With a Sparring Partner
@@ -17,10 +17,10 @@ documentation of what was decided and why. Neither is a chat transcript.
 ## Working state (read this contract first)
 
 All working memory lives in `.tandem/<slug>/` at the repo root (`<slug>` = short kebab name for
-the feature; a bare ticket id is a fine slug). Keep state dirs out of git without mutating the
-user's repo uninvited: prefer adding `.tandem/*/` to `.git/info/exclude` (local, nothing to
-commit); edit the repo's `.gitignore` only with the user's OK. `.tandem/config.md`, when the
-repo uses one, stays committed.
+the feature; a bare ticket id is a fine slug). Keep it out of git without mutating the user's
+repo uninvited: prefer adding `.tandem/` to `.git/info/exclude` (local, nothing to commit);
+edit the repo's `.gitignore` only with the user's OK. Nothing under `.tandem/` is a
+preferences file — persistent defaults live with the skill installation (see Configuration).
 
 | File | Role |
 |---|---|
@@ -38,30 +38,22 @@ from. A stale state file silently breaks all three.
 
 ## Configuration
 
-Precedence: defaults → `.tandem/config.md` (repo-level `key: value` lines) → invocation args
-(e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Short aliases are accepted in
-both places: `rounds` ≡ `max_rounds`, `review` ≡ `codex_review`. Unknown keys: warn once and
-ignore. Invalid values (`max_rounds=0` or non-numeric, an unrecognized enum): warn once and
-use the default — never guess a meaning. One override is invocation-only (`.tandem/config.md`
-has no such key): `execution=inline|subagents` forces the build's execution model (default:
-auto-classified per the build playbook). When forced, record it on state.md's `config:` line
-at kickoff so a later resume preserves it. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
-invocation passes new args. Echo the resolved values once at kickoff.
+The complete contract — the eight keys with defaults, aliases, validation, where the
+persistent `config.md` lives (beside the ACTIVE installation's `SKILL.md`, never in the
+target repo), and the `/tandem config` mode — is defined once, in `references/config.md`.
+Read it at kickoff when resolving config, on resume, and whenever the user wants to view or
+change defaults. Don't restate its rules from memory.
 
-| Key | Default | Meaning |
-|---|---|---|
-| `codex` | `on` | `off` = never invoke the Codex CLI anywhere in the run: sparring, mid-build spot-checks, and the pre-PR review all run single-model (solo mode *by choice*, recorded as `spar: solo (by config)` — no failure-ladder framing). For repos whose content must not leave the machine, or machines without Codex. |
-| `max_rounds` | `5` | Hard cap on sparring rounds. The loop always terminates here. |
-| `codex_review` | `on` | Pre-PR feature-level review via the `tandem-review` skill (single-model self-review when `codex=off`). |
-| `pr` | `ask` | `ask` = confirm before opening a PR; `auto` = open it; `off` = stop at a pushed branch. |
-| `ci` | `on` | Monitor CI checks after the PR opens (no-op when no PR exists). |
-| `docs` | `on` | Generate and commit the dossier (full mode only — plan/spar modes never reach it). |
-| `autonomy` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; still always ask for destructive, security-sensitive, or scope-ambiguous decisions — and a sparring deadlock always pauses for the user, in every mode. |
+Precedence: built-in defaults → active installation `config.md` → invocation args
+(`/tandem PROJ-123 rounds=3 review=off`). Record the resolved values on `state.md`'s
+`config:` line and echo them once at kickoff; invocation args win for that run only. On
+`/tandem resume`, the config recorded in `state.md` wins unless the resume invocation passes
+new args.
 
 ## Modes
 
-Mode keywords (`plan`, `spar`, `resume`) are recognized only as the bare first token of the
-input; trailing `key=value` tokens are config args, not task prose.
+Mode keywords (`plan`, `spar`, `resume`, `config`) are recognized only as the bare first token
+of the input; trailing `key=value` tokens are config args, not task prose.
 
 - `/tandem <input>` — full lifecycle.
 - `/tandem plan <input>` — stop after the Plan gate. No branch, no code, no dossier — the
@@ -75,6 +67,10 @@ input; trailing `key=value` tokens are config args, not task prose.
 - `/tandem resume [slug]` — read `.tandem/<slug>/state.md` (if no slug, list `.tandem/*/` and
   ask) and continue from the recorded phase, following the resume protocol in
   `references/state.md` (verify the phase claim against reality before trusting it).
+- `/tandem config [show | key=value … | reset]` — view/change the persistent defaults, per
+  the configuration mode in `references/config.md`. Never enters the lifecycle: no intake, no
+  run state, no branch, no Codex. Natural-language asks ("configure tandem defaults") route
+  here too.
 
 ## The lifecycle
 

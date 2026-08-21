@@ -31,9 +31,10 @@ The plan survived sparring and the gate; now execute it without silently driftin
 
 ## Execution model — inline or per-task subagents
 
-Classify once, after re-reading the frozen plan, and record the choice and reason in
-`state.md § Build → Execution`. An `execution=` value forced at invocation was recorded on
-state's `config:` line at kickoff — honor it here, reason: "forced by invocation".
+The resolved `execution` sits on state's `config:` line (contract: `references/config.md`).
+`inline` or `subagents` is a forced choice — honor it, reason: "set in config/invocation".
+`auto` means classify here, once, after re-reading the frozen plan; either way, record the
+choice and reason in `state.md § Build → Execution`:
 
 - **Inline** — you implement in-session: one or two tasks, tightly coupled work, or anything
   mechanical.
