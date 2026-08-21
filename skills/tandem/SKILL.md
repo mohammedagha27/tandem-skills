@@ -17,8 +17,10 @@ documentation of what was decided and why. Neither is a chat transcript.
 ## Working state (read this contract first)
 
 All working memory lives in `.tandem/<slug>/` at the repo root (`<slug>` = short kebab name for
-the feature; a bare ticket id is a fine slug). Gitignore the state dirs but not the config:
-ignore `.tandem/*/` — `.tandem/config.md` stays committed.
+the feature; a bare ticket id is a fine slug). Keep state dirs out of git without mutating the
+user's repo uninvited: prefer adding `.tandem/*/` to `.git/info/exclude` (local, nothing to
+commit); edit the repo's `.gitignore` only with the user's OK. `.tandem/config.md`, when the
+repo uses one, stays committed.
 
 | File | Role |
 |---|---|
@@ -36,7 +38,8 @@ from. A stale state file silently breaks all three.
 Precedence: defaults → `.tandem/config.md` (repo-level `key: value` lines) → invocation args
 (e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Short aliases are accepted in
 both places: `rounds` ≡ `max_rounds`, `review` ≡ `codex_review`. Unknown keys: warn once and
-ignore. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
+ignore. Invalid values (`max_rounds=0` or non-numeric, an unrecognized enum): warn once and
+use the default — never guess a meaning. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
 invocation passes new args. Echo the resolved values once at kickoff.
 
 | Key | Default | Meaning |

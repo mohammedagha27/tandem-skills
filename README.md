@@ -118,11 +118,12 @@ phase against reality before trusting it. To abandon a run instead, delete its
 
 - **Repo content goes to OpenAI.** Codex reads your repository and receives the plan/state
   files in its prompts; that content is processed by OpenAI under your Codex account's terms,
-  and the calls consume your Codex/ChatGPT plan's quota. For a repo whose content must not
-  leave your machine, set `codex: off` — the whole workflow then runs single-model (sparring
-  and review by Claude, labeled as such) and nothing is sent to OpenAI. Note that
-  `codex_review: off` alone is *not* a privacy switch: it only skips the pre-PR review gate,
-  and plan sparring still calls Codex.
+  and the calls consume your Codex/ChatGPT plan's quota. To keep repo content away from
+  OpenAI entirely, set `codex: off` — the whole workflow then runs single-model (sparring and
+  review by Claude, labeled as such). This is an OpenAI opt-out, not a fully-local mode:
+  Claude Code itself still processes your repo through Anthropic, as in any other session.
+  Note that `codex_review: off` alone is *not* a privacy switch: it only skips the pre-PR
+  review gate, and plan sparring still calls Codex.
 - **Codex is read-only, enforced per call.** Fresh sessions run `-s read-only`; resumed
   sessions force `-c sandbox_mode="read-only"` (resume would otherwise inherit your
   `~/.codex/config.toml`, which may allow writes).

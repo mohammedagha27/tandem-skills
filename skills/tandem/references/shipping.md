@@ -18,13 +18,17 @@ Record commands + results in `state.md § Verification`.
 
 Invoke the **tandem-review** skill on the feature branch — it reviews the whole feature
 (merge-base → HEAD + working tree), not the last diff, and knows to read `plan.md`/`state.md`
-for requirements coverage. Pass it the slug so it finds the tandem context.
+for requirements coverage. Pass it the slug so it finds the tandem context, and state the
+resolved config explicitly — `codex` and the recorded `base:` in particular travel with the
+call; the reviewer honors the run's state over repo defaults.
 
 Triage its triaged output (tandem-review already verifies findings against the code):
 
 - Fix accepted findings; log the round in `state.md § Ship`.
 - Re-reviews resume the SAME Codex session over the fix delta ("here's what changed since
-  your review: …") — not a fresh whole-branch pass.
+  your review: …") — not a fresh whole-branch pass. The delta includes the disposition of
+  every prior finding — fixed (where), rejected (with evidence), or consciously deferred —
+  so settled points aren't re-litigated.
 - Cap: **2 fix-and-re-review cycles**, counted per feature branch (a fresh Codex session does
   not reset it). Still MATERIAL+ after that → present the remainder to the user with positions
   rather than looping; each further cycle happens only on their explicit per-cycle ask. Rerun

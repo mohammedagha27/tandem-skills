@@ -182,8 +182,8 @@ then validated its own changes the same way rounds 1–2 were validated.
   descriptions only): 11/12. The miss — single-FILE codex requests fell between the
   "snippet" exclusion and branch scope. → tandem-review exclusion now reads "single-file,
   single-function, or snippet (branch/feature scope only)"; tandem's description now signals
-  the solo fallback ("still applies when Codex is unavailable or unwanted"). New queries added
-  to `trigger_evals`.
+  the solo fallback ("still applies when Codex is unavailable or unwanted"). 4 of the 6 new
+  queries added to `trigger_evals`.
 - **Adversarial tabletop of the new paths** (codex=off lifecycle, trust boundaries,
   fresh→resume→failure→recovery, non-GitHub ship): trust-boundary and failure-ladder walks
   CLEAN; 9 findings fixed — undefined `$P2` in the resume snippet; the protocol assumed shell
@@ -198,13 +198,70 @@ then validated its own changes the same way rounds 1–2 were validated.
   (non-empty fresh reply, no event required) confirmed safe. New live finding encoded: the
   JSONL stream of a fully successful run can contain cosmetic `"type":"error"` events — the
   success contract is the only failure test.
-- Publication scans (working tree + full git history): no secrets, no personal/company data,
-  no private URLs or local paths. Quoted upstream Pocock license verified verbatim against
-  source.
+- Publication scans (working tree + full git history): no secrets, no company data, no
+  private URLs or local paths, no *unintentional* personal data. Intentional author
+  identifiers remain by design (license copyright, clone URL, git commit authorship) — kept
+  as an explicit pre-publish decision for the author. Quoted upstream Pocock license verified
+  verbatim against source.
 
-## 6. Verdict
+Method limitation, stated plainly: rounds 1–3 are live protocol tests plus adversarial
+tabletop walkthroughs. The scenario evals in `evals/evals.json` are expectations, not
+executable fixtures — there are no committed assertions, mock-Codex fixtures, or baseline
+runs yet, so this record demonstrates *coherence under adversarial reading and a working CLI
+protocol*, not measured outcome improvement. A fixture-based harness (including a mock codex
+executable that records whether it was called) is the highest-value next investment.
 
-Both skills survived two adversarial rounds with all confirmed defects fixed; the Codex CLI
-protocol is live-verified end-to-end on 0.146.0. Residual known limitations are listed in the
-README. The natural next iteration is field use: the first few real `/tandem` runs will teach
-more than a third tabletop round would.
+## 6. Round 4 — Codex counter-audit triage (2026-08-21)
+
+An independent Codex-side audit (`docs/CODEX-AUDIT.md`) reached NOT READY TO PUBLISH with
+five blockers. Each finding was verified against the files before acting — the same
+arbitration rule the skills impose on their own reviews.
+
+**Confirmed and fixed:**
+- `codex=off` passed as an invocation arg lands in `state.md`, but tandem-review only honored
+  `.tandem/config.md` → reviewer now honors the run's `state.md` config as authoritative, and
+  the ship playbook passes the resolved config explicitly.
+- README privacy framing ("must not leave your machine") overpromised → now explicit that
+  `codex: off` is an OpenAI opt-out, not a fully-local mode; Claude Code still processes the
+  repo through Anthropic.
+- Base resolution preferred "the branch's configured upstream", which after `push -u` is
+  `origin/<same-branch>` → empty scope. Precedence is now: user-supplied → tandem state
+  `base:` → PR/MR target → ambiguity check → unambiguous default branch; tracking upstreams
+  are explicitly banned as bases.
+- Build had no clean-tree gate → new step 0: classify the tree; unrelated dirty work always
+  asks (stash / isolated worktree / bless named files), in every autonomy mode.
+- Adopted P1/P2 items: round-1 spar prompt now hands Codex `state.md` (not just the plan);
+  out-of-focus BLOCKING findings must still be reported; re-review deltas carry prior-finding
+  dispositions; terminal failures (missing binary, bad auth) skip the recovery attempt;
+  scratch files are cleaned up after each round and Codex's own session retention is
+  disclosed; config values are validated (warn + default); state dirs prefer
+  `.git/info/exclude` over editing the user's `.gitignore`; the "healthy mixed record" line
+  no longer implies a target accept/reject ratio.
+- Validation overstatements corrected (this document): personal-data claim scoped to
+  *unintentional* data; trigger-eval counts clarified; the fixtureless-eval limitation stated
+  above.
+
+**Rejected, with reasons:**
+- Wholesale protocol redesign (TANDEM-CRITIC/1 wire format, NEXT-token semantics, dropping
+  the lens ladder and kill shot, deleting spar-log, delegating PR/CI to host skills): the
+  current contract is live-verified on the actual CLI; the replacement is unproven against
+  real Codex behavior, the kill shot and ladder are deliberate anti-laziness bounds that
+  already adapt (skip + early exit), spar-log is the bounded audit trail that keeps state.md
+  small, and delegating lifecycle stages to Superpowers-style skills would break the
+  portability requirement that tandem work without them. Its best ideas (state-aware round-1
+  prompt, dispositions in deltas, out-of-focus blocker rule, CLEAN-is-valid framing) were
+  taken piecemeal instead.
+- "Fixture-based evals as a publication blocker": downgraded to the top follow-up. Prompt
+  skills routinely publish with scenario evals; the honest fix is not overclaiming (done),
+  not blocking publication on a test harness.
+- Requirement delivery-status dimension (`planned|implemented|verified` per R-id): plan
+  steps already reference R-ids and `§ Build → Done` tracks steps; a second status dimension
+  is bureaucracy ahead of field evidence.
+
+## 7. Verdict
+
+Both skills survived two authoring-time adversarial rounds, an independent second-session
+audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is
+live-verified end-to-end on 0.146.0. Residual known limitations are listed in the README and
+in round 3's method note. The natural next iteration is field use plus a fixture-based eval
+harness: the first few real `/tandem` runs will teach more than a fifth tabletop round would.

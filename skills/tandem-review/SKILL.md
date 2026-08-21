@@ -16,11 +16,14 @@ carries that consent; no other caller, human or programmatic, inherits it.
 ## Scope resolution
 
 1. Determine the base in this order: (a) a user-supplied base/range always wins ("review this
-   branch" names the *subject*, not the base); (b) the branch's configured upstream merge
-   target, if the repo records one; (c) **ambiguity check before any fallback** — if more than
-   one plausible integration branch exists (`main` AND `develop`, say), ask; the default
-   branch existing does NOT settle it; (d) only with a single candidate, the repo's default
-   branch (`gh repo view --json defaultBranchRef`, or `origin/HEAD`).
+   branch" names the *subject*, not the base); (b) in tandem context, the `base:` recorded in
+   `.tandem/<slug>/state.md`; (c) the target branch of an existing PR/MR for this branch;
+   (d) **ambiguity check before any fallback** — if more than one plausible integration branch
+   exists (`main` AND `develop`, say), ask; the default branch existing does NOT settle it;
+   (e) only with a single candidate, the repo's default branch
+   (`gh repo view --json defaultBranchRef`, or `origin/HEAD`). **Never use the branch's git
+   tracking upstream as the base**: after `push -u`, `@{upstream}` is `origin/<this-branch>`,
+   and diffing against it yields an empty scope that reads as "nothing to review".
 2. The scope is the working-tree diff against the merge-base — `git diff <merge-base>` (this
    covers committed AND uncommitted changes) — plus untracked files from `git status`, listed
    separately. Echo the scope (base, branch, commit count, files touched) before launching.
@@ -29,10 +32,12 @@ carries that consent; no other caller, human or programmatic, inherits it.
 3. If a `.tandem/<slug>/` directory exists for this branch, tell Codex to read its `plan.md`
    and `state.md` — that upgrades the review with requirements coverage and plan-deviation
    checks. Standalone (no tandem context) reviews simply skip those dimensions.
-4. Honor `codex: off` in `.tandem/config.md` (it's a privacy switch — this skill must not be
-   its side door): say so and run the Claude-only pass against the same examine-list, labeled
-   single-model. An explicit request to use Codex anyway wins — but only after you've flagged
-   the config, so the override is informed.
+4. Honor `codex: off` wherever the run records it: the `config:` line of the run's `state.md`
+   (invocation overrides land there — it is authoritative in tandem context) or
+   `.tandem/config.md`. It's a privacy switch — this skill must not be its side door: say so
+   and run the Claude-only pass against the same examine-list, labeled single-model. An
+   explicit request to use Codex anyway wins — but only after you've flagged the config, so
+   the override is informed.
 
 ## Protocol
 

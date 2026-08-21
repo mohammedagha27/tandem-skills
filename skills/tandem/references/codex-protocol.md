@@ -83,8 +83,11 @@ large diffs, prefer `run_in_background: true` and read the reply file on complet
 background run finishes, lead your next message with a loud banner (`🔔 CODEX FINISHED —
 <what>`) before any analysis — the user isn't watching tool calls.
 
-One unified ladder for every failure kind (timeout, crash, missing success contract, double
-verdict-miss):
+Classify the failure before the ladder. **Terminal** — the codex binary is missing, auth is
+invalid, the model/flag is unsupported: a retry cannot succeed, so skip the recovery, go
+straight to solo mode, and tell the user exactly what's broken and how to fix it (`codex
+login`, install, version). **Transient** — timeout, crash, empty reply, missing success
+contract, double verdict-miss — enters the ladder:
 
 1. **First failure:** tell the user what failed. One deliberate recovery is sanctioned: a
    **fresh session** (`codex exec`, new thread) whose prompt carries a 3-bullet catch-up
@@ -114,7 +117,13 @@ the same session; a second miss is a failed round — enter the failure ladder a
 `STILL DISPUTED` items go to `state.md § Disagreements`, not back into the argument.
 
 Long replies: extract the findings and verdict into your triage; don't quote the reply
-wholesale into context. The full text is already on disk if anyone needs it.
+wholesale into context. The full text stays on disk while it's needed.
+
+Cleanup: once a round's findings, verdict, and thread id are recorded durably (state.md,
+spar-log), delete that round's scratch files — prompts and replies contain plan and repo
+content and shouldn't linger in temp storage. Disclosure for the privacy-conscious: Codex
+also keeps its own session history (locally and per your account's settings), outside this
+protocol's control.
 
 ## Trust boundaries (both directions)
 

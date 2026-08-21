@@ -53,8 +53,11 @@ First round carries context; later rounds carry only the delta (the session reme
 ```
 Round 1:  You are an adversarial reviewer sparring over an implementation plan before any
           code exists. Be skeptical and specific — find what breaks, don't be agreeable.
-          Read plan.md at <path> and any repo files you need (you are read-only).
-          THIS ROUND'S SOLE FOCUS: <lens charter from the table>.
+          Read plan.md at <path> AND state.md at <path> (requirements with their
+          confirmed/assumed status, constraints, evidence, prior decisions), plus any repo
+          files you need (you are read-only).
+          THIS ROUND'S SOLE FOCUS: <lens charter from the table>. A BLOCKING finding outside
+          this focus must still be reported — focus narrows attention, not honesty.
           For each finding: severity tag, one-line concrete fix. <verdict contract>
 
 Round N:  The plan changed since your last look: <2-5 bullet summary of revisions, including
@@ -83,7 +86,10 @@ and disagreements (G-ids, including everything Codex lists under `STILL DISPUTED
 forward through state, never by re-reading the log.**
 
 Don't cave to everything (that defeats the cross-model check) and don't dismiss everything
-(that defeats the point). The healthy signature is a mixed record with reasons on both sides.
+(that defeats the point). But health is not a target accept/reject ratio — it's evidence on
+every decision. All-accepted, all-rejected, or a flat CLEAN are all legitimate when the
+evidence supports them; what's illegitimate is accepting without verifying or rejecting
+without a logged reason.
 
 ## Convergence and deadlock
 

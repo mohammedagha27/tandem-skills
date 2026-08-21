@@ -4,6 +4,12 @@ The plan survived sparring and the gate; now execute it without silently driftin
 
 ## Setup
 
+0. **Clean-tree gate:** `git status` before anything. Clean, or dirty only with
+   workflow-owned files (`.tandem/…`)? Proceed. Anything else is unrelated work and is never
+   absorbed silently — it would contaminate the branch, the baseline snapshot, the feature
+   diff, and every commit. Ask the user (in every autonomy mode): stash it, move this work to
+   an isolated worktree, or explicitly bless named files into scope; record the choice in
+   `state.md`.
 1. **Branch:** never build on the default branch. Resolve the integration branch
    deterministically: the repo's default branch (`gh repo view --json defaultBranchRef` or
    `origin/HEAD`) unless the repo's docs say features cut from elsewhere; if both `main` and
