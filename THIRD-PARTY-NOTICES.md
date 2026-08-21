@@ -31,11 +31,3 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
-## grill-me-codex / grill-with-docs-codex (prior derivatives)
-
-The Codex CLI safety mechanics (read-only sandbox enforcement on resume, stdin-EOF hang
-avoidance, timeout ceilings, thread-id capture) were first worked out in grill-me-codex /
-grill-with-docs-codex — earlier, unpublished derivatives of Matt Pocock's skills by this
-project's author — and were re-verified against codex-cli 0.146.0 for this project. Tandem
-is a from-scratch redesign, not a fork of those skills.

@@ -157,9 +157,9 @@ binary approve/revise, and every Codex loop bounded with an honest-deadlock path
 The interview discipline in the understand phase, and the ancestry of this whole idea, come
 from **Matt Pocock's** `grill-me` and `grill-with-docs` skills
 (https://github.com/mattpocock/skills, MIT) — see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-The Codex CLI mechanics build on earlier unpublished derivatives of those skills by this
-project's author (`grill-me-codex` / `grill-with-docs-codex`), re-verified against codex-cli
-0.146.0. This is a new project, not a fork of either.
+The Codex CLI mechanics were worked out by this project's author in earlier unpublished
+experiments and re-verified against codex-cli 0.146.0 for this project. This is a new
+project, not a fork.
 
 ## Limitations
 
