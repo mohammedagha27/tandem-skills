@@ -30,8 +30,14 @@ grep -o '"thread_id":"[^"]*"' "$STREAM" | head -1
 ```
 
 Every scratch file is a fresh `mktemp` — fixed paths (e.g. `/tmp/tandem-stream.jsonl`) collide
-across concurrent runs and, on shared machines, are a symlink hazard. Keep the four variables
-around for the whole run: `$ERR` is the log you read on failure.
+across concurrent runs and, on shared machines, are a symlink hazard.
+
+**Shell state does not survive across tool calls.** Run each round as ONE self-contained Bash
+invocation that creates its files, runs codex, then prints what later calls need before it
+exits: the thread id, the reply file's content (or path), and — on a failed contract — the
+tail of `$ERR`. Record the thread id and any paths you'll reuse in `state.md` (or your working
+notes) and inline them literally into later invocations; `$THREAD_ID` as a shell variable is
+gone by the next call.
 
 - `- <"$P"` feeds the prompt via stdin. This avoids the non-TTY hang: `codex exec` reads stdin
   in addition to any prompt argument, and under a non-interactive driver it blocks forever
@@ -42,15 +48,19 @@ around for the whole run: `$ERR` is the log you read on failure.
 - The reply lands in `$REPLY`. Read that file; never parse the JSONL stream for content.
 - **Success contract:** non-empty `$REPLY` + a `thread.started` event in the stream. Anything
   less is a failed run (auth, model, untrusted dir): read the stderr log, surface the real
-  error. stderr routinely carries cosmetic MCP/OAuth noise — judge by the contract, not by
-  stderr being non-empty.
+  error. stderr routinely carries cosmetic MCP/OAuth noise — and the JSONL stream of a fully
+  successful run can contain cosmetic `"type":"error"` events (live-verified on 0.146.0).
+  Judge by the contract only: never treat non-empty stderr or stream error events as failure.
 
 ## Resumed session (every later round)
 
 ```bash
-REPLY=$(mktemp); STREAM=$(mktemp)
-codex exec resume "$THREAD_ID" -c sandbox_mode="read-only" --json \
-  -o "$REPLY" - <"$P2" >"$STREAM" 2>>"$ERR"
+P2=$(mktemp); REPLY=$(mktemp); STREAM=$(mktemp); ERR=$(mktemp)
+cat >"$P2" <<'EOF'
+<round-N prompt>
+EOF
+codex exec resume "<thread-id captured from the fresh session>" \
+  -c sandbox_mode="read-only" --json -o "$REPLY" - <"$P2" >"$STREAM" 2>"$ERR"
 ```
 
 - **Success contract on resume:** a non-empty fresh `$REPLY` (the thread already exists, so

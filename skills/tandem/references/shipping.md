@@ -30,10 +30,13 @@ Triage its triaged output (tandem-review already verifies findings against the c
   rather than looping; each further cycle happens only on their explicit per-cycle ask. Rerun
   step 1 verification after any fix.
 
-If Codex is unavailable (or `codex=off`), degrade per its protocol: a Claude self-review pass
-against the examine-list in tandem-review's prompt (correctness, requirements coverage, architecture fit,
+If Codex is unavailable, degrade per its protocol; with `codex=off`, run the same pass by
+choice (no degradation framing). Either way it's a Claude self-review pass against the
+examine-list in tandem-review's prompt (correctness, requirements coverage, architecture fit,
 regressions, edge cases, security, performance, maintainability, test quality, complexity,
-plan deviations), recorded as single-model.
+plan deviations), recorded as single-model — under the **same output contract as the Codex
+path**: severity-tagged findings, a final verdict line, and triage into the same buckets. A
+paragraph of "looks fine" does not satisfy this step.
 
 ## 3. Dossier (per `docs` config)
 
@@ -46,7 +49,8 @@ branch after this commit — the pushed branch is the end state.
 `off` → push the branch, report, skip to step 5. `ask` (default) → present the summary and ask
 before opening. `auto` → open it. Opening a PR is outward-facing: when in doubt, ask.
 
-- Push with `-u`. Look for a PR template (`.github/PULL_REQUEST_TEMPLATE*`) and use it.
+- Push with `-u`. Look for a PR/MR template (`.github/PULL_REQUEST_TEMPLATE*`,
+  `.gitlab/merge_request_templates/`) and use it.
 - PR body: what + why from `state.md § Task/Decisions` (not a commit list), test plan from
   `§ Verification`, plus notable disagreements/deviations a reviewer should know. Link the
   ticket so the tracker auto-links.
@@ -56,8 +60,10 @@ before opening. `auto` → open it. Opening a PR is outward-facing: when in doub
 
 ## 5. CI (per `ci` config — no-op when no PR exists)
 
-`gh pr checks <url> --watch` (or poll if watch is unavailable). On failures, read the actual
-logs, then classify:
+On GitHub: `gh pr checks <url> --watch` (or poll if watch is unavailable). On other hosts, use
+the host's equivalent when one exists (e.g. `glab ci status` on GitLab); if there's no usable
+CLI/API, say CI can't be watched from here and give the pipeline URL — don't silently no-op.
+On failures, read the actual logs, then classify:
 
 - **Ours** (touched code, new tests, baseline-green now red) → fix, push, re-watch.
   Bounded: after 3 fix-pushes without green, stop and hand the analysis to the user.

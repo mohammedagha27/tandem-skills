@@ -25,7 +25,8 @@ the diff) is enough to render the template honestly.
 ```markdown
 # <Feature name>
 
-_<one-line what-and-why>. <date>, branch <name>. Built with tandem (Claude + Codex spar)._
+_<one-line what-and-why>. <date>, branch <name>. Built with tandem (<"Claude + Codex spar" |
+"single-model" — match how the spar actually ran, per state's `spar:` line>)._
 _(The PR links this dossier; record the PR URL in state.md § Ship once it exists.)_
 
 ## Problem

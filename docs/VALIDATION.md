@@ -168,7 +168,41 @@ no-mutation rule all PASSED. Remaining defects found and fixed:
   `UNRESOLVED (<severity>-class inference outstanding)` in that case, never plain CLEAN.
 - Crib gaps: failed calls don't count as cycles; untracked-file *content* must be read.
 
-## 5. Verdict
+## 5. Round 3 — independent pre-publication audit (second session, 2026-08-21)
+
+A separate session with no authoring context audited the repo as if publishing it that day,
+then validated its own changes the same way rounds 1–2 were validated.
+
+- **Fresh external review** (no-context agent, whole repo): rated internal consistency across
+  all files as excellent; found one blocker — a README sentence implying `codex_review: off`
+  was a privacy switch (it only skips the pre-PR gate; sparring still calls Codex). → Fixed
+  properly with the `codex: on|off` knob (a true single-model opt-out) and an honest README
+  privacy section.
+- **Trigger panel re-run** (12 queries, 6 stored + 6 new near-misses, judged against
+  descriptions only): 11/12. The miss — single-FILE codex requests fell between the
+  "snippet" exclusion and branch scope. → tandem-review exclusion now reads "single-file,
+  single-function, or snippet (branch/feature scope only)"; tandem's description now signals
+  the solo fallback ("still applies when Codex is unavailable or unwanted"). New queries added
+  to `trigger_evals`.
+- **Adversarial tabletop of the new paths** (codex=off lifecycle, trust boundaries,
+  fresh→resume→failure→recovery, non-GitHub ship): trust-boundary and failure-ladder walks
+  CLEAN; 9 findings fixed — undefined `$P2` in the resume snippet; the protocol assumed shell
+  variables survive across tool calls (they don't — rounds are now self-contained invocations
+  that print what later calls need); mid-build spot-checks and standalone tandem-review both
+  leaked Codex invocations past `codex: off`; by-config solo was lumped into degradation
+  framing; the dossier header hardcoded "Claude + Codex spar"; the self-review pass had no
+  output contract ("looks fine" satisfied it); CI watching was structurally GitHub-only and
+  silent about it; MR templates weren't looked up on GitLab.
+- **Live re-test via the original implementing session** (codex-cli 0.146.0): resume reliably
+  writes the `-o` reply file and does emit `thread.started`; the relaxed resume contract
+  (non-empty fresh reply, no event required) confirmed safe. New live finding encoded: the
+  JSONL stream of a fully successful run can contain cosmetic `"type":"error"` events — the
+  success contract is the only failure test.
+- Publication scans (working tree + full git history): no secrets, no personal/company data,
+  no private URLs or local paths. Quoted upstream Pocock license verified verbatim against
+  source.
+
+## 6. Verdict
 
 Both skills survived two adversarial rounds with all confirmed defects fixed; the Codex CLI
 protocol is live-verified end-to-end on 0.146.0. Residual known limitations are listed in the

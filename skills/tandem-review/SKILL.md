@@ -1,6 +1,6 @@
 ---
 name: tandem-review
-description: 'Cross-model review of a whole feature branch by OpenAI Codex (read-only), with Claude verifying every finding before it reaches the user. Use when the user invokes /tandem-review, says "have codex review this branch/feature/PR", "cross-model review before I open the PR", "second model opinion on this branch''s changes", or as the pre-PR gate of the tandem workflow. Reviews the entire feature (merge-base to HEAD plus working tree) — not just the latest commit or diff. NOT for reviewing plans before code exists (use /tandem spar), NOT for single-function or snippet review, NOT for plain review requests that never ask for a codex/cross-model opinion, and NOT a replacement for human PR review.'
+description: 'Cross-model review of a whole feature branch by OpenAI Codex (read-only), with Claude verifying every finding before it reaches the user. Use when the user invokes /tandem-review, says "have codex review this branch/feature/PR", "cross-model review before I open the PR", "second model opinion on this branch''s changes", or as the pre-PR gate of the tandem workflow. Reviews the entire feature (merge-base to HEAD plus working tree) — not just the latest commit or diff. NOT for reviewing plans before code exists (use /tandem spar), NOT for single-file, single-function, or snippet review (branch/feature scope only), NOT for plain review requests that never ask for a codex/cross-model opinion, and NOT a replacement for human PR review.'
 ---
 
 # Tandem-Review — Whole-Feature Cross-Model Review
@@ -29,6 +29,10 @@ carries that consent; no other caller, human or programmatic, inherits it.
 3. If a `.tandem/<slug>/` directory exists for this branch, tell Codex to read its `plan.md`
    and `state.md` — that upgrades the review with requirements coverage and plan-deviation
    checks. Standalone (no tandem context) reviews simply skip those dimensions.
+4. Honor `codex: off` in `.tandem/config.md` (it's a privacy switch — this skill must not be
+   its side door): say so and run the Claude-only pass against the same examine-list, labeled
+   single-model. An explicit request to use Codex anyway wins — but only after you've flagged
+   the config, so the override is informed.
 
 ## Protocol
 

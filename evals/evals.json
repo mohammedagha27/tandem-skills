@@ -87,6 +87,10 @@
     {"query": "have codex review my branch before I open the PR", "should_trigger": "tandem-review"},
     {"query": "codex review this plan before we write code", "should_trigger": "tandem (spar mode)"},
     {"query": "fix this typo in the README", "should_trigger": "neither"},
-    {"query": "review this function I just wrote", "should_trigger": "neither (single-model code review)"}
+    {"query": "review this function I just wrote", "should_trigger": "neither (single-model code review)"},
+    {"query": "run codex on this file and fix what it finds", "should_trigger": "neither (single-file scope; tandem-review is branch/feature scope only)"},
+    {"query": "I have a PRD in docs/prd/export.md — build it, but I don't have codex installed", "should_trigger": "tandem (solo mode)"},
+    {"query": "we're about to merge feat/billing-v2, get a second model's eyes on the whole branch, we use gitlab", "should_trigger": "tandem-review"},
+    {"query": "argue with codex about whether we should use postgres or dynamo for the session store", "should_trigger": "tandem (spar mode)"}
   ]
 }

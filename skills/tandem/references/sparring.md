@@ -113,9 +113,12 @@ count toward `max_rounds` and are logged in `state.md § Spar rounds` as `SC<n>`
 
 ## Solo mode (Codex unavailable — or `codex: off`)
 
-With `codex: off` in config, solo mode runs *by choice*: skip the failure-ladder framing, set
-`spar: solo (by config)`, and note in the plan-gate presentation that the spar was
-single-model. Everything below applies identically.
+With `codex: off` in config, solo mode runs *by choice*: set `spar: solo (by config)` and note
+in the plan-gate presentation that the spar was single-model. The **mechanics** below
+(subagent-per-round, prompt contract, lens charters, cap, arbitration, logging) apply
+identically; the failure narration and the `solo (degraded …)` state value apply only to the
+unavailability case. Mid-build spot-checks under `codex: off` run the same way: a solo
+devil's-advocate pass, same contract.
 
 When Codex fails, per the failure ladder in `codex-protocol.md`: tell the user plainly what
 failed and that the spar continues single-vendor (weaker — say so), set `spar: solo (degraded
