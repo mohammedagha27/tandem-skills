@@ -1,6 +1,6 @@
 ---
 name: tandem
-description: 'Feature lifecycle with a cross-model sparring partner. Use when the user invokes /tandem, gives a ticket ID (PROJ-123), a requirement doc, links, or a feature request and wants it taken from raw input to understood, planned, implemented, reviewed, and documented — with OpenAI Codex adversarially hardening the plan before any code. Also use when the user says "plan this with codex", "spar with codex", "build this feature properly", "take this ticket end to end", or wants to resume interrupted tandem work. Modes: plan (stop after the plan gate), spar (stop after the sparring loop), resume. NOT for reviewing an existing branch (use tandem-review), NOT for trivial edits a single commit would cover, and NOT for reviewing already-written code.'
+description: 'Feature lifecycle with a cross-model sparring partner. Use when the user invokes /tandem, gives a ticket ID (PROJ-123), a requirement doc, links, or a feature request and wants it taken from raw input to understood, planned, implemented, reviewed, and documented — with OpenAI Codex adversarially hardening the plan before any code. Also use when the user says "plan this with codex", "spar with codex", "build this feature properly", "take this ticket end to end", or wants to resume interrupted work (trigger when a .tandem/ state directory exists for it, even if they don''t say "tandem"). Modes: plan (stop after the plan gate), spar (stop after the sparring loop — also for standalone design debates with Codex, e.g. "argue with codex about whether we need a queue"), resume. NOT for reviewing an existing branch (use tandem-review), NOT for trivial edits a single commit would cover, and NOT for reviewing already-written code.'
 ---
 
 # Tandem — Build Features With a Sparring Partner
@@ -17,7 +17,8 @@ documentation of what was decided and why. Neither is a chat transcript.
 ## Working state (read this contract first)
 
 All working memory lives in `.tandem/<slug>/` at the repo root (`<slug>` = short kebab name for
-the feature; add it to `.gitignore` if not already ignored):
+the feature; a bare ticket id is a fine slug). Gitignore the state dirs but not the config:
+ignore `.tandem/*/` — `.tandem/config.md` stays committed.
 
 | File | Role |
 |---|---|
@@ -33,28 +34,37 @@ from. A stale state file silently breaks all three.
 ## Configuration
 
 Precedence: defaults → `.tandem/config.md` (repo-level `key: value` lines) → invocation args
-(e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Echo the resolved values once at
-kickoff.
+(e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Short aliases are accepted in
+both places: `rounds` ≡ `max_rounds`, `review` ≡ `codex_review`. Unknown keys: warn once and
+ignore. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
+invocation passes new args. Echo the resolved values once at kickoff.
 
 | Key | Default | Meaning |
 |---|---|---|
 | `max_rounds` | `5` | Hard cap on sparring rounds. The loop always terminates here. |
 | `codex_review` | `on` | Pre-PR feature-level review via the `tandem-review` skill. |
 | `pr` | `ask` | `ask` = confirm before opening a PR; `auto` = open it; `off` = stop at a pushed branch. |
-| `ci` | `on` | Monitor CI checks after the PR opens. |
-| `docs` | `on` | Generate and commit the dossier. |
-| `autonomy` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; still always ask for destructive, security-sensitive, or scope-changing decisions. |
+| `ci` | `on` | Monitor CI checks after the PR opens (no-op when no PR exists). |
+| `docs` | `on` | Generate and commit the dossier (full mode only — plan/spar modes never reach it). |
+| `autonomy` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; still always ask for destructive, security-sensitive, or scope-ambiguous decisions — and a sparring deadlock always pauses for the user, in every mode. |
 
 ## Modes
 
+Mode keywords (`plan`, `spar`, `resume`) are recognized only as the bare first token of the
+input; trailing `key=value` tokens are config args, not task prose.
+
 - `/tandem <input>` — full lifecycle.
-- `/tandem plan <input>` — stop after the Plan gate (plan + dossier-of-plan, no code).
-- `/tandem spar <input|path-to-plan>` — run only the sparring loop on a plan (draft one from the
-  input if none exists), then stop.
+- `/tandem plan <input>` — stop after the Plan gate. No branch, no code, no dossier — the
+  approved plan and state are the artifacts. `state.md` ends at phase `planned`, so a later
+  `/tandem resume` continues straight into Build.
+- `/tandem spar <input|path-to-plan>` — sparring only. Run a minimal intake first (slug from
+  the plan filename or input; create `state.md` with requirement stubs pulled from the plan or
+  prose, most of them `assumed`). A user-supplied plan file is **copied** into
+  `.tandem/<slug>/plan.md` — never edit their document in place. Run the loop, present the
+  outcome (including any deadlock tie-break), stop at phase `planned`.
 - `/tandem resume [slug]` — read `.tandem/<slug>/state.md` (if no slug, list `.tandem/*/` and
-  ask) and continue from the recorded phase. Trust the state file over memory of any prior
-  session; verify its `phase` claim against reality (does the branch exist? do the commits?)
-  before continuing.
+  ask) and continue from the recorded phase, following the resume protocol in
+  `references/state.md` (verify the phase claim against reality before trusting it).
 
 ## The lifecycle
 
@@ -71,11 +81,18 @@ Resolve every requirement to **confirmed** (user said so, or the source says so 
 **assumed** (you chose a reading — record it), or **open**. The order of authority: the
 codebase and docs answer first; the user answers only what they alone can. Interview style when
 you do ask: one question per message, your recommended answer attached, walking each branch of
-the decision tree until resolved (this is Matt Pocock's `grill-me` discipline). In
-`autonomy=auto`, convert non-critical opens into explicit assumptions instead of blocking —
-but ambiguity about *scope* always goes to the user.
+the decision tree until resolved (this is Matt Pocock's `grill-me` discipline).
 
-**Gate:** do not start sparring while a requirement that changes the plan's shape is still open.
+**The scope test** (one definition, used everywhere — here, at the plan gate, in escalation):
+a requirement is *scope-ambiguous* when two reasonable readings would deliver different things —
+a different deliverable, different surfaces touched, a different acceptance line. "Make search
+better" is scope-ambiguous (which search? better how?); "which HTTP client for the fetch" is
+not. Scope-ambiguous opens go to the user in **every** autonomy mode and are never converted
+to assumptions. In `autonomy=auto`, other opens may become assumptions — each conversion
+records its basis and `scope: no` in `state.md`, and every live assumption is surfaced again
+in the plan-gate presentation and the PR body.
+
+**Gate:** do not start sparring while a scope-ambiguous requirement is still open.
 
 ### 3. Spar — `references/sparring.md` + `references/codex-protocol.md`
 Draft `plan.md`, then run the bounded Claude ↔ Codex argument: purposeful rounds (assumptions →
@@ -84,11 +101,15 @@ when rounds stop earning their cost. Codex unavailable? The playbook's solo-mode
 applies — never skip adversarial pressure entirely.
 
 ### 4. Plan gate
-Present the hardened plan: goal, approach, key decisions with rationale, surviving
-disagreements, risks, out-of-scope. In `guided`, wait for approval; in `auto`, proceed unless
-the plan contains flagged decisions (destructive, security-sensitive, scope-changing) — those
-always wait. Freeze `plan.md`. If Pocock's ADR test applies to any decision (hard to reverse
-AND surprising without context AND a real trade-off), offer an ADR.
+Present the hardened plan in one interaction: goal, approach, key decisions with rationale,
+surviving disagreements **including any deadlock tie-break** (the user rules on those in every
+autonomy mode), live assumptions, risks, out-of-scope. In `guided`, wait for approval; in
+`auto`, proceed unless the presentation contains flagged items (destructive,
+security-sensitive, scope-ambiguous, or a deadlock) — those always wait. Freeze `plan.md`
+(header: `_(frozen at plan gate, <date>)_`). If Pocock's ADR test applies to any decision
+(hard to reverse AND surprising without context AND a real trade-off), offer an ADR — use the
+repo's existing ADR format if one exists, else a short Context/Decision/Consequences note in
+`docs/adr/`.
 
 ### 5. Build — `references/building.md`
 Implement the frozen plan on a feature branch: baseline-failure snapshot first, small verified
@@ -99,13 +120,16 @@ with the user if it's theirs.
 ### 6. Ship — `references/shipping.md`
 Fresh full verification (evidence before claims — no output, no "passes"), then if
 `codex_review=on` invoke the **tandem-review** skill on the whole feature branch (not the last
-diff), triage its findings, fix what's real, rerun verification. Then PR per `pr`, CI per `ci`,
-classifying failures as ours vs pre-existing via the baseline snapshot.
+diff), triage its findings, fix what's real, rerun verification. Then the **dossier** (below)
+is committed on the branch — before the PR opens, so it rides the PR and never invalidates a
+watched CI run. Then PR per `pr`, CI per `ci`, classifying failures as ours vs pre-existing
+via the baseline snapshot.
 
-### 7. Dossier — `references/dossier.md`
+### 7. Dossier — `references/dossier.md` (runs inside Ship, right before the PR)
 Render `state.md` into a durable engineering document (problem, requirements, decisions,
 disagreements, architecture, verification, limitations, follow-ups), save it where the repo
-keeps docs, commit it. This is project memory for humans and future agents — not a transcript.
+keeps docs, commit it on the feature branch. This is project memory for humans and future
+agents — not a transcript.
 
 **Definition of done:** verification green (or failures proven pre-existing and reported),
 review findings triaged, PR opened and CI green/triaged (per config), dossier committed,
@@ -115,10 +139,10 @@ review findings triaged, PR opened and CI green/triaged (per config), dossier co
 
 | Situation | Behavior |
 |---|---|
-| Ticket/doc/link inaccessible | Say so, ask for a paste, mark the source unfetched in `state.md`, continue with what exists |
-| Requirements stay ambiguous | `guided`: keep interviewing. `auto`: assume conservatively + record; scope ambiguity always asks |
-| Codex CLI missing/unauthenticated/timing out | Solo mode (see sparring playbook); record the degradation in state and dossier |
-| Codex and Claude deadlock at the round cap | Present both positions honestly; the user breaks the tie. Never fake convergence |
+| Ticket/doc/link inaccessible | Say so, record the attempted command + error in `state.md § Sources` (evidence, not a claim), ask for a paste, continue with what exists. If the failed source was the ONLY input, this is the no-input case: ask and wait, in both autonomy modes |
+| Requirements stay ambiguous | `guided`: keep interviewing. `auto`: assume + record basis; anything failing the scope test always asks |
+| Codex call fails (timeout/crash/auth) | Failure ladder in `codex-protocol.md`: one fresh-session recovery with a catch-up, then solo mode; record the degradation in state and dossier |
+| Codex and Claude deadlock | Tie-break at the plan gate, every autonomy mode; present both positions honestly. Never fake convergence |
 | Tests fail before any change | Baseline snapshot; only *new* failures block the ship |
 | Implementation exposes a bad assumption | Reopen the decision, update plan + state, continue |
 | Context getting heavy | Re-read `state.md` + current playbook only; never re-read spar-log or old diffs |

@@ -6,18 +6,27 @@ terms) with reference elements. It is rendered **from `state.md` + `plan.md` + t
 diff**, not from conversational memory, and it is explicitly NOT a transcript: no round-by-round
 blow-by-blow, no quoted AI dialogue. Reasoning, distilled.
 
-## Location & naming
+## When and where
 
-Follow the repo's existing convention if one exists (`docs/features/`, `docs/design/`,
-`docs/adr/` siblings…). Otherwise create `docs/features/` and write
-`YYYY-MM-DD-<slug>.md`. Commit it on the feature branch so it rides the PR.
+The dossier runs only in full mode, as the last pre-PR step of Ship — committed on the feature
+branch so it rides the PR and never invalidates an already-watched CI run. Plan/spar modes
+never reach it (their artifacts are the plan and state).
+
+Location: follow the repo's existing convention if one exists (`docs/features/`,
+`docs/design/`, `docs/adr/` siblings…). Otherwise create `docs/features/` and write
+`YYYY-MM-DD-<slug>.md`.
+
+Context tip: for the "final diff" input, don't pull the whole diff into a long-running
+session — `git diff <base>...HEAD --stat` plus targeted file reads (or a subagent summarizing
+the diff) is enough to render the template honestly.
 
 ## Template
 
 ```markdown
 # <Feature name>
 
-_<one-line what-and-why>. Shipped <date>, PR <link>. Built with tandem (Claude + Codex spar)._
+_<one-line what-and-why>. <date>, branch <name>. Built with tandem (Claude + Codex spar)._
+_(The PR links this dossier; record the PR URL in state.md § Ship once it exists.)_
 
 ## Problem
 <the original problem in the project's terms — not the ticket text verbatim>
@@ -58,6 +67,6 @@ solo (no Codex), say so.>
 - Keep it under ~2 pages. The dossier competes for future context windows; earn every line.
 - If an ADR was created at the plan gate, the dossier links it instead of duplicating it.
 
-After committing: set `state.md` phase to `done` with a closing summary line. The `.tandem/`
-working directory can be deleted by the user at any time — everything durable now lives in
-git, the PR, and the dossier.
+After committing: record the path in `state.md § Ship → Dossier` and return to the shipping
+playbook (PR next). The `.tandem/<slug>/` working directory can be deleted by the user any
+time after `done` — everything durable then lives in git, the PR, and the dossier.

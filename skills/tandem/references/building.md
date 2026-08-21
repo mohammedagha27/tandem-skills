@@ -4,14 +4,19 @@ The plan survived sparring and the gate; now execute it without silently driftin
 
 ## Setup
 
-1. **Branch:** never build on the default branch. Create `feat/<slug>` (or the repo's naming
-   convention) from the repo's integration branch.
+1. **Branch:** never build on the default branch. Resolve the integration branch
+   deterministically: the repo's default branch (`gh repo view --json defaultBranchRef` or
+   `origin/HEAD`) unless the repo's docs say features cut from elsewhere; if both `main` and
+   `develop` exist and nothing settles it, ask once. Create `feat/<slug>` (or the repo's
+   naming convention) from it, and record both `branch:` and `base:` in `state.md`.
 2. **Baseline snapshot:** run the test suite (or the relevant slice, if the full suite is
    impractical — say which) BEFORE the first change. Record failing test ids in
    `state.md § Build → Baseline failures`. This is what later separates "we broke it" from
    "it was broken" — you cannot reconstruct it after the fact.
 3. Re-read `plan.md`. If executing in a fresh session, the plan plus `state.md` must be enough;
-   if they aren't, that's a plan defect — fix the plan first.
+   if they aren't, that's a plan defect — repair it via the deviation protocol below (a
+   mechanical gap is move 1; a hole that reopens a decision is move 2). The freeze means no
+   *silent* change, not no change.
 
 ## Execution discipline
 
@@ -19,7 +24,9 @@ The plan survived sparring and the gate; now execute it without silently driftin
 - Honor the repo's own workflow norms and the user's standing preferences (TDD, coverage
   bars, commit conventions). The plan's test strategy section says what to test; write tests
   with the code, not as a final batch.
-- Small, coherent commits at natural checkpoints — each leaves the branch green.
+- Small, coherent commits at natural checkpoints — each leaves the branch green. After each
+  commit, update `Last commit:`/`In progress:` in `state.md` — that pair is what makes a
+  mid-build resume safe.
 - Preserve existing conventions; no drive-by refactors. If the code you're touching genuinely
   blocks the work, the fix belongs in the plan (add a deviation, below) — not smuggled in.
 - Verify continuously: after each step, run the focused tests for what you touched. Full-suite

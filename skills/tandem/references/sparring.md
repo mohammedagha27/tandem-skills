@@ -13,6 +13,7 @@ Codex bites hardest on something concrete. Before round 1, write `plan.md`:
 ## Goal                 <one paragraph, in the project's own terms>
 ## Requirements         <R1..Rn from state.md, each: confirmed|assumed>
 ## Approach             <numbered, concrete steps with file paths>
+## Test strategy        <what proves each requirement; which suites/commands>
 ## Key decisions        <the contestable choices, named explicitly — give Codex something to bite>
 ## Risks / open questions
 ## Out of scope
@@ -34,12 +35,16 @@ Each round has ONE purpose. Default order:
 
 Adaptive rules — rounds must earn their cost:
 
+- **The final round is always the kill shot.** With `max_rounds = N < 5`, run the N−1 most
+  valuable lenses first (default order, dropping from the middle what's least contestable for
+  this task), kill shot last.
 - **Skip** a lens whose territory is already settled (e.g. requirements were exhaustively
   confirmed with the user) — log the skip and reason in `state.md`. Never skip the kill shot.
 - **Early exit:** a round returning CLEAN or only-MINOR fast-forwards to the kill shot. A kill
-  shot returning CLEAN or only-MINOR converges the loop.
-- **Cap:** total rounds ≤ `max_rounds` (kill shot included). If findings are still landing at
-  the cap, that's a deadlock, not a failure — see below.
+  shot returning CLEAN or only-MINOR converges the loop — provided no unresolved BLOCKING
+  disagreement sits in `state.md` (see Convergence below).
+- **Cap:** completed review rounds ≤ `max_rounds` (kill shot included). Failed calls and the
+  protocol's recovery attempt don't consume rounds; an interrupted lens re-runs.
 
 ## Prompt shape per round
 
@@ -58,7 +63,8 @@ Round N:  The plan changed since your last look: <2-5 bullet summary of revision
 ```
 
 Telling Codex what was rejected and why is essential — it can rebut with new evidence (that
-rebuttal is signal) or concede (that's convergence).
+rebuttal is signal) or concede (that's convergence). The verdict contract's `STILL DISPUTED`
+channel keeps unresolved arguments tracked without letting them poison every later verdict.
 
 ## Arbitration — after every round
 
@@ -68,31 +74,44 @@ For each finding, Claude decides, in `state.md`, one of:
   that mis-reads the repo is rejected with the evidence. Then revise `plan.md`.
 - **Reject** — with a logged one-line reason. Rejections without reasons are forbidden: they
   rot into "Codex was ignored".
-- **Escalate** — only for scope-changing, security-sensitive, or destructive calls. Present
-  both positions and a recommendation; the user decides.
+- **Escalate** — for scope-ambiguous, security-sensitive, or destructive calls. Present both
+  positions and a recommendation; the user decides.
 
 Append the full critique + your response to `spar-log.md`. Update `state.md`: one summary line
 per round (lens, verdict, accepted/rejected/escalated counts) plus any new decisions (D-ids)
-and disagreements. **Carry forward through state, never by re-reading the log.**
+and disagreements (G-ids, including everything Codex lists under `STILL DISPUTED`). **Carry
+forward through state, never by re-reading the log.**
 
 Don't cave to everything (that defeats the cross-model check) and don't dismiss everything
 (that defeats the point). The healthy signature is a mixed record with reasons on both sides.
 
 ## Convergence and deadlock
 
-- **Converged:** kill shot returns CLEAN/MINOR → proceed to the Plan gate.
-- **Deadlocked:** cap hit with unresolved BLOCKING/MATERIAL that Claude disputes → present each
-  contested point with Codex's position, Claude's counter-position, and a recommendation. The
-  user breaks the tie. A flagged disagreement beats a false "approved" — never fake convergence.
-- Surviving disagreements (either kind) are recorded in `state.md § Disagreements` and appear
-  in the dossier. They are among the most valuable things this process produces.
+- **Converged:** kill shot returns CLEAN/MINOR **and** `state.md § Disagreements` holds no
+  unresolved BLOCKING item → proceed to the Plan gate.
+- **Deadlocked:** the cap is hit — or the kill shot is done — with an unresolved BLOCKING
+  disagreement standing. Deadlock is a legitimate outcome, never papered over.
+- **The tie-break always goes to the user, in every autonomy mode**, and is presented ONCE,
+  merged into the Plan gate: for each contested G-id — Codex's position, Claude's
+  counter-position, a recommendation. After the user rules: log the resolution on the G-id,
+  update `plan.md`; the round cap stays spent (no further Codex rounds — the dossier notes
+  that any post-tie-break revision shipped without re-review).
+
+## Mid-build spot-checks
+
+When Build reopens a decision (broken assumption) and the new approach is materially
+different, one spot-check round is allowed: same prompt shape, same verdict contract, resumed
+thread if alive, else fresh with a catch-up. Max one per reopened decision; spot-checks don't
+count toward `max_rounds`.
 
 ## Solo mode (Codex unavailable)
 
-Per the unavailability test in `codex-protocol.md`: tell the user, set `spar: solo` in
-`state.md`, and run the same lens ladder using a fresh general-purpose subagent per round as
-devil's advocate (fresh = no investment in the plan; instruct it to attack, same severity and
-verdict contract). Same cap, same arbitration, same logging. Weaker than a cross-model check —
-say so in the dossier — but far better than zero adversarial pressure. If subagents are also
-unavailable, run the ladder yourself in explicit devil's-advocate passes and mark the dossier
-accordingly.
+Per the failure ladder in `codex-protocol.md`: tell the user plainly what failed and that the
+spar continues single-vendor (weaker — say so), set `spar: solo (was codex thread <id>,
+degraded round <n>)` in `state.md`, and run the remaining lens ladder using a **fresh
+general-purpose subagent per round** as devil's advocate. Solo subagents have no session
+memory, so every solo prompt must carry: the `plan.md` path, settled decisions (D-ids), and
+previously rejected findings with reasons — or they will re-litigate everything. Same lens
+charters, same severity/verdict contract, same cap, same arbitration, same logging. If
+subagents are also unavailable, run the ladder yourself in explicit devil's-advocate passes
+and mark the dossier accordingly.

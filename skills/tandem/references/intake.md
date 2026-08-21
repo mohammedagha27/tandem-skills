@@ -2,8 +2,9 @@
 
 Goal: turn whatever the user gave you into a populated `state.md` with sources fetched, repo
 context discovered, and requirement stubs ready for the Understand phase. Don't interview the
-user here — collect first, ask later, so every question you eventually ask is one only they
-can answer.
+user about *requirements* here — collect first, ask later, so every question you eventually
+ask is one only they can answer. Exactly two intake-time questions are sanctioned: the
+no-input question, and a paste request for an unfetchable source.
 
 ## 1. Classify the input
 
@@ -20,9 +21,17 @@ The argument can be any mix of:
 - **Nothing** — ask one question: "What are we building? A ticket ID, doc, or a sentence all
   work."
 
-Every source gets a line in `state.md § Sources` with its fetch status. An inaccessible source
-is never silently dropped: report it, ask for a paste, continue with what exists, and treat
+Every source gets a line in `state.md § Sources` with its fetch status — and a failed fetch is
+recorded as **evidence** (the exact command/tool attempted + the error), not a bare claim; if
+you never actually tried, you can't mark it unfetched. An inaccessible source is never
+silently dropped: report it, ask for a paste, continue with what exists, and treat
 requirements that depended on it as `open`.
+
+**Sole-source failure:** if every source is unfetched and no usable prose came with the input
+(`/tandem PROJ-123` and the ticket won't fetch), this collapses to the "Nothing" case in both
+autonomy modes — an unfetched sole source is scope ambiguity by definition. Ask for the paste
+and stop; phase stays `intake`, `## Next` = "awaiting source". Defer repo discovery until you
+know what the task touches — don't fish.
 
 ## 2. Discover repo context (before forming opinions)
 

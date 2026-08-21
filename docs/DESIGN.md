@@ -69,8 +69,11 @@ whole history.
 
 ```
 Input → Intake → Understand → Spar (Claude ↔ Codex) → Plan gate →
-Build → Ship (verify → tandem-review → PR → CI) → Dossier
+Build → Ship (verify → tandem-review → dossier → PR → CI)
 ```
+
+(The dossier commits on the feature branch *before* the PR opens — validation caught that
+committing it after a watched CI run silently invalidates the recorded green.)
 
 Changes from the proposed lifecycle in the goal:
 
