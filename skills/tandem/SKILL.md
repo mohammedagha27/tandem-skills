@@ -87,7 +87,10 @@ Resolve every requirement to **confirmed** (user said so, or the source says so 
 **assumed** (you chose a reading — record it), or **open**. The order of authority: the
 codebase and docs answer first; the user answers only what they alone can. Interview style when
 you do ask: one question per message, your recommended answer attached, walking each branch of
-the decision tree until resolved (this is Matt Pocock's `grill-me` discipline).
+the decision tree until resolved (this is Matt Pocock's `grill-me` discipline). Whenever a
+question has concrete options — here, at the plan gate, in tie-breaks, in config mode —
+present it through the harness's interactive question tool (`AskUserQuestion` in Claude Code,
+recommended option first), not as prose the user has to type an answer to.
 
 **The scope test** (one definition, used everywhere — here, at the plan gate, in escalation):
 a requirement is *scope-ambiguous* when two reasonable readings would deliver different things —

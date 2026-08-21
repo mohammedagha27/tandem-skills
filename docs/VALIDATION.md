@@ -329,6 +329,14 @@ Not executed (honest limits): no end-to-end interactive `/tandem config` session
 user, and the trigger panel was not re-run for the new description clause — the config-mode
 trigger queries were added to `trigger_evals` for the next panel.
 
+Field-test feedback, same day: the first real `/tandem config` run answered with a full
+markdown table plus an open-ended prose question. Fixed in the contract: interactive mode now
+drives changes through the harness's interactive question tool (`AskUserQuestion` in Claude
+Code — grouped multi-select, then per-key option pickers with the current value marked),
+with a one-question text fallback for harnesses without a picker; the same
+picker-over-prose rule was extended to the understand-phase interview and deadlock
+tie-breaks.
+
 ## 9. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session

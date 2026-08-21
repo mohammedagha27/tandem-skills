@@ -99,11 +99,21 @@ operations only** (`show` and a declined interactive session never trigger them)
 
 Operations:
 
-- `/tandem config` (interactive): show the file path (or "none — built-in defaults in
-  effect") and the resolved values with origins; ask what to change (one question, concrete
-  options); if the user declines to change anything, exit without writing; otherwise
-  validate, write only the selected changes (preserving everything else), and show the
-  resulting file and its path.
+- `/tandem config` (interactive): state the file path (or "none — built-in defaults in
+  effect") in one line — don't dump the full table first; that's `show`'s job. Then drive
+  the changes with the harness's **interactive question tool** (`AskUserQuestion` in Claude
+  Code — the arrow-key picker), never open-ended prose questions:
+  1. One multi-select question — "Which settings do you want to change?" — with the eight
+     keys grouped into at most 4 options, each labeled with its current values, e.g.
+     `Codex — codex=on, max_rounds=5, codex_review=on`, `Build — execution=auto`,
+     `Ship — pr=ask, ci=on, docs=on`, `Gates — autonomy=guided`.
+  2. For each selected group, one question per key: the allowed values as options, the
+     current value listed first and marked `(current)`; numeric keys offer common values
+     (3, 5, 7) with free entry via the picker's Other.
+  Nothing selected, or the user declines? Exit without writing. Otherwise validate, write
+  only the selected changes (preserving everything else), and show the resulting file and
+  its path. No interactive picker in this harness? Fall back to ONE compact text question
+  listing the `key=value` choices.
 - `/tandem config show` — read-only. A table of key | built-in | configured (`—` if unset) |
   resolved, plus the active file path. Never writes, never creates the file.
 - `/tandem config key=value [key=value …]` — validate each assignment; invalid or unknown

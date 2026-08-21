@@ -117,7 +117,8 @@ every finding is by then accepted (folded into the plan), rejected (logged), or 
   gate as presentation items, not tie-breaks.
 - **The tie-break always goes to the user, in every autonomy mode**, and is presented ONCE,
   merged into the Plan gate: for each contested G-id — Codex's position, Claude's
-  counter-position, a recommendation. After the user rules: log the resolution on the G-id,
+  counter-position, a recommendation, offered through the harness's interactive question
+  tool (recommended option first) when available. After the user rules: log the resolution on the G-id,
   update `plan.md`; the round cap stays spent (no further Codex rounds — the dossier notes
   that any post-tie-break revision shipped without re-review).
 
