@@ -28,6 +28,9 @@ repo uses one, stays committed.
 | `plan.md` | The living plan. Draft during Spar, frozen at the Plan gate, annotated with deviations during Build. |
 | `spar-log.md` | Append-only record of every Codex critique and Claude response. Written once, never re-read wholesale — carry context forward through `state.md` only. |
 
+During a subagent build, `briefs/` and `reports/` also appear under the slug dir — per-task
+working files (regenerable from plan + state; never the ledger).
+
 The format for `state.md` is in `references/state.md` — read it before creating the file.
 **Why this matters:** the state file is what makes the workflow resumable, keeps a multi-round
 cross-model argument from flooding context, and is the raw material the dossier is rendered
@@ -39,9 +42,10 @@ Precedence: defaults → `.tandem/config.md` (repo-level `key: value` lines) →
 (e.g. `/tandem PROJ-123 rounds=3 review=off autonomy=auto`). Short aliases are accepted in
 both places: `rounds` ≡ `max_rounds`, `review` ≡ `codex_review`. Unknown keys: warn once and
 ignore. Invalid values (`max_rounds=0` or non-numeric, an unrecognized enum): warn once and
-use the default — never guess a meaning. One invocation-only override has no config key:
-`execution=inline|subagents` forces the build's execution model (default: auto-classified
-per the build playbook). On `/tandem resume`, the config recorded in `state.md` wins unless the resume
+use the default — never guess a meaning. One override is invocation-only (`.tandem/config.md`
+has no such key): `execution=inline|subagents` forces the build's execution model (default:
+auto-classified per the build playbook). When forced, record it on state.md's `config:` line
+at kickoff so a later resume preserves it. On `/tandem resume`, the config recorded in `state.md` wins unless the resume
 invocation passes new args. Echo the resolved values once at kickoff.
 
 | Key | Default | Meaning |

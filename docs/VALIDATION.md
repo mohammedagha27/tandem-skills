@@ -213,7 +213,8 @@ executable that records whether it was called) is the highest-value next investm
 
 ## 6. Round 4 — Codex counter-audit triage (2026-08-21)
 
-An independent Codex-side audit (`docs/CODEX-AUDIT.md`) reached NOT READY TO PUBLISH with
+An independent Codex-side audit (run internally; the full report was removed from the repo
+after resolution) reached NOT READY TO PUBLISH with
 five blockers. Each finding was verified against the files before acting — the same
 arbitration rule the skills impose on their own reviews.
 
@@ -258,7 +259,42 @@ arbitration rule the skills impose on their own reviews.
   steps already reference R-ids and `§ Build → Done` tracks steps; a second status dimension
   is bureaucracy ahead of field evidence.
 
-## 7. Verdict
+## 7. Round 5 — adaptive subagent execution (2026-08-21)
+
+The build playbook's new execution model (DESIGN §12, adapted from superpowers
+`subagent-driven-development`) got the same treatment: an adversarial tabletop by a fresh
+agent (6 walks: subagent happy path, blocked worker, inline small build, override/config
+interactions, cross-file consistency, trust/safety). Inline and cross-file walks came back
+clean; 11 findings were fixed:
+
+- A forced `execution=` override was lost if the run was interrupted between plan gate and
+  build start → now recorded on state's `config:` line at kickoff.
+- The worktree note sat after Setup, so a literal executor branched and baselined in the
+  dirty main checkout first — and the gate's wording made the *unrelated work* move while
+  the note moved the *build* → worktree creation is now Setup step 1, before branch and
+  baseline; the build moves, the user's work stays; `.tandem/` stays in the main checkout,
+  referenced absolutely.
+- Worker reports had no consumer ("never take the report's word" let a literal reader never
+  open it) → step 3 reads the report first; noted deviations land in state before the code
+  is judged.
+- Nothing forbade the worker committing → the brief contract now ends with: no commit, no
+  push, no state.md — the orchestrator owns git and the ledger.
+- A blocked dispatch's half-finished diff had no cleanup rule → inspect, salvage into the
+  revised brief, discard the rest; never dispatch onto a dirty tree.
+- Task-review findings had no ledger slot and no assigned fixer → `state.md § Build → Task
+  reviews` added; orchestrator implements corrections (re-dispatch only for task-sized
+  fixes).
+- Batching had no naming or bound ("declare everything tiny" shortcut) and parallel dispatch
+  created commit-scoping hazards → combined-brief naming (`TASK-<a>+<b>`), "minutes each,
+  not real tasks", and dispatches are now strictly sequential.
+- Classification left an awkward middle undefined → tie-break: ≥3 independent tasks or one
+  large-diff task → subagents; else inline; reason always recorded.
+- Risk self-certification softened: "when unsure whether a task is mechanical, it isn't —
+  review it."
+- Stale references fixed ("plan step" → task; the working-state contract now mentions
+  `briefs/` and `reports/` as regenerable non-ledger files).
+
+## 8. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

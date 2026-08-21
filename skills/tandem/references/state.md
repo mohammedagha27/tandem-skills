@@ -15,7 +15,7 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: codex=on max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided
+config: codex=on max_rounds=5 codex_review=on pr=ask ci=on docs=on autonomy=guided [execution=<value> — only when forced at invocation]
 spar: pending | codex (thread <id>) | solo (by config) | solo (degraded round <n>[, was codex thread <id>])
 updated: <ISO datetime>
 
@@ -48,6 +48,7 @@ updated: <ISO datetime>
 - Done: <TASK ids completed>
 - Last commit: <sha> (<TASK id>)
 - In progress: <TASK id> — uncommitted changes: yes|no
+- Task reviews: TASK-<n>: <N fixed / M rejected (reason) / waived by user> (subagent builds; only reviewed tasks)
 - Deviations: V1: <what changed vs plan + why>  (also annotate plan.md)
 
 ## Verification
