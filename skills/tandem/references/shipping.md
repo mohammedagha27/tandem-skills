@@ -48,8 +48,8 @@ continues in it, without re-asking. With `codex=off`, run the single-model pass 
 subagent** (model: `claude_fallback_model`, disclosed; labeled "Claude fallback critic" in
 the failure case, "solo review" under `codex=off`) against the examine-list in
 tandem-review's prompt (correctness, requirements coverage, architecture fit, regressions,
-edge cases, security, performance, maintainability, test quality, complexity, plan
-deviations) — under the **same output contract as the Codex path**: severity-tagged
+edge cases, security, performance, maintainability, non-author readability, test quality,
+complexity, plan deviations) — under the **same output contract as the Codex path**: severity-tagged
 findings, a final verdict line, triage into the same buckets, and the orchestrator verifies
 every finding before acting. Never use an implementation subagent to review its own work; if
 subagents are unavailable, an orchestrator self-review is the last resort, marked as such.
