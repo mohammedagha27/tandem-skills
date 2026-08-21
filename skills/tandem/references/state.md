@@ -18,7 +18,7 @@ mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
 config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit
-spar: pending | codex (thread <id>) | solo (by config) | claude-fallback (model <m>, since round <n>[, was codex thread <id>])
+spar: pending | codex (thread <id>) | solo (by config) | claude-fallback (model <m>, since round <n>[, was codex thread <id>]) | skipped (user instruction, <date>)
 codex-failure: <omit unless Codex became unavailable: at <stage/round> — reason → policy (ask|stop|claude) → outcome (user chose stop|claude|retry / stopped / fallback, model <m>)[; explicit codex retry at <stage>: succeeded|failed]>
 updated: <ISO datetime>
 

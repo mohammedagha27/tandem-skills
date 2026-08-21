@@ -398,7 +398,43 @@ already-validated structures, and the highest-risk piece — the prompt restruct
 live test above); no live verification of the restored 0.130-floor and `-m`-pinning facts
 (carried from the predecessors' verified notes, marked as such).
 
-## 11. Verdict
+## 11. Round 9 — authoring-patterns pass + pressure testing (2026-08-21)
+
+Two surveys of local skill collections (skill-creator/superpowers/obsidian/personal;
+ecc/vercel-store/posthog) produced 8 adopted authoring patterns: bundled
+`scripts/codex_call.sh` (live-verified on 0.149.0 — fresh call, resume with session memory
+intact, verdict parsed; prose protocol remains the authoritative fallback); TRIGGER/DO-NOT-
+TRIGGER description grammar (fresh 12/12 trigger panel; descriptions now 895/729 chars with
+real headroom); `metadata.version` + CHANGELOG.md; `argument-hint`/`source` frontmatter with
+block-scalar descriptions; literal kickoff/done report-line templates; a deprecation
+convention (DESIGN §16); empty-dir cleanup. Both surveys independently confirmed strengths
+to protect: load-timing progressive disclosure, single-source contracts, the failure-ladder
+table, version-pinned tool claims, and trust boundaries — absent from every surveyed
+collection.
+
+**Pressure testing** (superpowers method — four fresh agents executed tempting scenarios and
+reported their real rationalizations): all four held, and their harvests became the
+Excuse|Reality table now in SKILL.md's Hard rules. Fixes from what they found:
+- Baseline: "slow ≠ impractical" (background the run); slices legal only when the suite
+  *cannot* complete or the user declined the wait, and must cover everything Ship verifies;
+  the snapshot runs to completion before the first edit; late re-runs are recovery, not plan.
+- Review consent: invocation-time pre-authorization ("just fix whatever it finds") does not
+  count — approval must postdate the presented triage; a pre-authorization downgrades to a
+  one-word re-confirmation.
+- Skip-codex request: mid-run config overrides now specified (run-scoped, origin recorded,
+  forward-only, never written to installation config); an explicit total sparring waiver is
+  legal only after offering the `codex=off rounds=1` minimum, recorded as
+  `spar: skipped (user instruction)` and disclosed at gate/dossier/PR; config table now says
+  `codex=off` replaces Codex with Claude critics rather than removing review.
+- Stale verification: staleness defined in commits, not minutes — a post-run commit
+  invalidates evidence unless a diff-stat delta proof plus green doc-covering checks are
+  shown; re-quoting old output is named as non-evidence.
+
+Known limits: trigger grammar's disambiguators sit late in the descriptions (truncation
+would cost exactly them); the "trivial edit" boundary and the filesystem-dependent resume
+trigger remain unprobed by evals.
+
+## 12. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

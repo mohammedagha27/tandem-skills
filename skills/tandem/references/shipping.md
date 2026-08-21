@@ -3,6 +3,15 @@
 Iron law throughout: **no completion claims without fresh verification evidence in the current
 message.** "Should pass" and yesterday's run don't count.
 
+A verification run is evidence for exactly the tree it ran on. Any commit or working-tree
+change after the run invalidates it for completion claims, UNLESS the current message shows
+both: (a) `git diff --stat <verified-sha>..HEAD` proving the delta touches only paths the
+suite, linters, and build never read (the step-3 dossier commit is the intended case), and
+(b) a green rerun of any check that DOES cover those paths (doc lint, docs build, link
+check). If either half can't be shown, rerun step 1 in full. Wall-clock age neither
+invalidates a run on an unchanged tree nor excuses this check on a changed one — staleness
+is measured in commits, not minutes. Re-quoting old output is not fresh evidence.
+
 ## 1. Full verification
 
 Run the full relevant suite + linters + build (whatever the repo's CI would run). Compare
@@ -59,7 +68,8 @@ in `state.md § Ship`.
 ## 3. Dossier (per `docs` config)
 
 Render and commit the dossier now, on the feature branch, per `dossier.md` — before the PR
-opens, so it rides the PR and never invalidates a watched CI run. With `pr=off`, push the
+opens, so it rides the PR and never invalidates a watched CI run. After committing it,
+re-establish the evidence chain per the iron law's delta clause before opening the PR. With `pr=off`, push the
 branch after this commit — the pushed branch is the end state.
 
 ## 4. PR (per `pr` config)
@@ -104,4 +114,7 @@ references. Confirm before discarding anything unmerged.
 
 Update `state.md`: phase `done`, `§ Ship` complete, `§ Next` cleared, one closing summary
 line. Report to the user: what shipped, verification evidence, review outcome, dossier path,
-PR/CI state, pre-existing issues found along the way.
+PR/CI state, pre-existing issues found along the way — led by exactly this one-line summary:
+`✅ tandem <slug> done — <branch> (<n> commits) · verify: <green | N pre-existing noted> ·
+review: <verdict, N fixed / M rejected> · dossier: <path | off> · PR: <url | off> · CI:
+<green | state>`

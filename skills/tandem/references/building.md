@@ -24,10 +24,18 @@ The plan survived sparring and the gate; now execute it without silently driftin
    gate itself. Already inside a worktree? Don't nest another. Run everything from here on,
    baseline included, inside it. `.tandem/<slug>/` stays in the main checkout's repo root
    (one source of truth); reference it by absolute path from the worktree.
-2. **Baseline snapshot:** run the test suite (or the relevant slice, if the full suite is
-   impractical — say which) BEFORE the first change. Record failing test ids in
-   `state.md § Build → Baseline failures`. This is what later separates "we broke it" from
-   "it was broken" — you cannot reconstruct it after the fact.
+2. **Baseline snapshot:** run the test suite BEFORE the first change — to completion, results
+   recorded ("run before" constrains the whole snapshot, not just its start time). Record
+   failing test ids in `state.md § Build → Baseline failures`. This is what later separates
+   "we broke it" from "it was broken"; re-running on the base commit later is a costly
+   recovery for a missed baseline, never a plan. **Slow is not impractical**: a long suite
+   runs in the background while you finish Setup and re-read the plan — "the diff is tiny"
+   and "the user is impatient" are the two classic excuses, and both are named violations. A
+   slice instead of the full suite is legal only when the full suite *cannot* complete
+   (missing infra, external deps, multi-hour runs) or the user explicitly declined the wait —
+   record which — and the slice must cover every check Ship's verification will run: a
+   baseline narrower than the ship gate cannot classify ship-time failures and is not a
+   baseline.
 3. Re-read `plan.md`. If executing in a fresh session, the plan plus `state.md` must be enough;
    if they aren't, that's a plan defect — repair it via the deviation protocol below (a
    mechanical gap is move 1; a hole that reopens a decision is move 2). The freeze means no

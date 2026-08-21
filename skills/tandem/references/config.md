@@ -8,7 +8,7 @@ to this file instead of restating any of it.
 
 | Key | Values | Default | Meaning |
 |---|---|---|---|
-| `codex` | `on\|off` | `on` | `off` = never invoke the Codex CLI anywhere in a run: sparring, mid-build spot-checks, and the pre-PR review all run single-model (solo mode *by choice*, recorded as `spar: solo (by config)` — no failure-ladder framing). For repos whose content must not go to OpenAI, or machines without Codex. |
+| `codex` | `on\|off` | `on` | `off` = never invoke the Codex CLI anywhere in a run: sparring, mid-build spot-checks, and the pre-PR review all run single-model (solo mode *by choice*, recorded as `spar: solo (by config)` — no failure-ladder framing). For repos whose content must not go to OpenAI, or machines without Codex. Note: `off` replaces Codex with Claude critic subagents — it does not remove adversarial review (sparring.md § Claude critic mechanics). |
 | `max_rounds` | positive integer | `5` | Hard cap on sparring rounds. The loop always terminates here. |
 | `codex_review` | `on\|off` | `on` | Pre-PR feature-level review via the `tandem-review` skill (a fresh single-model Claude critic pass when `codex=off`). |
 | `execution` | `auto\|inline\|subagents` | `auto` | Build execution model. `auto` = classify per the build playbook; `inline`/`subagents` force that model. |
@@ -77,6 +77,11 @@ built-in defaults → active installation config.md → invocation args (key=val
 
 Resolve once at kickoff, record the RESOLVED values on `state.md`'s `config:` line, and echo
 them once. Invocation args win for that run only — they never mutate the installation config.
+A **mid-run user instruction** may change a key for the remainder of the run: update the
+`config:` line with the new value and its origin (e.g. `codex=off (user, mid-run, before
+spar round 1)`), apply it from the current phase forward (never retroactively — spent rounds
+stay spent), restate what it covers (changing `codex` also switches the pre-PR review to the
+single-model path), and never write it to the installation config.
 On `/tandem resume`, the config recorded in `state.md` wins unless the resume invocation
 explicitly passes new values (deterministic resume: editing installation defaults never
 retroactively changes an in-flight run).

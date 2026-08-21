@@ -1,6 +1,19 @@
 ---
 name: tandem-review
-description: 'Cross-model review of a whole feature branch by OpenAI Codex (read-only), with Claude verifying every finding before it reaches the user. Use when the user invokes /tandem-review, says "have codex review this branch/feature/PR", "cross-model review before I open the PR", "second model opinion on this branch''s changes", or as the pre-PR gate of the tandem workflow. Reviews the entire feature (merge-base to HEAD plus working tree) — not just the latest commit or diff. NOT for reviewing plans before code exists (use /tandem spar), NOT for single-file, single-function, or snippet review (branch/feature scope only), NOT for plain review requests that never ask for a codex/cross-model opinion, and NOT a replacement for human PR review.'
+description: >-
+  Cross-model review of a whole feature branch by OpenAI Codex (read-only), with Claude
+  verifying every finding against the code before it reaches the user; scope is merge-base
+  to HEAD plus the working tree, never just the last diff. TRIGGER when: the user invokes
+  /tandem-review; says "have codex review this branch/feature/PR", "cross-model review
+  before I open the PR", or "second model opinion on this branch's changes"; or as the
+  pre-PR gate of the tandem workflow. DO NOT TRIGGER for: reviewing plans before code exists
+  (use /tandem spar); single-file, single-function, or snippet review (branch/feature scope
+  only); plain review requests that never ask for a codex/cross-model opinion. Not a
+  replacement for human PR review.
+argument-hint: "[against <base-branch>]"
+source: https://github.com/mohammedagha27/tandem-skills
+metadata:
+  version: 0.2.0
 ---
 
 # Tandem-Review — Whole-Feature Cross-Model Review
@@ -9,9 +22,12 @@ Codex reads the complete feature — every commit since the merge-base plus unco
 and attacks it. Claude then **verifies each finding against the code before presenting it**:
 cross-model review is only valuable if hallucinated findings die before they waste anyone's
 time. Codex never writes a file; Claude writes nothing either on a review-only invocation (no
-"cleanup" stashes or commits of the user's tree). Fixes are applied only when the invoker
-explicitly says so afterwards — the sole exception is the tandem ship phase, whose playbook
-carries that consent; no other caller, human or programmatic, inherits it.
+"cleanup" stashes or commits of the user's tree). Fixes are applied only on explicit approval
+given AFTER the triage is presented — pre-authorization in the invocation ("just fix whatever
+it finds", "I trust you") does not count: findings can only be approved by someone who has
+seen them, and triage may reject some of what Codex found. The sole exception is the tandem
+ship phase, whose playbook carries that consent; no other caller, human or programmatic,
+inherits it.
 
 ## Scope resolution
 
@@ -46,7 +62,9 @@ carries that consent; no other caller, human or programmatic, inherits it.
 ## Protocol
 
 Full mechanics: read `../tandem/references/codex-protocol.md` (this skill family installs
-together). If that file is missing, the essentials that must never be violated:
+together) — and prefer its bundled wrapper, `../tandem/scripts/codex_call.sh <prompt-file>
+[thread-id]`, which implements the mechanics and prints STATUS/THREAD_ID/REPLY_FILE/VERDICT.
+If both are missing, the essentials that must never be violated:
 
 - Preflight `codex --version` (flags verified on 0.146.0 and 0.149.0; re-check on other versions) and run
   from the repo root
@@ -124,8 +142,11 @@ it as `UNRESOLVED (<severity>-class inference outstanding)`. Present: confirmed 
 with your fix plan), rejected (with evidence), pre-existing, unverifiable — preserving Codex's
 fact/inference boundaries.
 
-**Standalone invocation:** STOP after presenting. Ask which findings to fix — never
-auto-apply review fixes to a branch you were only asked to review.
+**Standalone invocation:** STOP after presenting — even when the invocation pre-authorized
+fixes. Ask which findings to fix; honor a pre-authorization only by re-confirming it against
+the presented triage ("you said fix everything — apply the N confirmed findings?"), which
+costs the trusting user one word. Never auto-apply review fixes to a branch you were only
+asked to review.
 **Called from tandem's ship phase:** fix confirmed findings per that phase's rules, resuming
 the SAME Codex session for re-review over the fix delta.
 

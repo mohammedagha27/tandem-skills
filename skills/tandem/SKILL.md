@@ -1,6 +1,20 @@
 ---
 name: tandem
-description: 'Feature lifecycle with a cross-model sparring partner. Use when the user invokes /tandem, gives a ticket ID (PROJ-123), a requirement doc, links, or a feature request and wants it taken from raw input to planned, implemented, reviewed, and documented — with OpenAI Codex adversarially hardening the plan before any code. Also use when the user says "plan this with codex", "spar with codex", "build this feature properly", "take this ticket end to end", or wants to resume interrupted work (trigger when a .tandem/ state directory exists for it, even if they don''t say "tandem"). Works without Codex (labeled single-model mode). Modes: plan (stop at the plan gate), spar (stop after the sparring loop — also for standalone design debates with Codex, e.g. "argue with codex about whether we need a queue"), resume, config (view/change saved defaults — "configure tandem defaults"). NOT for reviewing an existing branch or already-written code (use tandem-review), and NOT for trivial edits a single commit would cover.'
+description: >-
+  Feature lifecycle with a cross-model sparring partner: OpenAI Codex adversarially hardens
+  the plan before any code exists and reviews the whole feature before the PR; works without
+  Codex (labeled single-model mode). TRIGGER when: the user invokes /tandem; gives a ticket
+  ID (PROJ-123), a requirements doc, links, or a feature request to take end to end; says
+  "plan this with codex", "spar with codex", or "build this feature properly"; wants to
+  resume interrupted work (a .tandem/ state directory exists for it, even if they don't say
+  "tandem"); or wants to view/change tandem defaults ("configure tandem defaults"). Modes:
+  plan (stop at the plan gate), spar (also standalone design debates, e.g. "argue with codex
+  about whether we need a queue"), resume, config. DO NOT TRIGGER for: reviewing an existing
+  branch or already-written code (use tandem-review); trivial edits a single commit covers.
+argument-hint: "[plan|spar|resume|config] <ticket-id | doc-path | feature description> [key=value ...]"
+source: https://github.com/mohammedagha27/tandem-skills
+metadata:
+  version: 0.2.0
 ---
 
 # Tandem — Build Features With a Sparring Partner
@@ -48,7 +62,8 @@ Precedence: built-in defaults → active installation `config.md` → invocation
 (`/tandem PROJ-123 rounds=3 review=off`). Record the resolved values on `state.md`'s
 `config:` line and echo them once at kickoff; invocation args win for that run only. On
 `/tandem resume`, the config recorded in `state.md` wins unless the resume invocation passes
-new args.
+new args. The kickoff echo is exactly one line, this shape:
+`⚙ tandem <slug> · <mode> · codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit · overrides: <none | list>`
 
 ## Modes
 
@@ -186,8 +201,18 @@ review findings triaged, PR opened and CI green/triaged (per config), dossier co
 ## Hard rules
 
 Violating the letter of these rules is violating their spirit — "technically compliant"
-workarounds (a skipped baseline because "the diff is tiny", a stale run counted as
-verification) are violations.
+workarounds are violations. These excuses were all actually felt under pressure testing;
+when you notice yourself reaching for one, that's the tell:
+
+| Excuse | Reality |
+|---|---|
+| "The diff is tiny — the baseline/full suite is disproportionate" | Tiny diffs have non-local blast radius (config keys, doc-walking tests). Slow ≠ impractical: background the run |
+| "The user is in a hurry — skipping serves them" | The sanctioned minimum (background run, one-word re-confirm, `rounds=1` solo) costs seconds; a wrong maximal reading of a hurried sentence costs the run |
+| "The user pre-authorized it" | Consent to unseen findings or unstated consequences isn't informed. Re-confirm against what they can now see |
+| "CI will catch it anyway" | CI runs after your change — it cannot attribute what the baseline exists to classify |
+| "It's not *silent* if the user asked" | A waiver waives the check, never the record and disclosure |
+| "The old run is right there in my context" | Evidence belongs to the tree it ran on — staleness is measured in commits, not minutes |
+| "The rule's rationale doesn't apply here, so the rule doesn't bind" | You are the party the rule constrains; self-exemption is the failure mode, not an interpretation |
 
 - Codex is read-only in every interaction this skill makes. No exceptions.
 - Every Codex loop is bounded and terminates. No unbounded ping-pong.

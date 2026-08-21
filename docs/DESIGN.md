@@ -263,3 +263,12 @@ the letter=spirit clause; severity-ordered per-fix application in the review loo
 call over a weak-adopt recommendation). Skipped: full TDD iron law, rationalization tables,
 bite-sized checkbox plans, parallel implementers, domain-modeling machinery — each conflicts
 with a documented tandem decision.
+
+## 16. Deprecation convention (adopted 2026-08-21, applied as needed)
+
+When a config key, mode, or skill must break compatibility: keep the old name recognized for
+one release with a `[DEPRECATED — use <new>]` warning at resolution time (warn once per run,
+never guess semantics); mark the replacement in the description/docs the same way ecc does
+("[DEPRECATED - use X] … do not invoke; route to X"); record the migration in CHANGELOG.md;
+and remove the shim in the following release. Never let two live mechanisms coexist without
+a dated removal plan — that rule already killed `.tandem/config.md` (§13).

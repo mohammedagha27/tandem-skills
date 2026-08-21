@@ -53,6 +53,12 @@ Adaptive rules — rounds must earn their cost:
   this task), kill shot last.
 - **Skip** a lens whose territory is already settled (e.g. requirements were exhaustively
   confirmed with the user) — log the skip and reason in `state.md`. Never skip the kill shot.
+- **Total waiver:** sparring may be skipped entirely only on the user's explicit instruction —
+  and only after offering the minimum first (`codex=off rounds=1`: one Claude-critic
+  kill-shot round, minutes of cost). If they still waive it: record
+  `spar: skipped (user instruction, <date>)`, disclose "plan not adversarially reviewed" at
+  the plan gate, in the dossier, and in the PR body, and never present the plan as sparred.
+  A waiver waives the check, never the disclosure.
 - **Early exit:** a round returning CLEAN or only-MINOR fast-forwards to the kill shot. A kill
   shot returning CLEAN or only-MINOR converges the loop — provided no unresolved BLOCKING
   disagreement sits in `state.md` (see Convergence below).

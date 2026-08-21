@@ -3,6 +3,17 @@
 The one safe, non-hanging way to run OpenAI Codex as a read-only critic from Claude Code.
 Every line here exists because the naive version fails silently or dangerously.
 
+## Preferred path: the bundled script
+
+`<tandem-skill-dir>/scripts/codex_call.sh <prompt-file> [thread-id]` implements everything
+mechanical below — scratch files, stdin feed, stream capture, thread-id parse, both success
+contracts, last-line verdict parse — and prints `STATUS/THREAD_ID/REPLY_FILE/VERDICT` (plus
+the stderr tail on failure). Run it from the target repo root; omit the thread-id for a
+fresh session, pass it to resume. Use the script whenever it's present; the hand-rolled
+commands below are the fallback for installs without it — and this document stays
+authoritative for semantics either way (timeouts, the failure ladder, the verdict contract,
+and trust boundaries all still apply to script-driven calls).
+
 ## Preflight (once per run)
 
 1. `codex --version` — these mechanics are verified on 0.146.0 and 0.149.0; on any other version re-check
