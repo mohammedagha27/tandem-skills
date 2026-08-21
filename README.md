@@ -50,6 +50,15 @@ by `/tandem` as the pre-PR gate.
 
 ## Installation
 
+Via the [skills.sh](https://skills.sh/mohammedagha27/tandem-skills/tandem) CLI (works for
+Claude Code and other agents):
+
+```bash
+npx skills add mohammedagha27/tandem-skills
+```
+
+Or from a clone (symlinks track the repo, so `git pull` updates the skills):
+
 ```bash
 git clone https://github.com/mohammedagha27/tandem-skills.git
 cd tandem-skills && ./install.sh        # symlinks both skills into ~/.claude/skills
