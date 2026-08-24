@@ -434,7 +434,45 @@ Known limits: trigger grammar's disambiguators sit late in the descriptions (tru
 would cost exactly them); the "trivial edit" boundary and the filesystem-dependent resume
 trigger remain unprobed by evals.
 
-## 12. Verdict
+## 12. Round 10 — first real-world deployment postmortem (2026-08-24)
+
+The first substantial field run — 10.5 hours overnight on a real production feature (~750k
+orchestrator tokens, no context compaction, 5/5 spar rounds with 49 findings, 12 logged
+deviations, subagent build with 9 task briefs, whole-branch review + 2 fix cycles, live
+browser pass, draft PR, CI green) — was postmortemed via a structured two-round interview of
+the executing session plus an independent audit of its durable artifacts (branch, dossier,
+PR body, commit timeline). Method note: interview answers were cross-checked against
+artifacts where possible; the session corrected two of the interviewer's premises with
+evidence, and its own dossier contained a wrong headline total its ledger disproved —
+both symmetric reminders that prose recall loses to ledgers.
+
+Field-confirmed (assumptions validated by real outcomes): spar value (two would-have-shipped
+defects killed pre-code, including a privacy-critical data-exposure path that all planned
+tests would have missed); risk-sized task review (a queue-faked-invisible deadlock caught);
+baseline slice exception; red-green worker contract (real RED tails reported); freeze +
+deviation ledger (12 V-ids, no silent drift in its class); state/spar-log context discipline
+(spar-log written once per round and never re-read; no compaction in 10.5h); STILL DISPUTED
+carry-over; thread-resume protocol (8/8 Codex calls clean); PR/dossier disclosure machinery.
+
+Field-driven fixes (all implemented this round, all from synthetic-generalized evidence):
+`gate_timeout: wait|proceed` with defined provisional-decision semantics (both user gates hit
+the question-tool timeout overnight — structural, not incidental); ship-phase
+accepted-findings reconciliation (an accepted-and-planned finding was silently never built
+and three downstream checks missed it); suggested-fix-is-a-claim verification;
+plan consolidation after ~10 accepted findings; coverage skim-disclosure in both critic
+output contracts; brief fields for produced-field consumers and UI screen exits (the two
+plan-should-have-known deviation classes); shared-source distillation for briefs (4 workers
+had each re-read the same ~30k-token design source); foreground dispatch for build workers
+(three goes-idle-without-reporting incidents); pin-only test label; kill-shot-at-cap flagged
+as un-re-reviewed; dossier headline numbers computed from the ledger; dead `updated:` header
+removed. Regression evals 23–28 encode these failure classes synthetically.
+
+Recorded as experiments, not implemented: adaptive middle lenses (findings ignored lens
+boundaries, but every fixed-ladder round earned its cost — needs more runs); browser-pass
+snapshot-size budgeting; harness-side auto-forward of subagent final messages (harness
+issue, not skill text).
+
+## 13. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

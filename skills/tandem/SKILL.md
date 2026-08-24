@@ -52,7 +52,7 @@ from. A stale state file silently breaks all three.
 
 ## Configuration
 
-The complete contract — the ten keys with defaults, aliases, validation, where the
+The complete contract — the eleven keys with defaults, aliases, validation, where the
 persistent `config.md` lives (beside the ACTIVE installation's `SKILL.md`, never in the
 target repo), and the `/tandem config` mode — is defined once, in `references/config.md`.
 Read it at kickoff when resolving config, on resume, and whenever the user wants to view or
@@ -63,7 +63,7 @@ Precedence: built-in defaults → active installation `config.md` → invocation
 `config:` line and echo them once at kickoff; invocation args win for that run only. On
 `/tandem resume`, the config recorded in `state.md` wins unless the resume invocation passes
 new args. The kickoff echo is exactly one line, this shape:
-`⚙ tandem <slug> · <mode> · codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit · overrides: <none | list>`
+`⚙ tandem <slug> · <mode> · codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit gate_timeout=wait · overrides: <none | list>`
 
 ## Modes
 
@@ -103,6 +103,11 @@ Every subagent this skill dispatches follows the same rules:
   and use its returned report directly.
 - **Verify on return:** read each summary, check for conflicts between agents, and never
   treat an agent's claim as verification evidence — run the checks yourself.
+- **The report is an artifact, not a message.** Workers write their report to disk and
+  return only a short status — so when an agent goes idle without returning anything, check
+  its report file before nudging: in field use the work was done and on disk; only the
+  message was lost. One nudge ("you went idle without delivering — send the report"), then
+  read the file directly.
 
 ## The lifecycle
 
@@ -157,6 +162,19 @@ security-sensitive, scope-ambiguous, or a deadlock) — those always wait. Freez
 (hard to reverse AND surprising without context AND a real trade-off), offer an ADR — use the
 repo's existing ADR format if one exists, else a short Context/Decision/Consequences note in
 `docs/adr/`.
+
+**Gate timeout:** when the approval question gets no answer (the question tool times out, or
+nobody can answer — overnight autonomous runs hit this structurally), the `gate_timeout`
+config decides. `wait` (default): park the run resumably — record the open question in
+`§ Next` and stop; `/tandem resume` continues once answered. `proceed`: adopt the RECOMMENDED
+option for each timed-out choice and mark it **provisional** — the mark rides the plan's
+freeze header, the decision's state entry, the dossier's contested section, and the PR body's
+⚠ section; any PR opens as a DRAFT while provisional items exist and becomes ready-for-review
+only when each is explicitly confirmed; re-present them at every later user touchpoint and
+notify the user they're pending. What `proceed` never crosses: scope-ambiguous requirements,
+destructive or irreversible actions, and `codex_failure: ask` pauses — those wait in every
+mode. The rationale that makes provisional progress safe: everything between the plan gate
+and the PR is branch-local and reversible.
 
 ### 5. Build — `references/building.md`
 Implement the frozen plan on a feature branch: baseline-failure snapshot first, small verified

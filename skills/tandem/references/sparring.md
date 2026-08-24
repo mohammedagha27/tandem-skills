@@ -16,7 +16,11 @@ Codex bites hardest on something concrete. Before round 1, write `plan.md`:
                          - requirements delivered (R-ids)
                          - files to create/modify/test
                          - depends on (TASK-ids)
-                         - interfaces consumed/produced
+                         - interfaces consumed/produced — for each produced field/endpoint:
+                           WHO consumes it and what they render or do with it (a field list
+                           without its consumers is precisely incomplete)
+                         - (UI tasks) screen exits: every way the user leaves this screen —
+                           standalone mockups omit navigation, and only a live walk catches it
                          - exact behavior and constraints
                          - verification command + expected result
                          - done when
@@ -86,7 +90,9 @@ Round 1:
   <follow_through>Produce findings now; never stop to ask clarifying questions — state the
   assumption you had to make instead.</follow_through>
   <output_contract>Per finding: severity tag, OBSERVED|INFERRED, file:line where applicable,
-  what breaks and when, a one-line concrete fix. <verdict contract></output_contract>
+  what breaks and when, a one-line concrete fix. Before the verdict, state what you did NOT
+  read or verify (skipped files, undecoded assets, mechanical-only checks) — silence about
+  coverage reads as full coverage. <verdict contract></output_contract>
 
 Round N:
   <delta>The plan changed since your last look: <2-5 bullets, including which of your
@@ -106,7 +112,12 @@ channel keeps unresolved arguments tracked without letting them poison every lat
 For each finding, Claude decides, in `state.md`, one of:
 
 - **Accept** — but first verify it against the actual code/docs; a plausible-sounding finding
-  that mis-reads the repo is rejected with the evidence. Then revise `plan.md`.
+  that mis-reads the repo is rejected with the evidence. Accepting a finding never
+  auto-accepts its proposed fix: the fix is a separate claim, verified with the same rigor —
+  in field use, a reviewer-suggested one-liner applied uncritically became the next review's
+  finding. And weigh marginal-but-right findings for their carry cost (an extra enum value,
+  a fifth state): a fix can be correct and still not earn its maintenance weight — adapting
+  or narrowing it is a legal acceptance. Then revise `plan.md`.
 - **Reject** — with a logged one-line reason. Rejections without reasons are forbidden: they
   rot into "Codex was ignored".
 - **Escalate** — for scope-ambiguous, security-sensitive, or destructive calls. Present both
@@ -116,6 +127,12 @@ Append the full critique + your response to `spar-log.md`. Update `state.md`: on
 per round (lens, verdict, accepted/rejected/escalated counts) plus any new decisions (D-ids)
 and disagreements (G-ids, including everything Codex lists under `STILL DISPUTED`). **Carry
 forward through state, never by re-reading the log.**
+
+**Consolidate before you accrete:** when a round's acceptances leave `plan.md` patched past
+coherence (rule of thumb: ~10 accepted findings since the last full pass), rewrite the plan
+wholesale before the next round — a plan accreted from eleven patches stops reading as one
+design, and the next round wastes findings on your seams instead of the substance. A rewrite
+is a plan revision, not a deviation.
 
 Don't cave to everything (that defeats the cross-model check) and don't dismiss everything
 (that defeats the point). But health is not a target accept/reject ratio — it's evidence on
@@ -128,7 +145,9 @@ without a logged reason.
 The loop ends when the kill shot has run and been arbitrated (early exit or cap — either way,
 kill shot last). One exception: if the kill shot lands MATERIAL+ findings that Claude accepts
 (the plan just changed) and unspent rounds remain, one re-run of the kill shot is allowed
-within the cap. Then classify — the two outcomes are exhaustive **after arbitration**, because
+within the cap. At the cap with no rounds left, fold the accepted fixes and carry a flagged
+item into the plan-gate presentation: "spar ended at cap — final-round fixes are
+un-re-reviewed." Never imply the last revisions were adversarially checked when they weren't. Then classify — the two outcomes are exhaustive **after arbitration**, because
 every finding is by then accepted (folded into the plan), rejected (logged), or escalated:
 
 - **Deadlocked:** an unresolved BLOCKING disagreement stands in `state.md § Disagreements`.

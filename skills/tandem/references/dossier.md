@@ -64,7 +64,9 @@ Codex review or cross-model validation.>
 ## Rules
 
 - Every claim traceable to state/plan/diff — if it's not in an artifact, don't remember it
-  into the dossier.
+  into the dossier. Headline metrics especially (round counts, finding totals): compute them
+  from `state.md`'s per-round lines at render time, never restate them from memory — a field
+  run shipped a wrong headline total by re-deriving it in prose while its ledger was correct.
 - Skip empty sections rather than padding them ("no contested decisions" is one line).
 - Plain, human prose. No AI-conversation framing ("Codex then suggested…") beyond the
   contested-decisions section where attribution *is* the content.

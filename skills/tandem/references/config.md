@@ -17,6 +17,7 @@ to this file instead of restating any of it.
 | `docs` | `on\|off` | `on` | Generate and commit the dossier (full mode only). |
 | `autonomy` | `guided\|auto` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; destructive, security-sensitive, or scope-ambiguous decisions — sparring deadlocks, and a `codex_failure: ask` pause — always ask, in every mode. |
 | `codex_failure` | `ask\|stop\|claude` | `ask` | What happens when Codex becomes UNAVAILABLE mid-run (quota, rate limit, auth, missing CLI, network, bounded-retry timeout, repeated protocol failure — never a mere disagreement, and never `codex: off`, which is a choice, not a failure). `ask` = pause at a safe checkpoint and let the user decide; `stop` = stop safely, resumable; `claude` = continue with fresh **Claude fallback critic** agents. Details in `codex-protocol.md § Codex unavailable — the codex_failure policy`. |
+| `gate_timeout` | `wait\|proceed` | `wait` | What happens when a user gate (plan-gate approval, tie-break, `pr: ask`) gets no answer — the question channel times out or nobody can answer; overnight autonomous runs hit this structurally. `wait` = park the run resumably (question recorded in `§ Next`, stop; `/tandem resume` continues when answered). `proceed` = adopt the RECOMMENDED option and mark it PROVISIONAL (semantics in SKILL.md § Plan gate: rides plan/state/dossier/PR-⚠; any PR stays DRAFT until each item is explicitly confirmed). Never crosses: scope-ambiguous requirements, destructive actions, `codex_failure: ask` pauses — those always wait. |
 | `claude_fallback_model` | `inherit` or a model id | `inherit` | Model for Claude fallback critics only (never implementation subagents). `inherit` = the orchestrator's current model. Any model id the installed Claude Code environment supports is legal — there is no hardcoded list; validation happens at dispatch, and an unavailable model means ask-or-stop, never a silent substitute. |
 
 Aliases, accepted in the config file and as invocation args: `rounds` ≡ `max_rounds`,
@@ -109,9 +110,10 @@ Operations:
 - `/tandem config` (interactive): state the file path (or "none — built-in defaults in
   effect") in one line — don't dump the full table first; that's `show`'s job. Then present
   **every key as its own tab** in the harness's interactive question tool (`AskUserQuestion`
-  in Claude Code renders one tab per question; it takes four questions per call, so the ten
-  keys are three consecutive tabbed dialogs: `codex | max_rounds | codex_review | execution`,
-  then `pr | ci | docs | autonomy`, then `codex_failure | claude_fallback_model`). Per tab:
+  in Claude Code renders one tab per question; it takes four questions per call, so the
+  eleven keys are three consecutive tabbed dialogs: `codex | max_rounds | codex_review |
+  execution`, then `pr | ci | docs | autonomy`, then `codex_failure | claude_fallback_model |
+  gate_timeout`). Per tab:
   the key name as the header, one question ("codex — call OpenAI Codex?"), and its allowed
   values as the options, with the CURRENT value first and labeled `(current)` — so a tab the
   user doesn't care about is simply left on its current value. `max_rounds` offers 3, 5, 7

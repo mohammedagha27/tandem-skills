@@ -26,6 +26,16 @@ line and name the evidence (test id, command output, file:line). A green suite i
 proof — a suite with a missing feature also passes. Gaps block the ship and reopen Build (or
 the plan, per the deviation protocol).
 
+Then the **accepted-findings reconciliation**: walk every accepted finding — identities come
+from `spar-log.md`'s per-round finding lists (this is the ONE sanctioned spar-log re-read,
+here at ship) — and each must map to shipped code (cite it), a logged deviation, or an
+honest re-label (`adapted: <how>` / `rejected in practice: <why>`). Record the tally in
+`state.md § Ship` (`Findings reconciliation: N accepted → N mapped`). An accepted finding
+with no trace is unshipped plan, and nothing downstream catches it — in field use, a finding
+that was accepted into the plan was silently never built, and task verification, the
+deviation ledger, AND the whole-branch review all missed it. Resolve every orphan before the
+review gate.
+
 Record commands + results + the checklist outcome in `state.md § Verification`.
 
 ## 2. Feature review gate (`codex_review=on`)
@@ -76,6 +86,10 @@ branch after this commit — the pushed branch is the end state.
 
 `off` → push the branch, report, skip to step 5. `ask` (default) → present the summary and ask
 before opening. `auto` → open it. Opening a PR is outward-facing: when in doubt, ask.
+`ask` timing out (user absent) follows `gate_timeout`: `wait` parks here resumably;
+`proceed` pushes and opens a **DRAFT** PR — team-visible but explicitly not-ready, CI runs,
+trivially reversible — with every provisional item in a ⚠ section, notifies the user, and
+never marks it ready-for-review until each provisional item is explicitly confirmed.
 
 - Push with `-u`. Look for a PR/MR template (`.github/PULL_REQUEST_TEMPLATE*`,
   `.gitlab/merge_request_templates/`) and use it.

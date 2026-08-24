@@ -67,7 +67,10 @@ per-task working files — regenerable, never authoritative:
 
 1. **Brief:** write `.tandem/<slug>/briefs/TASK-<n>.md` from the plan's task entry plus any
    state context it needs. The worker gets the brief and the repo — never this conversation
-   and never the whole plan. Every brief ends with the worker's contract: implement and test
+   and never the whole plan. When several briefs need the same bulky source (a mockup, spec,
+   or schema), distill it ONCE into `.tandem/<slug>/briefs/shared-<topic>.md` and point the
+   briefs there — in field use, four workers each re-read the same 30k-token mockup because
+   their briefs pointed at the raw file. Every brief ends with the worker's contract: implement and test
    exactly this task (behavior-pinning tests: show them RED before your change and GREEN
    after, and report both runs); run the brief's verification command; write a detailed report (what you
    did, deviations, caveats, anything only partially met) to
@@ -76,7 +79,10 @@ per-task working files — regenerable, never authoritative:
    A brief that can't stand alone is a plan defect: fix the plan via the deviation protocol
    before dispatching.
 2. **Dispatch** the fresh implementer subagent with the brief path (plus the worktree path
-   when one is in use).
+   when one is in use) — in the **foreground** by default: workers run sequentially anyway,
+   and a foreground call returns the report inline, eliminating the goes-idle-without-
+   reporting failure class. Background dispatch is for parallel work (intake sweeps), not
+   build workers.
 3. **Verify yourself:** read the worker's report FIRST — deviations and caveats it noted go
    into `state.md` (§ Deviations, or a blocker to resolve) before you judge the code. Then
    read the diff and run the brief's verification command yourself — never take the report's
@@ -100,7 +106,10 @@ files>`), and never dispatch the next worker onto a dirty tree.
 - Work task by task; mark each done in `state.md § Build → Done` as you go.
 - A behavior-pinning or regression test must be seen RED before the change and GREEN after —
   a pinning test that passes immediately proves nothing about the change; fix the test.
-  Workers report both runs (it's part of the brief's verification contract).
+  Workers report both runs (it's part of the brief's verification contract). When RED is
+  genuinely impractical (state that cannot be seeded, a >N-records window), the test may be
+  labeled **pin-only** — legal, but the label and the reason are disclosed in the worker's
+  report and in state; never present a pin-only test as red-green.
 - Honor the repo's own workflow norms and the user's standing preferences (TDD, coverage
   bars, commit conventions). The plan's test strategy section says what to test; write tests
   with the code, not as a final batch.

@@ -115,8 +115,10 @@ empty-state behavior, retries, stale state, and rollback paths before moving on.
 <follow_through>Produce the review now; never stop to ask clarifying questions — state the
 assumption you had to make instead.</follow_through>
 <output_contract>Per finding: severity tag ([BLOCKING]/[MATERIAL]/[MINOR]), OBSERVED|INFERRED,
-file:line where applicable, what breaks and when, a one-line concrete fix. End with EXACTLY
-one line: VERDICT: BLOCKING | MATERIAL | MINOR | CLEAN.</output_contract>
+file:line where applicable, what breaks and when, a one-line concrete fix. Before the
+verdict, state what you did NOT read or verify (skipped/skimmed files, undecoded assets,
+mechanically-checked-only files) — silence about coverage reads as full coverage. End with
+EXACTLY one line: VERDICT: BLOCKING | MATERIAL | MINOR | CLEAN.</output_contract>
 ```
 
 After the reply: spot-check coverage against your own files-touched list — if a heavily

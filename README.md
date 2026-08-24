@@ -98,8 +98,10 @@ The ten keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `executio
 (auto|inline|subagents), `pr` (ask|auto|off), `ci` (on|off), `docs` (on|off), `autonomy`
 (guided|auto), `codex_failure` (ask|stop|claude — what happens if Codex becomes unavailable
 mid-run: ask you, stop resumably, or continue with clearly-labeled Claude fallback critics),
-`claude_fallback_model` (inherit|model id — the model those fallback critics use) — full
-semantics in the skill's `references/config.md`. One-off overrides ride
+`claude_fallback_model` (inherit|model id — the model those fallback critics use),
+`gate_timeout` (wait|proceed — what happens when an approval question gets no answer:
+park resumably, or adopt the recommended option marked provisional with any PR held as a
+draft until you confirm) — full semantics in the skill's `references/config.md`. One-off overrides ride
 the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=off`.
 
 ## What a run looks like

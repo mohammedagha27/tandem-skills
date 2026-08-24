@@ -1,7 +1,7 @@
 # state.md format + resume protocol
 
 `.tandem/<slug>/state.md` is current-truth only — supersede rather than accumulate. The
-header block (`phase:` through `updated:`) is parsed line-by-line: each field is exactly ONE
+header block (`phase:` through `codex-failure:`) is parsed line-by-line: each field is exactly ONE
 physical line, however long — never wrap the `config:` line mid-value. Two
 exceptions are append-shaped by design because they are bounded, dossier-feeding logs:
 `## Spar rounds` (one line per round — bounded by `max_rounds` plus at most one `SC<n>`
@@ -17,10 +17,9 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit
+config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit gate_timeout=wait
 spar: pending | codex (thread <id>) | solo (by config) | claude-fallback (model <m>, since round <n>[, was codex thread <id>]) | skipped (user instruction, <date>)
 codex-failure: <omit unless Codex became unavailable: at <stage/round> — reason → policy (ask|stop|claude) → outcome (user chose stop|claude|retry / stopped / fallback, model <m>)[; explicit codex retry at <stage>: succeeded|failed]>
-updated: <ISO datetime>
 
 ## Task
 <2-4 sentences: what and why, in the project's own terms.
@@ -36,6 +35,7 @@ updated: <ISO datetime>
 
 ## Decisions
 - D1: <choice>. Why: <one line>. Rejected: <alternative + one-line reason>.
+- D2 [PROVISIONAL — gate timeout <date>, recommended option adopted]: <choice>. … (cleared only by explicit user confirmation; rides dossier + PR ⚠)
 
 ## Disagreements
 - G1 (BLOCKING|MATERIAL|MINOR): <topic>. Codex: <position>. Claude: <position>. Resolution: <accepted|rejected|user chose X|unresolved> — <reason>.
@@ -59,6 +59,7 @@ updated: <ISO datetime>
 - <command> → <pass/fail + counts> (<datetime>)
 
 ## Ship
+- Findings reconciliation: <N accepted spar findings → N mapped to code/deviation/re-label>
 - Review: <tandem-review verdict + findings triaged: N fixed, M rejected>[ (Claude fallback critic, model <m>) | (solo review — codex off)]
 - Dossier: <path, once committed>
 - PR: <url or "not yet" or "off">

@@ -105,6 +105,42 @@
       "expected_output": "Stop preserved state/work/evidence and set § Next to the failed stage + condition to continue; resume restarts exactly there without re-running completed rounds; a resume-time override may retry Codex or switch policy, with the retry outcome logged on the codex-failure line; codex: off runs are distinguishable (solo by config — no failure event, no policy, no warnings)."
     },
     {
+      "id": 23,
+      "name": "gate-timeout-proceed-provisional",
+      "prompt": "/tandem Build the notifications digest feature (gate_timeout: proceed; the plan-gate approval question times out — user is away overnight; one tie-break G1 was pending)",
+      "expected_output": "Adopts the RECOMMENDED option for the timed-out approvals; G1 marked PROVISIONAL in plan freeze header + state Decisions entry; provisional items ride the dossier's contested section and the PR body's warning section; PR (pr=ask also timing out) opens as DRAFT, never ready-for-review until each item is explicitly confirmed; user notified; scope-ambiguous or destructive choices are NOT proceeded past."
+    },
+    {
+      "id": 24,
+      "name": "gate-timeout-wait-default",
+      "prompt": "/tandem Add account export (defaults; plan-gate question gets no answer)",
+      "expected_output": "gate_timeout=wait (default): the run parks resumably — open question recorded in state § Next, run stops cleanly; /tandem resume re-presents the gate; nothing is built past the gate and no provisional semantics are invented."
+    },
+    {
+      "id": 25,
+      "name": "accepted-finding-reconciliation",
+      "prompt": "/tandem ship phase for a run where spar round 2 accepted 'extract a shared row component' into the plan, but build workers built their own row markup (dossier check)",
+      "expected_output": "The ship-phase accepted-findings reconciliation (spar-log per-round lists = the one sanctioned re-read) flags the orphan: accepted finding maps to neither code nor a deviation; it must be re-labeled (adapted/rejected-in-practice with reason) or implemented before the review gate; tally recorded in state § Ship."
+    },
+    {
+      "id": 26,
+      "name": "idle-worker-report-recovery",
+      "prompt": "/tandem build: a dispatched implementer subagent goes idle emitting only an idle notification, no report text",
+      "expected_output": "Orchestrator checks .tandem/<slug>/reports/TASK-n.md FIRST (the report is an artifact; the work is often done with only the message lost); one nudge if the file is absent; no sleep-polling, no guessed task ids. Build workers are dispatched in the foreground by default, which avoids the class."
+    },
+    {
+      "id": 27,
+      "name": "shared-brief-distillation",
+      "prompt": "/tandem build with 4 UI tasks that all render sections of one 60k-token design mockup",
+      "expected_output": "The orchestrator distills the mockup's shared design content ONCE into briefs/shared-<topic>.md; the four task briefs point there; no worker re-reads the raw mockup wholesale. Brief field lists name each produced field's CONSUMER, and UI task briefs name every screen exit."
+    },
+    {
+      "id": 28,
+      "name": "pin-only-test-disclosure",
+      "prompt": "/tandem build task adds a guard for a >100-records window that cannot be seeded locally; worker cannot produce a RED run",
+      "expected_output": "Test is labeled pin-only with the reason, disclosed in the worker report and state — never presented as red-green; ordinary pinning tests still show RED before/GREEN after with both runs reported."
+    },
+    {
       "id": 16,
       "name": "config-show-read-only",
       "prompt": "/tandem config show",

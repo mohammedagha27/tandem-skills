@@ -272,3 +272,32 @@ never guess semantics); mark the replacement in the description/docs the same wa
 ("[DEPRECATED - use X] … do not invoke; route to X"); record the migration in CHANGELOG.md;
 and remove the shim in the following release. Never let two live mechanisms coexist without
 a dated removal plan — that rule already killed `.tandem/config.md` (§13).
+
+## 17. First real-world deployment postmortem (2026-08-24)
+
+A 10.5-hour overnight production-feature run (a 7-screen partner-embed surface; ~750k
+orchestrator tokens, zero context compactions, 49 spar findings, 12 deviations, 2 review
+cycles, CI green) was interviewed in depth. Confirmed by field evidence: the spar's value is
+real (a PII-into-partner-frame stream and a cache-wrapper-freezes-polling defect were killed
+pre-code — both would have passed every test the plan would have written); risk-sized task
+review caught a lock-held-across-dispatch deadlock invisible to Queue-faked tests; the
+baseline slice exception, red-green worker contract, deviation ledger, STILL DISPUTED
+carry-over, and state/spar-log context discipline all worked as designed. Field-driven
+changes: `gate_timeout: wait|proceed` (both user gates hit the question-tool timeout with
+the user asleep — structural for overnight runs; "provisional decision" semantics defined:
+recommended-option adoption that rides plan/state/dossier/PR-⚠ and holds any PR as a draft
+until confirmed); ship-phase accepted-findings reconciliation (an accepted finding was
+planned and silently never built — task verification, the deviation ledger, and the
+whole-branch review all missed it); suggested fixes verified like findings (a reviewer's
+one-line fix, applied uncritically, became the next review's finding); plan consolidation
+after ~10 accepted findings (11 straight patches degraded plan coherence and cost a finding
+on stale prose); coverage skim-disclosure in every critic output contract; brief fields for
+produced-field consumers and UI screen exits (the two plan-should-have-known deviation
+classes); shared-source distillation for briefs; foreground dispatch for build workers
+(idle-without-report class); pin-only test label (disclosure-required when RED is
+impractical); kill-shot-at-cap flagged as un-re-reviewed; dossier headline numbers computed
+from the ledger (the field dossier shipped a wrong total from prose recall); dead `updated:`
+header dropped. Deliberately NOT changed: the lens ladder order (findings ignored lens
+boundaries but every round earned its cost — adaptive middle lenses recorded as an
+experiment), sequential workers, the two-artifact state/log split, and the freeze+deviation
+protocol — all field-confirmed.
