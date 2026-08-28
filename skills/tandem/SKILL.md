@@ -122,14 +122,34 @@ is reported and worked around, never silently dropped.
 ### 2. Understand
 Resolve every requirement to **confirmed** (user said so, or the source says so unambiguously),
 **assumed** (you chose a reading — record it), or **open**. The order of authority: the
-codebase and docs answer first; the user answers only what they alone can. Interview style
-when you do ask (adapted from Matt Pocock's grilling discipline): ask the whole **dependency
-frontier** in one round — every question whose prerequisites are already settled, numbered,
-each with your recommended answer. A question whose answer depends on another question still
-open this round belongs to a later round; a running exploration blocks only the questions
-downstream of it — ask the rest of the frontier now. When a boundary is fuzzy, pose a
-concrete scenario ("a user deletes the org mid-export — what should happen?") instead of an
-abstract question. Whenever questions have concrete options — here, at the plan gate, in
+codebase and docs answer first; the user answers only what they alone can.
+
+**Step 1 — the Assumptions Ledger, once.** Before asking anything, present everything intake
+resolved on its own — every `assumed` R-id and every inferred convention — as ONE numbered
+batch, each with its source (file path, doc, research finding): "confirm or correct in one
+pass; anything unmarked I treat as confirmed." Never drip assumptions as individual
+questions. Confirmed entries become `confirmed` R-ids; corrections that open real questions
+join the decision map below. (Adapted from Chase AI's claudex-loop — the single biggest
+time-save over a naive interview.)
+
+**Step 2 — the Decision Map.** Lay out the genuinely open decisions in two tiers and keep it
+visible as items resolve, so the user sees convergence: **load-bearing** (a wrong answer costs
+a migration, a rewrite, a security hole, or user trust — schema, auth, data model,
+concurrency, money, public API) and **cosmetic** (renameable, refactorable, swappable — batched
+as recommendations with a one-line rationale each; the user vetoes by exception, silence =
+accepted).
+
+**Step 3 — ask the frontier** (adapted from Matt Pocock's grilling discipline): every
+load-bearing question whose prerequisites are already settled goes out in one round, each
+in this shape — **the question · why it matters · your committed recommendation · what
+breaks if we guess wrong**. A question whose "if we guess wrong" line comes out weak isn't
+load-bearing: demote it to the cosmetic batch. A question depending on an answer still open
+this round waits; a running exploration blocks only its downstream questions. When a
+boundary is fuzzy, pose a concrete scenario ("a user deletes the org mid-export — what should
+happen?") instead of an abstract question. Escape hatch — offer it explicitly when the
+load-bearing tier exceeds ~8 questions: **"accept all remaining recommendations"** locks every
+open decision at its recommended answer and records each as `assumed (accepted
+recommendation)`. Whenever questions have concrete options — here, at the plan gate, in
 tie-breaks, in config mode — present them through the harness's interactive question tool
 (`AskUserQuestion` in Claude Code: one tab per frontier question, ≤4 per dialog, recommended
 option first), not as prose the user has to type answers to.

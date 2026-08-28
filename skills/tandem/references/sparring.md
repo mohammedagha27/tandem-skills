@@ -27,6 +27,11 @@ Codex bites hardest on something concrete. Before round 1, write `plan.md`:
                          If a task can't be executed from its brief plus the repo alone,
                          the plan isn't done.>
 ## Test strategy        <what proves each requirement; which suites/commands>
+## Toolchain            <optional — only when intake's skill inventory matched something:
+                         which installed skills each bench (Claude / Codex) loads and follows
+                         for which tasks, plus generator/MCP capabilities the build depends
+                         on. Reviewable like everything else: the critic attacks unused
+                         relevant skills and unjustified inclusions alike. Omit if empty.>
 ## Key decisions        <the contestable choices, named explicitly, each with its rejected
                          alternative(s) in one line — the reviewer contests a choice between
                          named options, not a choice nobody can see>

@@ -54,7 +54,10 @@ with logged rejections and honest deadlock — were first worked out in **Chase 
 (https://github.com/chaseai-yt/claudex-loop), used under the MIT License (Copyright (c) 2026
 Chase AI). Those skills' interview act is in turn adapted from Matt Pocock's `grill-me` /
 `grill-with-docs` (above). Tandem is a from-scratch redesign of the lifecycle around those
-mechanics, not a fork.
+mechanics, not a fork. From claudex-loop's current form tandem also adapted the batch-confirmed
+Assumptions Ledger, the why-it-matters / recommendation / if-we-guess-wrong question format with
+cosmetic demotion and the accept-all-recommendations escape hatch, the visible decision map, the
+none/web/deep research gate, and the skill-inventory → toolchain scan.
 
 ```
 MIT License

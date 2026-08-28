@@ -4,6 +4,11 @@ Skill versions live in each SKILL.md's `metadata.version`; this file tracks the 
 
 ## 0.2.0 — 2026-08-21
 
+- Interview upgrades adapted from Chase AI's claudex-loop (MIT): batch-confirmed Assumptions
+  Ledger, why-it-matters/recommendation/if-we-guess-wrong question format with cosmetic
+  demotion and an accept-all escape hatch, visible decision map, none/web/deep research
+  gate, skill-inventory → optional plan `## Toolchain`; README gains a Receipts section
+
 - Attribution corrected: the inherited Codex CLI critic mechanics are Chase AI's
   `grill-me-codex` / `grill-with-docs-codex` (MIT; now `chaseai-yt/claudex-loop`), not this
   project's own earlier work — THIRD-PARTY-NOTICES, README, and DESIGN updated

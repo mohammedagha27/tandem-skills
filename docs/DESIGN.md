@@ -29,6 +29,7 @@ which made multi-round loops repetitive.
 | `grill-me` (Pocock) | One-question-at-a-time interview, recommended answer per question, "explore the codebase instead of asking" | Taken wholesale as the understanding phase's interaction style |
 | `grill-with-docs` (Pocock) | Glossary challenge, term sharpening, concrete-scenario stress tests, code cross-reference, lazy doc creation, strict 3-part ADR test | Taken: scenario stress tests, code cross-reference, the ADR restraint test. Left: mandatory CONTEXT.md machinery (folded into intake as "respect existing docs") |
 | `grill-me-codex` / `grill-with-docs-codex` (Chase AI, MIT; now `chaseai-yt/claudex-loop`) | Verified Codex CLI mechanics (thread resume, sandbox enforcement on resume, stdin EOF hang, timeouts), bounded rounds, deadlock honesty, Claude-as-arbiter, append-only argument log | Taken: all mechanics (re-verified on 0.146.0), arbiter rule, deadlock protocol. Left: monolithic single-file structure, verbatim duplication, binary APPROVED/REVISE verdicts, single repeated review prompt |
+| `claudex-loop` (Chase AI, MIT — the live successor of the grill-*-codex pair) | Recon-first Assumptions Ledger batch-confirmed once; load-bearing question format (why it matters / recommendation / if we guess wrong) with cosmetic demotion and an accept-all escape hatch; visible decision map; none/web/deep research gate; skill-inventory → toolchain; codex-build role flip | Taken (§18): ledger, question format + demotion + escape hatch, decision map, research gate, toolchain scan. Left: binary APPROVED/REVISE verdict, PLAN-REVIEW-LOG-as-deliverable, older protocol snippets, codex-build (user chose to keep Codex read-only) |
 | `codex-review` / `codex-build` | Clean-tree gate, temp-file prompt discipline, `-o` file (never parse JSONL for content), bounded fix rounds, human diff gate, background-run banner | Taken: prompt/file discipline, bounded fix loops, verify-yourself rule. `codex-build` (Codex implements) intentionally NOT absorbed — Tandem keeps Claude as the implementer and Codex as the critic; delegated implementation remains a separate concern |
 | `superpowers:brainstorming` | Hard gate before implementation, one question per message, 2–3 approaches with recommendation, decompose-before-refine for oversized scope, spec self-review checklist | Taken: gate, question style, approach proposals, scope decomposition, self-review |
 | `superpowers:writing-plans` | Zero-context executor assumption, exact paths, no placeholders ("TBD" is a plan failure), type-consistency self-review | Taken: plan quality bar and the no-placeholder rule |
@@ -302,3 +303,20 @@ header dropped. Deliberately NOT changed: the lens ladder order (findings ignore
 boundaries but every round earned its cost — adaptive middle lenses recorded as an
 experiment), sequential workers, the two-artifact state/log split, and the freeze+deviation
 protocol — all field-confirmed.
+
+## 18. Absorbed from claudex-loop (2026-08-24)
+
+Reading Chase AI's published successor to tandem's predecessors settled two things. First,
+attribution: the inherited Codex mechanics are Chase AI's MIT work, now credited correctly.
+Second, an honest comparison — claudex-loop is a narrower plan-hardening tool whose Codex
+protocol is the older generation of the same lineage (binary verdict, fixed reply path, live
+grep pipe, discarded stderr), so its mechanics were NOT adopted; but its interview design has
+five devices tandem lacked and now has: the batch-confirmed Assumptions Ledger (assumed
+R-ids confirmed once, cheaply, before any question), the load-bearing question format whose
+"if we guess wrong" line doubles as a demotion test into a veto-by-exception cosmetic batch,
+the "accept all remaining recommendations" escape hatch, the visible decision map, the
+none/web/deep research gate for tech the repo can't answer (deep = explicit opt-in + approved
+questions), and the skill-inventory → optional `## Toolchain` plan section. codex-build (Codex
+as implementer) was declined by the user: tandem keeps "Codex never writes" as an invariant.
+No tabletop was run for these additions — they are interview-presentation devices layered on
+validated structures; the next real run is their test.

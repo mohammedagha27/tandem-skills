@@ -111,10 +111,12 @@ the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=
 1. **Intake** — no ticket to fetch; the prose is the source. Tandem finds the API entry
    points, middleware conventions, and the test layout, and writes requirement stubs to
    `.tandem/rate-limiting/state.md`.
-2. **Understand** — it asks you only what the repo can't answer, batching every question
-   whose prerequisites are settled into one round of tabbed pickers, each with a
-   recommendation attached: "Per-user or per-IP limits? The auth middleware suggests
-   per-user — recommend that." Scope-ambiguous questions are never guessed at.
+2. **Understand** — first an Assumptions Ledger: everything the repo already answered,
+   confirmed in one pass. Then only the load-bearing questions, batched by dependency into
+   tabbed pickers, each with why-it-matters, a recommendation, and what-breaks-if-wrong:
+   "Per-user or per-IP limits? The auth middleware suggests per-user — recommend that; wrong
+   guess means a rate-limit migration." Cosmetic choices come as one veto-by-exception batch;
+   scope-ambiguous questions are never guessed at.
 3. **Spar** — it drafts `plan.md`, then Codex attacks it round by round (assumptions →
    architecture → edge cases → simplification → kill shot). Claude verifies each finding,
    folds in what's right, rejects what's wrong with a logged reason. Simple plans converge in
@@ -142,6 +144,25 @@ phase against reality before trusting it. To abandon a run instead, delete its
   called out), decisions with rejected alternatives, where the two models disagreed and how it
   resolved, verification evidence, known limitations. Project memory, not a transcript.
 - The branch, PR, and a review log of the sparring rounds.
+
+## Receipts
+
+From the first multi-hour real-world run (a seven-screen embedded feature, ~22k lines, run
+overnight almost fully autonomously):
+
+- **49 sparring findings across 5 rounds**, ~⅓ accepted with adapted fixes, 1 escalated to
+  the user as a genuine deadlock — every round returned an earned BLOCKING verdict.
+- **A privacy-critical data stream killed before any code existed**: Claude's own surviving
+  design would have exposed personal data into a partner-hosted frame, and every planned
+  test would have passed. The cross-model round caught it.
+- **A response-cache wrapper that would have frozen all live state** — caught by the kill
+  shot; fake-transport tests had stayed green.
+- **12 logged deviations, zero silent drift** in the ledgered classes; whole-branch review
+  found 11 more findings, 2 fix cycles, CI green.
+- **Zero context compactions in 10.5 hours** — the state-not-transcript discipline held.
+
+The same run also exposed what the skill got wrong; those fixes are in the changelog. The
+honest limitation list lives in [docs/VALIDATION.md](docs/VALIDATION.md).
 
 ## Privacy & security
 

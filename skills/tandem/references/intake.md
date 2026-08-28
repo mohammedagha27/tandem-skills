@@ -59,6 +59,26 @@ Bound this to what the task touches — it's reconnaissance, not an audit:
 Use subagents for broad sweeps when the repo is large (per SKILL.md § Subagent discipline —
 end your turn to wait; never sleep-poll); keep conclusions, not file dumps.
 
+**Research gate** (adapted from Chase AI's claudex-loop): when the task involves technology
+or an integration the repo can't answer, don't silently pick a research depth — offer the
+tiers with a recommendation based on stakes and let the user choose: `none` (your knowledge +
+the codebase; right for familiar ground), `web` (a handful of targeted searches — docs,
+gotchas, prior art; minutes, and the default recommendation when the ground is unfamiliar),
+`deep` (a multi-agent research workflow — heavy; only for high-stakes unfamiliar territory,
+and it requires the user's explicit opt-in PLUS sign-off on the 3–5 specific questions the
+research must answer before anything launches). Save any research brief under the repo's
+docs convention (or `docs/research/YYYY-MM-DD-<slug>.md`), list it in `state.md § Sources`,
+and cite it from the requirements it grounds. `research=none|web|deep` on the invocation
+pre-answers the gate.
+
+**Skill inventory scan**: list the installed skill packs on both benches — Claude's
+(`~/.claude/skills/`, folder names + first description lines only) and Codex's
+(`~/.agents/skills/`) — and match them against the task's domain. Record hits in `state.md`
+as *proposed* toolchain entries with the bench they exist on ("installed on Claude side
+only"); if a Codex-side skill's behavior under headless `codex exec` is unverified, ledger
+that as an assumption. Discovery informs the plan; nothing loads unless `plan.md`'s
+optional `## Toolchain` section names it and survives sparring.
+
 ## 3. Produce requirement stubs
 
 Write `state.md` (format: `state.md` reference; its `config:` line holds the RESOLVED values
