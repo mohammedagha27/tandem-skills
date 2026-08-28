@@ -8,8 +8,9 @@ Date: 2026-08-21. Environment at design time: Claude Code with codex-cli 0.146.0
 
 ## 1. The problem
 
-The prior generation of skills — this author's earlier unpublished Codex-review derivatives,
-built on Matt Pocock's `grill-me` / `grill-with-docs` (MIT) — solved two failure modes well:
+The prior generation of skills — Chase AI's `grill-me-codex` / `grill-with-docs-codex` (MIT;
+since published as `chaseai-yt/claudex-loop`), built on Matt Pocock's `grill-me` /
+`grill-with-docs` (MIT) — solved two failure modes well:
 
 1. Building the wrong thing (fixed by relentlessly interviewing the user).
 2. A plan that sounds right but breaks (fixed by a cross-model adversarial review loop with
@@ -27,7 +28,7 @@ which made multi-round loops repetitive.
 |---|---|---|
 | `grill-me` (Pocock) | One-question-at-a-time interview, recommended answer per question, "explore the codebase instead of asking" | Taken wholesale as the understanding phase's interaction style |
 | `grill-with-docs` (Pocock) | Glossary challenge, term sharpening, concrete-scenario stress tests, code cross-reference, lazy doc creation, strict 3-part ADR test | Taken: scenario stress tests, code cross-reference, the ADR restraint test. Left: mandatory CONTEXT.md machinery (folded into intake as "respect existing docs") |
-| prior Codex-review derivatives (unpublished) | Verified Codex CLI mechanics (thread resume, sandbox enforcement on resume, stdin EOF hang, timeouts), bounded rounds, deadlock honesty, Claude-as-arbiter, append-only argument log | Taken: all mechanics (re-verified on 0.146.0), arbiter rule, deadlock protocol. Left: monolithic single-file structure, verbatim duplication, binary APPROVED/REVISE verdicts, single repeated review prompt |
+| `grill-me-codex` / `grill-with-docs-codex` (Chase AI, MIT; now `chaseai-yt/claudex-loop`) | Verified Codex CLI mechanics (thread resume, sandbox enforcement on resume, stdin EOF hang, timeouts), bounded rounds, deadlock honesty, Claude-as-arbiter, append-only argument log | Taken: all mechanics (re-verified on 0.146.0), arbiter rule, deadlock protocol. Left: monolithic single-file structure, verbatim duplication, binary APPROVED/REVISE verdicts, single repeated review prompt |
 | `codex-review` / `codex-build` | Clean-tree gate, temp-file prompt discipline, `-o` file (never parse JSONL for content), bounded fix rounds, human diff gate, background-run banner | Taken: prompt/file discipline, bounded fix loops, verify-yourself rule. `codex-build` (Codex implements) intentionally NOT absorbed — Tandem keeps Claude as the implementer and Codex as the critic; delegated implementation remains a separate concern |
 | `superpowers:brainstorming` | Hard gate before implementation, one question per message, 2–3 approaches with recommendation, decompose-before-refine for oversized scope, spec self-review checklist | Taken: gate, question style, approach proposals, scope decomposition, self-review |
 | `superpowers:writing-plans` | Zero-context executor assumption, exact paths, no placeholders ("TBD" is a plan failure), type-consistency self-review | Taken: plan quality bar and the no-placeholder rule |
