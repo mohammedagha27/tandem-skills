@@ -6,12 +6,12 @@ description: >-
   HEAD plus the working tree, never just the last diff. Needs a git repo with a base branch.
   TRIGGER when: the user invokes /tandem-review; says "have codex review/look over/double-check
   this branch/feature/PR", "cross-model review before I open the PR", "second model opinion on
-  this branch's changes", or "not just your opinion" about existing code; or as the pre-PR
-  gate of the tandem workflow. If asked to "review the branch, then keep building", run this
+  this branch's changes", or "not just your opinion" about existing code; or as tandem's
+  pre-PR gate. If asked to "review the branch, then keep building", run this
   first, then hand off to /tandem. DO NOT TRIGGER for: reviewing plans or designs before code
-  exists (use /tandem spar); single-file, single-function, or snippet review (branch/feature
+  exists (use /tandem spar if they want it challenged); single-file, single-function, or snippet review (branch/feature
   scope only); plain review requests that never ask for a codex/cross-model opinion, including
-  a teammate's PR; running tests or CI on a branch. Not a replacement for human PR review.
+  a teammate's PR; running tests or CI on a branch. Not a substitute for human review.
 argument-hint: "[against <base-branch>]"
 metadata:
   version: 0.3.0

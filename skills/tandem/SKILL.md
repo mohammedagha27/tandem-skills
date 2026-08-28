@@ -3,16 +3,16 @@ name: tandem
 description: >-
   Feature lifecycle with a cross-model sparring partner: OpenAI Codex adversarially hardens
   the plan before any code exists and reviews the whole feature before the PR; works without
-  Codex (labeled single-model mode). Needs a git repo. TRIGGER when: the user invokes /tandem;
+  Codex (single-model mode). TRIGGER when: the user invokes /tandem;
   gives a ticket ID (PROJ-123), a requirements doc, links, or a feature request to take end to
   end; says "plan this with codex", "spar with codex", or "build this feature properly"; wants
   a real argument or pushback on a design choice, even without naming codex; says
   "pick up where we left off" on a feature (check for a .tandem/ state dir, even if they don't
   say "tandem"); or wants to change how tandem behaves ("configure tandem defaults", "make
-  codex less aggressive", "fewer rounds"). Modes: plan (stop at the plan gate), spar, resume,
-  config. DO NOT TRIGGER for: reviewing an existing branch or already-written code (use
-  tandem-review); trivial edits a single commit covers; questions about Codex the product;
-  "resume" meaning a CV.
+  codex less aggressive", "fewer rounds"). Modes: plan, spar, resume, config, review (→
+  tandem-review). DO NOT TRIGGER for: reviewing an existing branch or already-written code (use
+  tandem-review); trivial edits a single commit covers; no git repo yet (offer git init
+  first); questions about Codex the product; "resume" meaning a CV.
 argument-hint: "[plan|spar|resume|config|review] <ticket-id | doc-path | feature description> [key=value ...]"
 metadata:
   version: 0.3.0
