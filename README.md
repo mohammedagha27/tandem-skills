@@ -187,9 +187,11 @@ binary approve/revise, and every Codex loop bounded with an honest-deadlock path
 The interview discipline in the understand phase, and the ancestry of this whole idea, come
 from **Matt Pocock's** `grill-me` and `grill-with-docs` skills
 (https://github.com/mattpocock/skills, MIT) — see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
-The Codex CLI mechanics were worked out by this project's author in earlier unpublished
-experiments and re-verified against codex-cli 0.146.0 for this project. This is a new
-project, not a fork.
+The Codex CLI mechanics — read-only sandbox enforcement on resume, the stdin-EOF hang fix,
+thread-id capture, the bounded Claude-as-arbiter loop with honest deadlock — build on **Chase
+AI's** `grill-me-codex` / `grill-with-docs-codex` (MIT), now published as
+[`chaseai-yt/claudex-loop`](https://github.com/chaseai-yt/claudex-loop); re-verified here on
+codex-cli 0.146.0 and 0.149.0. Tandem is a new project, not a fork of either lineage.
 
 ## Limitations
 
