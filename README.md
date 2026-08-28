@@ -94,7 +94,7 @@ belongs to the installation that's actually loaded — global, project-level, or
 /tandem config reset                 # back to built-ins (asks first)
 ```
 
-The ten keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
+The eleven keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
 (auto|inline|subagents), `pr` (ask|auto|off), `ci` (on|off), `docs` (on|off), `autonomy`
 (guided|auto), `codex_failure` (ask|stop|claude — what happens if Codex becomes unavailable
 mid-run: ask you, stop resumably, or continue with clearly-labeled Claude fallback critics),
