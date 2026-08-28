@@ -6,7 +6,7 @@ description: >-
   Codex (single-model mode). TRIGGER when: the user invokes /tandem;
   gives a ticket ID (PROJ-123), a requirements doc, links, or a feature request to take end to
   end; says "plan this with codex", "spar with codex", or "build this feature properly"; wants
-  a real argument or pushback on a design choice, even without naming codex; says
+  a real argument on a design choice, even without naming codex; says
   "pick up where we left off" on a feature (check for a .tandem/ state dir, even if they don't
   say "tandem"); or wants to change how tandem behaves ("configure tandem defaults", "make
   codex less aggressive", "fewer rounds"). Modes: plan, spar, resume, config, review (→
