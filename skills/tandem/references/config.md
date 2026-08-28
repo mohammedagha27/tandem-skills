@@ -17,8 +17,9 @@ to this file instead of restating any of it.
 | `docs` | `on\|off` | `on` | Generate and commit the dossier (full mode only). |
 | `autonomy` | `guided\|auto` | `guided` | `guided` = pause at gates (questions, plan sign-off). `auto` = proceed through normal gates; destructive, security-sensitive, or scope-ambiguous decisions — sparring deadlocks, and a `codex_failure: ask` pause — always ask, in every mode. |
 | `codex_failure` | `ask\|stop\|claude` | `ask` | What happens when Codex becomes UNAVAILABLE mid-run (quota, rate limit, auth, missing CLI, network, bounded-retry timeout, repeated protocol failure — never a mere disagreement, and never `codex: off`, which is a choice, not a failure). `ask` = pause at a safe checkpoint and let the user decide; `stop` = stop safely, resumable; `claude` = continue with fresh **Claude fallback critic** agents. Details in `codex-protocol.md § Codex unavailable — the codex_failure policy`. |
-| `gate_timeout` | `wait\|proceed` | `wait` | What happens when a user gate (plan-gate approval, tie-break, `pr: ask`) gets no answer — the question channel times out or nobody can answer; overnight autonomous runs hit this structurally. `wait` = park the run resumably (question recorded in `§ Next`, stop; `/tandem resume` continues when answered). `proceed` = adopt the RECOMMENDED option and mark it PROVISIONAL (semantics in SKILL.md § Plan gate: rides plan/state/dossier/PR-⚠; any PR stays DRAFT until each item is explicitly confirmed). Never crosses: scope-ambiguous requirements, destructive actions, `codex_failure: ask` pauses — those always wait. |
+| `gate_timeout` | `wait\|proceed` | `wait` | What happens when a user gate (plan-gate approval, tie-break, `pr: ask`) gets no answer — the question channel times out or nobody can answer; overnight autonomous runs hit this structurally. `wait` = park the run resumably (question recorded in `§ Next`, stop; `/tandem resume` continues when answered). `proceed` = adopt the RECOMMENDED option and mark it PROVISIONAL (semantics in `plan-gate.md`: rides plan/state/dossier/PR-⚠; any PR stays DRAFT until each item is explicitly confirmed). Never crosses: scope-ambiguous requirements, destructive actions, `codex_failure: ask` pauses — those always wait. |
 | `claude_fallback_model` | `inherit` or a model id | `inherit` | Model for Claude fallback critics only (never implementation subagents). `inherit` = the orchestrator's current model. Any model id the installed Claude Code environment supports is legal — there is no hardcoded list; validation happens at dispatch, and an unavailable model means ask-or-stop, never a silent substitute. |
+| `research` | `ask\|none\|web\|deep` | `ask` | Intake's research gate for technology the repo can't answer (see `intake.md`). `ask` = offer the tiers with a recommendation; `none`/`web`/`deep` pre-answer it. `deep` still requires the user's sign-off on the research questions before anything launches. |
 
 Aliases, accepted in the config file and as invocation args: `rounds` ≡ `max_rounds`,
 `review` ≡ `codex_review`. Store the canonical name when writing the file.
@@ -37,11 +38,12 @@ session. Never hardcode `~/.claude` — the skill may be installed globally
 custom `CLAUDE_SKILLS_DIR`, or through a symlink; the rule is the same in every case: the
 config sits beside the loaded `SKILL.md`.
 
-- **Symlinked install** (this repo's `install.sh`): the skill dir is a symlink into the
-  clone, so reading/writing `<TANDEM_SKILL_DIR>/config.md` lands on one physical file inside
-  the clone. Intended: one file, no accidental second copy, survives re-linking. (This repo
-  gitignores `skills/*/config.md` so a personal config never enters version control of the
-  skill repo itself.)
+- **Symlinked install**: the skill dir may be a symlink — into this repo's clone (its
+  `install.sh`), or into another store (the `skills` CLI installs copies under its own
+  directory and links to them). Reading/writing `<TANDEM_SKILL_DIR>/config.md` follows the
+  link to ONE physical file, wherever it lives; report both paths when they differ. Intended:
+  one file, no accidental second copy, survives re-linking. (This repo gitignores
+  `skills/*/config.md` so a personal config never enters the skill repo's version control.)
 - **Two installations** (global AND project): only the loaded one and its config apply.
   Never merge installation configs or invent precedence between them.
 - **Missing `config.md`** = built-in defaults. Only a user-requested save via
@@ -69,6 +71,9 @@ changing: comments, blank lines, and other lines valid or not (see Validation).
   mode, refuse to write it. Never guess a meaning.
 - A pre-existing invalid or unknown line found while editing other keys is preserved and
   warned about, never silently dropped — the user wrote it; they remove it.
+- Repeated key within one layer (`rounds=3 rounds=5` on one invocation): the LAST assignment
+  wins; warn once (`duplicate key 'max_rounds' — using 5`). The kickoff echo's `overrides:`
+  list uses canonical key names (aliases resolved).
 
 ## Runtime precedence
 
@@ -111,9 +116,9 @@ Operations:
   effect") in one line — don't dump the full table first; that's `show`'s job. Then present
   **every key as its own tab** in the harness's interactive question tool (`AskUserQuestion`
   in Claude Code renders one tab per question; it takes four questions per call, so the
-  eleven keys are three consecutive tabbed dialogs: `codex | max_rounds | codex_review |
-  execution`, then `pr | ci | docs | autonomy`, then `codex_failure | claude_fallback_model |
-  gate_timeout`). Per tab:
+  twelve keys are three consecutive tabbed dialogs in schema order: `codex | max_rounds |
+  codex_review | execution`, then `pr | ci | docs | autonomy`, then `codex_failure |
+  gate_timeout | claude_fallback_model | research`). Per tab:
   the key name as the header, one question ("codex — call OpenAI Codex?"), and its allowed
   values as the options, with the CURRENT value first and labeled `(current)` — so a tab the
   user doesn't care about is simply left on its current value. `max_rounds` offers 3, 5, 7
@@ -124,8 +129,10 @@ Operations:
   Finish by showing the resulting file and its path. Never ask open-ended prose questions
   here; if the harness has no interactive picker, fall back to ONE compact text question
   listing `key=value` choices.
-- `/tandem config show` — read-only. A table of key | built-in | configured (`—` if unset) |
-  resolved, plus the active file path. Never writes, never creates the file.
+- `/tandem config show` — read-only. First line: the config path as loaded (and, if a symlink
+  resolves elsewhere, the physical path too), followed by `— not present; built-in defaults in
+  effect` when the file doesn't exist. Then a table of key | built-in | configured (`—` if
+  unset) | resolved, keys in schema order. Never writes, never creates the file.
 - `/tandem config key=value [key=value …]` — validate each assignment; invalid or unknown
   ones get the warning and are NOT written (valid ones in the same call still are); update
   only the named keys, preserve everything else, then show the result and path.

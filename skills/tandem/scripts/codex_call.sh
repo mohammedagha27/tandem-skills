@@ -18,6 +18,8 @@ P="${1:?usage: codex_call.sh <prompt-file> [thread-id]}"
 TID="${2:-}"
 [ -s "$P" ] || { echo "STATUS=fail"; echo "ERROR=prompt file missing or empty: $P"; exit 2; }
 
+command -v codex >/dev/null 2>&1 || { echo "STATUS=fail"; echo "CLASS=deterministic"; echo "ERROR=codex binary not found (install / PATH) — do not retry"; exit 127; }
+CODEX_VERSION=$(codex --version 2>/dev/null | head -1)
 REPLY=$(mktemp); STREAM=$(mktemp); ERR=$(mktemp)
 
 if [ -z "$TID" ]; then
@@ -38,16 +40,22 @@ if [ -z "$TID" ]; then
   grep -q '"type":"thread.started"' "$STREAM" || OK=0
 fi
 
-# Verdict parses from the LAST line of the reply (may lack a trailing newline).
-VERDICT=$(tail -n 1 "$REPLY" 2>/dev/null | grep -o 'VERDICT:[[:space:]]*[A-Z]*' | head -1 | sed 's/VERDICT:[[:space:]]*//')
+# Verdict parses from the LAST NON-EMPTY line of the reply (may lack a trailing newline);
+# only the four contract values count. VERDICT_VALID=0 means: treat as MATERIAL + one
+# retry-with-reminder per codex-protocol.md — never carry on as if it were CLEAN.
+LAST_LINE=$(grep -v '^[[:space:]]*$' "$REPLY" 2>/dev/null | tail -n 1)
+VERDICT=$(printf '%s\n' "$LAST_LINE" | grep -oE 'VERDICT:[[:space:]]*(BLOCKING|MATERIAL|MINOR|CLEAN)' | head -1 | sed 's/VERDICT:[[:space:]]*//')
+if [ -n "$VERDICT" ]; then VERDICT_VALID=1; else VERDICT_VALID=0; fi
 
 if [ "$OK" -eq 1 ]; then echo "STATUS=ok"; else echo "STATUS=fail"; fi
 echo "EXIT_CODE=$RC"
+echo "CODEX_VERSION=${CODEX_VERSION:-unknown}"
 echo "THREAD_ID=${NEW_TID:-unknown}"
 echo "REPLY_FILE=$REPLY"
 echo "STREAM_FILE=$STREAM"
 echo "ERR_FILE=$ERR"
 echo "VERDICT=${VERDICT:-none}"
+echo "VERDICT_VALID=$VERDICT_VALID"
 if [ "$OK" -eq 0 ]; then
   echo "--- stderr tail (see codex-protocol.md failure ladder) ---"
   tail -n 8 "$ERR" 2>/dev/null

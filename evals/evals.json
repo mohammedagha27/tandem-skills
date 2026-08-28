@@ -24,7 +24,7 @@
       "id": 4,
       "name": "ambiguous-feature",
       "prompt": "/tandem Make search better",
-      "expected_output": "Does NOT start planning; intake finds the search implementation, understand phase interviews one-question-at-a-time with recommendations; scope ambiguity goes to the user even in autonomy=auto."
+      "expected_output": "Does NOT start planning; intake finds the search implementation; understand batches assumptions in one ledger, then asks the load-bearing frontier in one round with recommendations; scope ambiguity goes to the user even in autonomy=auto."
     },
     {
       "id": 5,
@@ -36,7 +36,7 @@
       "id": 6,
       "name": "full-implementation-with-review",
       "prompt": "/tandem Add bulk export support rounds=3",
-      "expected_output": "max_rounds resolved to 3 and echoed; after build, tandem-review invoked on merge-base..HEAD; findings verified before triage; bounded fix cycles; PR per config."
+      "expected_output": "max_rounds resolved to 3 and echoed; after build, tandem-review invoked on merge-base → HEAD plus the working tree; findings verified before triage; bounded fix cycles; PR per config."
     },
     {
       "id": 7,
@@ -75,6 +75,12 @@
       "expected_output": "Baseline snapshot records the 3 failures before any change; ship blocks only on NEW failures; pre-existing ones are reported separately with the baseline as evidence and noted in the dossier — never silently 'fixed' to force green."
     },
     {
+      "id": 13,
+      "name": "unfamiliar-external-project",
+      "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no installation config.md)",
+      "expected_output": "Runs on defaults with zero configuration; no config.md is created by the run; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
+    },
+    {
       "id": 14,
       "name": "adaptive-subagent-execution",
       "prompt": "/tandem Split the monolithic report generator into separate export, template, and delivery services (plan approved with 7 independent tasks)",
@@ -87,10 +93,34 @@
       "expected_output": "Build classifies execution=inline (two tightly coupled tasks — no subagent ceremony) and records the choice + reason in state.md § Build; execution=subagents invocation override would force the other path."
     },
     {
-      "id": 13,
-      "name": "unfamiliar-external-project",
-      "prompt": "/tandem Add a --verbose flag (fresh clone of an unfamiliar open-source project, no CLAUDE.md, no installation config.md)",
-      "expected_output": "Runs on defaults with zero configuration; no config.md is created by the run; intake discovers conventions from the repo itself (CONTRIBUTING, test layout, a neighboring feature); no assumption of any particular tracker, framework, or docs directory."
+      "id": 16,
+      "name": "config-show-read-only",
+      "prompt": "/tandem config show",
+      "expected_output": "Resolves <TANDEM_SKILL_DIR>/config.md beside the loaded SKILL.md (global, project, custom CLAUDE_SKILLS_DIR, or symlink — never hardcoded ~/.claude); prints key | built-in | configured | resolved plus the active file path; writes nothing, creates nothing, does not start intake/run state/branch/Codex."
+    },
+    {
+      "id": 17,
+      "name": "config-direct-assignment",
+      "prompt": "/tandem config execution=subagents max_rounds=3",
+      "expected_output": "Validates both values, updates only those keys in the active installation's config.md (creating it if absent, preserving other lines/comments), warns before writing if the file is git-tracked (project install), shows the resulting file + path; next run resolves execution=subagents max_rounds=3."
+    },
+    {
+      "id": 18,
+      "name": "config-invalid-assignment",
+      "prompt": "/tandem config max_rounds=0 sparkle=on",
+      "expected_output": "Both rejected with concise warnings (invalid value; unknown key); nothing written; existing settings not corrupted; no defaults guessed."
+    },
+    {
+      "id": 19,
+      "name": "config-reset-confirmation",
+      "prompt": "/tandem config reset",
+      "expected_output": "Asks for confirmation first; on yes, rewrites config.md to the canonical empty form (or deletes just that file if the user prefers) — built-ins back in effect; touches nothing else."
+    },
+    {
+      "id": 20,
+      "name": "invocation-override-one-run",
+      "prompt": "/tandem Add rate limiting rounds=2 (installation config.md has max_rounds: 4)",
+      "expected_output": "Run resolves max_rounds=2 (invocation wins), echoed once and recorded on state.md's config: line; installation config.md still says 4 afterwards; a later /tandem resume of this run uses the recorded 2 unless the resume invocation overrides it."
     },
     {
       "id": 21,
@@ -139,50 +169,56 @@
       "name": "pin-only-test-disclosure",
       "prompt": "/tandem build task adds a guard for a >100-records window that cannot be seeded locally; worker cannot produce a RED run",
       "expected_output": "Test is labeled pin-only with the reason, disclosed in the worker report and state — never presented as red-green; ordinary pinning tests still show RED before/GREEN after with both runs reported."
-    },
-    {
-      "id": 16,
-      "name": "config-show-read-only",
-      "prompt": "/tandem config show",
-      "expected_output": "Resolves <TANDEM_SKILL_DIR>/config.md beside the loaded SKILL.md (global, project, custom CLAUDE_SKILLS_DIR, or symlink — never hardcoded ~/.claude); prints key | built-in | configured | resolved plus the active file path; writes nothing, creates nothing, does not start intake/run state/branch/Codex."
-    },
-    {
-      "id": 17,
-      "name": "config-direct-assignment",
-      "prompt": "/tandem config execution=subagents max_rounds=3",
-      "expected_output": "Validates both values, updates only those keys in the active installation's config.md (creating it if absent, preserving other lines/comments), warns before writing if the file is git-tracked (project install), shows the resulting file + path; next run resolves execution=subagents max_rounds=3."
-    },
-    {
-      "id": 18,
-      "name": "config-invalid-assignment",
-      "prompt": "/tandem config max_rounds=0 sparkle=on",
-      "expected_output": "Both rejected with concise warnings (invalid value; unknown key); nothing written; existing settings not corrupted; no defaults guessed."
-    },
-    {
-      "id": 19,
-      "name": "config-reset-confirmation",
-      "prompt": "/tandem config reset",
-      "expected_output": "Asks for confirmation first; on yes, rewrites config.md to the canonical empty form (or deletes just that file if the user prefers) — built-ins back in effect; touches nothing else."
-    },
-    {
-      "id": 20,
-      "name": "invocation-override-one-run",
-      "prompt": "/tandem Add rate limiting rounds=2 (installation config.md has max_rounds: 4)",
-      "expected_output": "Run resolves max_rounds=2 (invocation wins), echoed once and recorded on state.md's config: line; installation config.md still says 4 afterwards; a later /tandem resume of this run uses the recorded 2 unless the resume invocation overrides it."
     }
   ],
   "trigger_evals": [
-    {"query": "/tandem PROJ-451", "should_trigger": "tandem"},
-    {"query": "take this ticket end to end and spar with codex on the plan first", "should_trigger": "tandem"},
-    {"query": "have codex review my branch before I open the PR", "should_trigger": "tandem-review"},
-    {"query": "codex review this plan before we write code", "should_trigger": "tandem (spar mode)"},
-    {"query": "fix this typo in the README", "should_trigger": "neither"},
-    {"query": "review this function I just wrote", "should_trigger": "neither (single-model code review)"},
-    {"query": "run codex on this file and fix what it finds", "should_trigger": "neither (single-file scope; tandem-review is branch/feature scope only)"},
-    {"query": "I have a PRD in docs/prd/export.md — build it, but I don't have codex installed", "should_trigger": "tandem (solo mode)"},
-    {"query": "we're about to merge feat/billing-v2, get a second model's eyes on the whole branch, we use gitlab", "should_trigger": "tandem-review"},
-    {"query": "argue with codex about whether we should use postgres or dynamo for the session store", "should_trigger": "tandem (spar mode)"},
-    {"query": "configure tandem defaults", "should_trigger": "tandem (config mode)"},
-    {"query": "/tandem config pr=auto", "should_trigger": "tandem (config mode)"}
+    {
+      "query": "/tandem PROJ-451",
+      "should_trigger": "tandem"
+    },
+    {
+      "query": "take this ticket end to end and spar with codex on the plan first",
+      "should_trigger": "tandem"
+    },
+    {
+      "query": "have codex review my branch before I open the PR",
+      "should_trigger": "tandem-review"
+    },
+    {
+      "query": "codex review this plan before we write code",
+      "should_trigger": "tandem (spar mode)"
+    },
+    {
+      "query": "fix this typo in the README",
+      "should_trigger": "neither"
+    },
+    {
+      "query": "review this function I just wrote",
+      "should_trigger": "neither (single-model code review)"
+    },
+    {
+      "query": "run codex on this file and fix what it finds",
+      "should_trigger": "neither (single-file scope; tandem-review is branch/feature scope only)"
+    },
+    {
+      "query": "I have a PRD in docs/prd/export.md — build it, but I don't have codex installed",
+      "should_trigger": "tandem (solo mode)"
+    },
+    {
+      "query": "we're about to merge feat/billing-v2, get a second model's eyes on the whole branch, we use gitlab",
+      "should_trigger": "tandem-review"
+    },
+    {
+      "query": "argue with codex about whether we should use postgres or dynamo for the session store",
+      "should_trigger": "tandem (spar mode)"
+    },
+    {
+      "query": "configure tandem defaults",
+      "should_trigger": "tandem (config mode)"
+    },
+    {
+      "query": "/tandem config pr=auto",
+      "should_trigger": "tandem (config mode)"
+    }
   ]
 }

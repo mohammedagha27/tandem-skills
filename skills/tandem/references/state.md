@@ -17,7 +17,7 @@ phase: intake | understand | spar | plan-gate | planned | build | ship | done
 mode: full | plan | spar
 branch: <feature branch, once created>
 base: <branch it was cut from, e.g. origin/main>
-config: codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask claude_fallback_model=inherit gate_timeout=wait
+config: <every key from config.md's schema, in schema order, e.g.> codex=on max_rounds=5 codex_review=on execution=auto pr=ask ci=on docs=on autonomy=guided codex_failure=ask gate_timeout=wait claude_fallback_model=inherit research=ask
 spar: pending | codex (thread <id>) | solo (by config) | claude-fallback (model <m>, since round <n>[, was codex thread <id>]) | skipped (user instruction, <date>)
 codex-failure: <omit unless Codex became unavailable: at <stage/round> — reason → policy (ask|stop|claude) → outcome (user chose stop|claude|retry / stopped / fallback, model <m>)[; explicit codex retry at <stage>: succeeded|failed]>
 
@@ -72,11 +72,8 @@ codex-failure: <omit unless Codex became unavailable: at <stage/round> — reaso
 R-ids, D-ids, G-ids, V-ids are stable once assigned; plan tasks and the dossier reference them.
 That's the whole traceability mechanism — cheap on purpose.
 
-The `scope:` tag on requirements uses one test everywhere (the Understand gate's
-"shape-changing", the plan gate's "scope-changing", and escalation all mean this): **two
-reasonable readings would deliver different things** — different deliverable, different
-surfaces touched, different acceptance line. `scope: yes` items are the user's to resolve in
-every autonomy mode and are never converted to assumptions.
+The `scope:` tag uses the scope test defined once in `references/understand.md`; `scope: yes`
+items are the user's to resolve in every autonomy mode and are never converted to assumptions.
 
 ## Resume protocol
 
@@ -89,9 +86,8 @@ On `/tandem resume`:
    diff before touching them; never stash or discard them blind. Re-run tests only if
    `## Verification` is stale relative to `Last commit`. Reality wins: fix `state.md` to match
    it and note the correction.
-3. Config: the `config:` line in state holds the RESOLVED values from kickoff and wins,
-   unless the resume invocation passes new args (contract: `references/config.md`) —
-   installation-config edits made since kickoff do not retroactively change this run.
+3. Config: the `config:` line holds the RESOLVED values from kickoff and wins on resume unless
+   the resume invocation passes new args — precedence details live in `references/config.md`.
 4. Announce a 3-line recap to the user (task, phase, next action), then continue from `## Next`
    with the matching phase playbook.
 5. A recorded Codex `thread` may be resumable; if the resume fails, follow the protocol's

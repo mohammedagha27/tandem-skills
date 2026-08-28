@@ -2,18 +2,20 @@
 name: tandem-review
 description: >-
   Cross-model review of a whole feature branch by OpenAI Codex (read-only), with Claude
-  verifying every finding against the code before it reaches the user; scope is merge-base
-  to HEAD plus the working tree, never just the last diff. TRIGGER when: the user invokes
-  /tandem-review; says "have codex review this branch/feature/PR", "cross-model review
-  before I open the PR", or "second model opinion on this branch's changes"; or as the
-  pre-PR gate of the tandem workflow. DO NOT TRIGGER for: reviewing plans before code exists
-  (use /tandem spar); single-file, single-function, or snippet review (branch/feature scope
-  only); plain review requests that never ask for a codex/cross-model opinion. Not a
-  replacement for human PR review.
+  verifying every finding against the code before it reaches the user; scope is merge-base to
+  HEAD plus the working tree, never just the last diff. Needs a git repo with a base branch.
+  TRIGGER when: the user invokes /tandem-review; says "have codex review/look over/double-check
+  this branch/feature/PR", "cross-model review before I open the PR", "second model opinion on
+  this branch's changes", or "not just your opinion" about existing code; or as the pre-PR
+  gate of the tandem workflow. If asked to "review the branch, then keep building", run this
+  first, then hand off to /tandem. DO NOT TRIGGER for: reviewing plans or designs before code
+  exists (use /tandem spar); single-file, single-function, or snippet review (branch/feature
+  scope only); plain review requests that never ask for a codex/cross-model opinion, including
+  a teammate's PR; running tests or CI on a branch. Not a replacement for human PR review.
 argument-hint: "[against <base-branch>]"
-source: https://github.com/mohammedagha27/tandem-skills
 metadata:
-  version: 0.2.0
+  version: 0.3.0
+  source: https://github.com/mohammedagha27/tandem-skills
 ---
 
 # Tandem-Review — Whole-Feature Cross-Model Review
@@ -40,8 +42,8 @@ inherits it.
    (`gh repo view --json defaultBranchRef`, or `origin/HEAD`). **Never use the branch's git
    tracking upstream as the base**: after `push -u`, `@{upstream}` is `origin/<this-branch>`,
    and diffing against it yields an empty scope that reads as "nothing to review".
-2. The scope is the working-tree diff against the merge-base — `git diff <merge-base>` (this
-   covers committed AND uncommitted changes) — plus untracked files from `git status`, listed
+2. Compute the merge-base (`git merge-base <base> HEAD`). The scope is the working-tree diff
+   against it — `git diff <merge-base>` (this covers committed AND uncommitted changes) — plus untracked files from `git status`, listed
    separately. Echo the scope (base, branch, commit count, files touched) before launching.
    Sanity-check it: an empty or one-commit scope on a long-lived branch usually means a wrong
    base (or a just-merged integration branch) — confirm before declaring "nothing to review".
@@ -55,7 +57,9 @@ inherits it.
    of its own). If no sibling tandem installation exists, no persistent config applies —
    say so (it's the privacy key: the user should know none was found) and proceed on
    defaults. It's a privacy switch — this skill must not be its side door: say so and run
-   the Claude-only pass against the same examine-list, labeled single-model. An explicit
+   the Claude-only pass against the same examine-list — a fresh Claude critic subagent per
+   `../tandem/references/sparring.md § Claude critic mechanics`, labeled
+   `single-model (codex off by config)`. An explicit
    request to use Codex anyway wins — but only after you've flagged the config, so the
    override is informed.
 
@@ -66,9 +70,8 @@ together) — and prefer its bundled wrapper, `../tandem/scripts/codex_call.sh <
 [thread-id]`, which implements the mechanics and prints STATUS/THREAD_ID/REPLY_FILE/VERDICT.
 If both are missing, the essentials that must never be violated:
 
-- Preflight `codex --version` (flags verified on 0.146.0 and 0.149.0; re-check on other versions) and run
-  from the repo root
-  (Codex refuses untrusted, non-git directories).
+- Preflight `codex --version` (verified versions: see `codex-protocol.md`'s title; re-check on
+  others) and run from the repo root (Codex refuses untrusted, non-git directories).
 - Prompt via temp file + stdin, fresh `mktemp` files per call (prompt, reply, stream, stderr):
   `codex exec -s read-only --json -o "$REPLY" - <"$P" >"$STREAM" 2>"$ERR"`.
   Never inline-quote; stdin-feed prevents the non-TTY EOF hang. Parse `thread_id` from the

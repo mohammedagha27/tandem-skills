@@ -2,6 +2,29 @@
 
 Skill versions live in each SKILL.md's `metadata.version`; this file tracks the family.
 
+## 0.3.0 — 2026-08-28
+
+Read-only audit (skill-reviewer roles, 18 fresh trigger evals, 5 behavioral evals incl. real
+`config show` execution) → all findings fixed:
+- `research` becomes the twelfth config key (it was an invocation arg the contract had to
+  reject); schema table is the single key enumeration; echo/state/tabs follow schema order
+- Understand and Plan gate moved out of SKILL.md into `references/understand.md` and
+  `references/plan-gate.md` (router back to ~215 lines); autonomy-vs-gate_timeout split
+  stated; scope-ambiguous timed-out item parks the WHOLE gate; timeout detection defined
+- Fit check in Modes (DO-NOT-TRIGGER inputs decline in one line); `review` first token
+  delegates to tandem-review; `resume` with no state reports and stops
+- Intake: question budget corrected; skill inventory scan install-relative and confined to
+  the research gate; duplicate invocation keys last-wins with a warning
+- Descriptions rewritten from an 18-query panel (repo prerequisite, review verbs, config and
+  spar natural-language triggers, CV/product exclusions); `source` moved under `metadata`
+- `codex_call.sh`: verdict restricted to contract values + VERDICT_VALID, last non-empty
+  line, binary-missing = deterministic, CODEX_VERSION echoed
+- Dedup: precedence/scope-test/version-claim restatements replaced with pointers; worktree-safe
+  exclude path; evals 4/6 corrected and re-sorted; tandem-review shows the merge-base command
+  and links the single-model mechanics
+- Versions now bump on every behavioral change (the installed copy had drifted 3 files behind
+  the repo while both said 0.2.0)
+
 ## 0.2.0 — 2026-08-21
 
 - Interview upgrades adapted from Chase AI's claudex-loop (MIT): batch-confirmed Assumptions

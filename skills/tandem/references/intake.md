@@ -3,8 +3,9 @@
 Goal: turn whatever the user gave you into a populated `state.md` with sources fetched, repo
 context discovered, and requirement stubs ready for the Understand phase. Don't interview the
 user about *requirements* here — collect first, ask later, so every question you eventually
-ask is one only they can answer. Exactly two intake-time questions are sanctioned: the
-no-input question, and a paste request for an unfetchable source.
+ask is one only they can answer. The sanctioned intake-time questions are exactly these: the
+no-input question, a paste request for an unfetchable source, the research gate (below), and
+the one-time offer to copy a legacy `.tandem/config.md`. Nothing else is asked here.
 
 ## 1. Classify the input
 
@@ -68,12 +69,14 @@ gotchas, prior art; minutes, and the default recommendation when the ground is u
 and it requires the user's explicit opt-in PLUS sign-off on the 3–5 specific questions the
 research must answer before anything launches). Save any research brief under the repo's
 docs convention (or `docs/research/YYYY-MM-DD-<slug>.md`), list it in `state.md § Sources`,
-and cite it from the requirements it grounds. `research=none|web|deep` on the invocation
-pre-answers the gate.
+and cite it from the requirements it grounds. The `research` config key (or `research=none|web|deep` on the
+invocation) pre-answers the gate; `ask` (the default) offers it.
 
-**Skill inventory scan**: list the installed skill packs on both benches — Claude's
-(`~/.claude/skills/`, folder names + first description lines only) and Codex's
-(`~/.agents/skills/`) — and match them against the task's domain. Record hits in `state.md`
+**Skill inventory scan** (only when the research gate opened — familiar ground doesn't need
+it): list the installed skill packs on both benches — Claude's (the skills directory that
+contains the loaded tandem skill, i.e. `<TANDEM_SKILL_DIR>/..`; folder names + first
+description lines only) and Codex's (the `skills` CLI's store when present, commonly
+`~/.agents/skills/`; skip silently if absent) — and match them against the task's domain. Record hits in `state.md`
 as *proposed* toolchain entries with the bench they exist on ("installed on Claude side
 only"); if a Codex-side skill's behavior under headless `codex exec` is unverified, ledger
 that as an assumption. Discovery informs the plan; nothing loads unless `plan.md`'s
@@ -81,9 +84,9 @@ optional `## Toolchain` section names it and survives sparring.
 
 ## 3. Produce requirement stubs
 
-Write `state.md` (format: `state.md` reference; its `config:` line holds the RESOLVED values
-per SKILL.md § Configuration and `references/config.md` — resolve them now, never copy the
-template's example values) with every requirement you can extract, each
+Write `state.md` (format: `state.md` reference; resolve the `config:` line per
+`references/config.md` now — never copy the template's example values) with every requirement
+you can extract, each
 tagged `confirmed` / `assumed` / `open` and given an acceptance line ("accept: …") where the
 source provides one. Rules of thumb:
 

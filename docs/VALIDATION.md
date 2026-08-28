@@ -472,7 +472,42 @@ boundaries, but every fixed-ladder round earned its cost — needs more runs); b
 snapshot-size budgeting; harness-side auto-forward of subagent final messages (harness
 issue, not skill text).
 
-## 13. Verdict
+## 13. Round 11 — read-only audit and consolidation (2026-08-28)
+
+Method: two agents in the skill-reviewer role (static, all 12 files) + skill-creator criteria;
+18 fresh trigger evals (6 positive / 6 hard-negative / 6 edge) from descriptions only; 5
+behavioral evals including two REAL executions (`/tandem config show` against the live
+installation with a verified no-file-created check; `codex_call.sh` contract check) and three
+literal tabletop walks; per-file load measurements. Findings were spot-verified before
+acceptance.
+
+Results: no CRITICAL. HIGH — the deployed skill was a stale skills-CLI copy (3 files behind
+the repo, same version string); `research=` documented as an invocation arg the 11-key
+contract had to reject; intake violating its own question budget and path rule; no body-level
+fit check (`/tandem review my branch` ran the full lifecycle by the letter). MEDIUM — trigger
+edge gaps (15.5/18: repo prerequisite unstated, spar needs "codex" in the utterance, config
+NL variants, resume never says "check"), duplicate-key precedence and resume-with-no-state
+unspecified, whole-gate vs per-item wait on a scope-ambiguous timeout undefined, ~90 lines of
+cross-file restatement, SKILL.md grown 165→266 lines, `.git/info/exclude` wrong in linked
+worktrees, eval 4 contradicting the frontier rule, ceremony not scaling down. LOW — script
+verdict enum unvalidated / literal last line, preflight outside the script's "still applies",
+attribution parentheticals in instruction text, `source:` non-standard frontmatter.
+Well-designed per both reviewers: the Codex protocol + script, state ledger + reality-checked
+resume, STILL DISPUTED channel, tandem-review's base/triage rules, accepted-findings
+reconciliation, baseline classification, trust boundaries, DO-NOT-TRIGGER cross-pointers;
+examples do not over-bias.
+
+All findings fixed in v0.3.0 (CHANGELOG): `research` is the twelfth key and the schema table
+is the only enumeration; Understand and Plan gate moved to `references/understand.md` /
+`plan-gate.md` (SKILL.md back to ~215 lines); fit check + `review` delegation + no-state
+resume; descriptions rewritten from the panel's proposals (1011/1000 chars); duplicate-key
+last-wins; whole-gate wait on never-cross items; timeout detection defined; dedup via
+pointers; worktree-safe exclude path; script hardened (contract-only verdict, VERDICT_VALID,
+non-empty last line, CODEX_VERSION, deterministic on missing binary); evals corrected and
+sorted; `install.sh` re-run and stale copies removed (deployed = repo, verified by diff).
+Version bump rule adopted: every behavioral change bumps `metadata.version`.
+
+## 14. Verdict
 
 Both skills survived two authoring-time adversarial rounds, an independent second-session
 audit, and a Codex counter-audit, with all confirmed defects fixed; the Codex CLI protocol is

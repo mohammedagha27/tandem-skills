@@ -11,13 +11,15 @@ contracts, last-line verdict parse — and prints `STATUS/THREAD_ID/REPLY_FILE/V
 the stderr tail on failure). Run it from the target repo root; omit the thread-id for a
 fresh session, pass it to resume. Use the script whenever it's present; the hand-rolled
 commands below are the fallback for installs without it — and this document stays
-authoritative for semantics either way (timeouts, the failure ladder, the verdict contract,
-and trust boundaries all still apply to script-driven calls).
+authoritative for semantics either way (the preflight, timeouts, the failure ladder, the
+verdict contract, and trust boundaries all still apply to script-driven calls — the caller
+still writes the prompt to a fresh `mktemp` path; the script never accepts a fixed one as
+sanctioned).
 
 ## Preflight (once per run)
 
-1. `codex --version` — these mechanics are verified on 0.146.0 and 0.149.0; on any other version re-check
-   the flags below before trusting them. Known floor: CLIs older than 0.130 error on the
+1. `codex --version` — verified versions are stated once in this file's title; on any other
+   version re-check the flags below before trusting them. Known floor: CLIs older than 0.130 error on the
    default model — treat them as unsupported (deterministic failure), don't work around.
 2. Authenticated via a prior `codex login` (ChatGPT account is fine). Auth/model errors get
    surfaced to the user — never silently retried.

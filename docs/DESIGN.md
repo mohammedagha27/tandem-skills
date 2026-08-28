@@ -320,3 +320,18 @@ questions), and the skill-inventory → optional `## Toolchain` plan section. co
 as implementer) was declined by the user: tandem keeps "Codex never writes" as an invariant.
 No tabletop was run for these additions — they are interview-presentation devices layered on
 validated structures; the next real run is their test.
+
+## 19. Post-audit consolidation (2026-08-28)
+
+A read-only audit (see VALIDATION round 11) found no critical defects but real drift: the
+deployed skill was a stale skills-CLI copy three files behind the repo with an unchanged
+version string; `research=` was documented as an invocation arg the eleven-key contract had to
+reject; intake had accreted questions past its own budget and hardcoded paths against
+config.md's rule; ~90 lines restated rules owned elsewhere; and SKILL.md had grown from a
+165-line router to 266 lines with Understand and the plan gate inline. Decisions: `research`
+is a first-class key (twelve); the schema table is the ONLY enumeration and everything else
+follows schema order; Understand and Plan gate are references (`understand.md`,
+`plan-gate.md`); the description's DO-NOT-TRIGGER rule is now executable in the body (fit
+check, `review` delegation); versions bump on every behavioral change because an unchanging
+version cannot detect deployment drift. Rule for the future: any new knob touches exactly one
+file's table and nothing else.

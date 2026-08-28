@@ -94,14 +94,15 @@ belongs to the installation that's actually loaded — global, project-level, or
 /tandem config reset                 # back to built-ins (asks first)
 ```
 
-The eleven keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
+The twelve keys: `codex` (on|off), `max_rounds`, `codex_review` (on|off), `execution`
 (auto|inline|subagents), `pr` (ask|auto|off), `ci` (on|off), `docs` (on|off), `autonomy`
 (guided|auto), `codex_failure` (ask|stop|claude — what happens if Codex becomes unavailable
 mid-run: ask you, stop resumably, or continue with clearly-labeled Claude fallback critics),
 `claude_fallback_model` (inherit|model id — the model those fallback critics use),
 `gate_timeout` (wait|proceed — what happens when an approval question gets no answer:
 park resumably, or adopt the recommended option marked provisional with any PR held as a
-draft until you confirm) — full semantics in the skill's `references/config.md`. One-off overrides ride
+draft until you confirm), `research` (ask|none|web|deep — how much outside research intake
+may do for tech the repo can't answer) — full semantics in the skill's `references/config.md`. One-off overrides ride
 the invocation and never touch your defaults: `/tandem PROJ-123 rounds=3 review=off`.
 
 ## What a run looks like
@@ -137,7 +138,7 @@ phase against reality before trusting it. To abandon a run instead, delete its
 
 ## What a run leaves behind
 
-- `.tandem/<slug>/` — working state, kept out of git via `.git/info/exclude` (never a
+- `.tandem/<slug>/` — working state, kept out of git via the repo's local exclude file (never a
   preferences file). `state.md` holds requirements, decisions, disagreements, and deviations;
   it's what makes `/tandem resume` work.
 - `docs/features/YYYY-MM-DD-<slug>.md` — the dossier: problem, requirements (assumptions
